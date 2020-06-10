@@ -176,6 +176,81 @@
           }
         }
       }
+    },
+    "utils-feature-gateway-explorer": {
+      "root": "libs/utils/feature-gateway-explorer",
+      "sourceRoot": "libs/utils/feature-gateway-explorer/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
+              "libs/utils/feature-gateway-explorer/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/utils/feature-gateway-explorer/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/utils/feature-gateway-explorer/jest.config.js",
+            "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/utils/feature-gateway-explorer",
+            "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
+            "packageJson": "libs/utils/feature-gateway-explorer/package.json",
+            "main": "libs/utils/feature-gateway-explorer/src/index.ts",
+            "assets": ["libs/utils/feature-gateway-explorer/*.md"]
+          }
+        }
+      }
+    },
+    "socketcluster-adapter": {
+      "root": "libs/socketcluster/adapter",
+      "sourceRoot": "libs/socketcluster/adapter/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/socketcluster/adapter/tsconfig.lib.json",
+              "libs/socketcluster/adapter/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/socketcluster/adapter/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/socketcluster/adapter/jest.config.js",
+            "tsConfig": "libs/socketcluster/adapter/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/socketcluster/adapter",
+            "tsConfig": "libs/socketcluster/adapter/tsconfig.lib.json",
+            "packageJson": "libs/socketcluster/adapter/package.json",
+            "main": "libs/socketcluster/adapter/src/index.ts",
+            "assets": ["libs/socketcluster/adapter/*.md"]
+          }
+        }
+      }
     }
   },
   "cli": {

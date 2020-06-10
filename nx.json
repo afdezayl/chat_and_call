@@ -28,6 +28,12 @@
     "front-e2e": {
       "tags": [],
       "implicitDependencies": ["front"]
+    },
+    "utils-feature-gateway-explorer": {
+      "tags": []
+    },
+    "socketcluster-adapter": {
+      "tags": []
     }
   }
 }

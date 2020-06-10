@@ -15,7 +15,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@chat-and-call/utils/feature-gateway-explorer": [
+        "libs/utils/feature-gateway-explorer/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/adapter": [
+        "libs/socketcluster/adapter/src/index.ts"
+      ]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
