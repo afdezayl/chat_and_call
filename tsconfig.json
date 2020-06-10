@@ -21,6 +21,9 @@
       ],
       "@chat-and-call/socketcluster/adapter": [
         "libs/socketcluster/adapter/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/utils-crud-server": [
+        "libs/socketcluster/utils-crud-server/src/index.ts"
       ]
     }
   },

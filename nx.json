@@ -34,6 +34,9 @@
     },
     "socketcluster-adapter": {
       "tags": []
+    },
+    "socketcluster-utils-crud-server": {
+      "tags": []
     }
   }
 }

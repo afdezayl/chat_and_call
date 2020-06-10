@@ -38,17 +38,7 @@ export interface IAGAction {
    * A string constant which is used to indicate that an action is an authenticate action.
    */
   AUTHENTICATE: string;
-  /**
-   * Allow an action to be processed by the back end server/socket logic.
-   * @param packet  This method accepts an optional packet argument; if provided, the packet will be used as the action payload instead of action.data. This allows middleware to transform data from clients before it is handled by the back end logic.
-   */
-  allow(packet?: any): Function;
-  /**
-   * Prevent an action from reaching the back end server/socket logic.
-   * @param error This method accepts an Error as argument. This error will be sent to the client which initiated the action.
-   */
-  block(error: Error): Function;
-  /**
+    /**
    * This field exists on all action types except for the HANDSHAKE_WS action. It holds the AGServerSocket whose corresponding client initiated the action.
    */
   socket: AGServerSocket;
@@ -92,4 +82,15 @@ export interface IAGAction {
    * A Promise which will resolve or reject depending on whether the action was allowed or blocked. This property is mostly meant for internal use by SocketCluster middleware.
    */
   promise: Promise<any>;
+  /**
+   * Allow an action to be processed by the back end server/socket logic.
+   * @param packet  This method accepts an optional packet argument; if provided, the packet will be used as the action payload instead of action.data. This allows middleware to transform data from clients before it is handled by the back end logic.
+   */
+  allow(packet?: any): Function;
+  /**
+   * Prevent an action from reaching the back end server/socket logic.
+   * @param error This method accepts an Error as argument. This error will be sent to the client which initiated the action.
+   */
+  block(error: Error): Function;
+
 }

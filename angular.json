@@ -251,6 +251,45 @@
           }
         }
       }
+    },
+    "socketcluster-utils-crud-server": {
+      "root": "libs/socketcluster/utils-crud-server",
+      "sourceRoot": "libs/socketcluster/utils-crud-server/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
+              "libs/socketcluster/utils-crud-server/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/socketcluster/utils-crud-server/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/socketcluster/utils-crud-server/jest.config.js",
+            "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/socketcluster/utils-crud-server",
+            "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
+            "packageJson": "libs/socketcluster/utils-crud-server/package.json",
+            "main": "libs/socketcluster/utils-crud-server/src/index.ts",
+            "assets": ["libs/socketcluster/utils-crud-server/*.md"]
+          }
+        }
+      }
     }
   },
   "cli": {

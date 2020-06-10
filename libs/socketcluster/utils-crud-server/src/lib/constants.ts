@@ -1,0 +1,1 @@
+export const SOCKET_PATHS_METADATA = 'websockets:paths';
