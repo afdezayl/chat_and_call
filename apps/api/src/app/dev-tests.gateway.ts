@@ -1,10 +1,28 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { SocketGet } from '@chat-and-call/socketcluster/utils-crud-server';
+import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import {
+  SocketGet,
+  SocketCrudGateway,
+  SocketPost,
+} from '@chat-and-call/socketcluster/utils-crud-server';
+import { AGServerSocket } from 'socketcluster-server';
 
-@WebSocketGateway()
+@SocketCrudGateway('dev')
 export class DevTestsGateway {
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
+  @SocketGet('message')
+  greeting(
+    @MessageBody() data: any,
+    @ConnectedSocket() socket: AGServerSocket
+  ): string {
     return 'Hello world!';
+  }
+
+  @SocketPost('echo')
+  echo(@MessageBody() data: any, @ConnectedSocket() socket: AGServerSocket) {
+    return data;
+  }
+
+  @SocketGet('no-params')
+  noParams() {
+    return;
   }
 }

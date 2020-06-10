@@ -5,7 +5,7 @@ import {
   MESSAGE_METADATA,
   MESSAGE_MAPPING_METADATA,
 } from '@nestjs/websockets/constants';
-import { AsyngularInterceptor } from '../utils/method-decorators-utils';
+import { AsyngularInterceptor } from '../utils/AsyngularInterceptor';
 import { SocketValidationPipe } from '../pipes/socket-validation.pipe';
 
 function joinPath(type: string, method: string) {
@@ -32,7 +32,7 @@ function executeGatewayFunctions(path: string) {
     const functions: Array<Function> = Reflect.getMetadata(
       SOCKET_PATHS_METADATA,
       target.prototype,
-    );
+    )?? [];
     functions.forEach(fn => fn(path));
     return target;
   };
@@ -44,6 +44,7 @@ export const SocketGet = (path: string) => {
   return applyDecorators(
     AsyngularInterceptor('GET', path),
     SubscribeMessage(`#get:${path}`),
+    joinPath('get', path),
     UsePipes(SocketValidationPipe),
   );
 };
@@ -51,6 +52,7 @@ export const SocketGet = (path: string) => {
 export const SocketPost = (path: string) => {
   return applyDecorators(
     AsyngularInterceptor('POST', path),
+    SubscribeMessage(`#post:${path}`),
     joinPath('post', path),
     UsePipes(SocketValidationPipe),
   );
@@ -59,6 +61,7 @@ export const SocketPost = (path: string) => {
 export const SocketPut = (path: string) => {
   return applyDecorators(
     AsyngularInterceptor('PUT', path),
+    SubscribeMessage(`#put:${path}`),
     joinPath('put', path),
     UsePipes(SocketValidationPipe),
   );
@@ -67,6 +70,7 @@ export const SocketPut = (path: string) => {
 export const SocketDelete = (path: string) => {
   return applyDecorators(
     AsyngularInterceptor('DELETE', path),
+    SubscribeMessage(`#delete:${path}`),
     SubscribeMessage(`#delete:${path}`),
     UsePipes(SocketValidationPipe),
   );

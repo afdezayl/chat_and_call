@@ -1,12 +1,11 @@
 import {
   CanActivate,
   ExecutionContext,
-  Injectable,
-  Logger,
+  Injectable
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { SocketCrudRequest } from '../utils/method-decorators-utils';
+import { SocketCrudRequest } from '../utils/AsyngularInterceptor';
 import { AGServerSocket } from 'socketcluster-server';
 
 @Injectable()
