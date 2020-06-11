@@ -1,15 +1,21 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { DatabasePoolModule } from '@chat-and-call/utils/database-pool';
+
 import { DevTestsGateway } from './dev-tests.gateway';
+import { GatewaysModule } from './gateways/gateways.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
+  providers: [DevTestsGateway],
   imports: [
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    DatabasePoolModule,
+    GatewaysModule,
+    LoggerModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, DevTestsGateway],
+  controllers: [],
+
 })
 export class AppModule {}

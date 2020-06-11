@@ -5,9 +5,14 @@ import {
   SocketPost,
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { AGServerSocket } from 'socketcluster-server';
+import { Logger } from '@nestjs/common';
 
 @SocketCrudGateway('dev')
 export class DevTestsGateway {
+  constructor(private logger: Logger) {
+    this.logger.setContext(this.constructor.name);
+  }
+
   @SocketGet('message')
   greeting(
     @MessageBody() data: any,

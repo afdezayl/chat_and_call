@@ -290,6 +290,90 @@
           }
         }
       }
+    },
+    "auth-data-access-auth-server": {
+      "root": "libs/auth/data-access-auth-server",
+      "sourceRoot": "libs/auth/data-access-auth-server/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/auth/data-access-auth-server/tsconfig.lib.json",
+              "libs/auth/data-access-auth-server/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/auth/data-access-auth-server/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/auth/data-access-auth-server/jest.config.js",
+            "tsConfig": "libs/auth/data-access-auth-server/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "auth-shared-auth-interfaces": {
+      "root": "libs/auth/shared-auth-interfaces",
+      "sourceRoot": "libs/auth/shared-auth-interfaces/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/auth/shared-auth-interfaces/tsconfig.lib.json",
+              "libs/auth/shared-auth-interfaces/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/auth/shared-auth-interfaces/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/auth/shared-auth-interfaces/jest.config.js",
+            "tsConfig": "libs/auth/shared-auth-interfaces/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "utils-database-pool": {
+      "root": "libs/utils/database-pool",
+      "sourceRoot": "libs/utils/database-pool/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/utils/database-pool/tsconfig.lib.json",
+              "libs/utils/database-pool/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/utils/database-pool/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/utils/database-pool/jest.config.js",
+            "tsConfig": "libs/utils/database-pool/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

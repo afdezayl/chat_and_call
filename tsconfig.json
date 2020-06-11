@@ -24,6 +24,15 @@
       ],
       "@chat-and-call/socketcluster/utils-crud-server": [
         "libs/socketcluster/utils-crud-server/src/index.ts"
+      ],
+      "@chat-and-call/auth/data-access-auth-server": [
+        "libs/auth/data-access-auth-server/src/index.ts"
+      ],
+      "@chat-and-call/auth/shared-auth-interfaces": [
+        "libs/auth/shared-auth-interfaces/src/index.ts"
+      ],
+      "@chat-and-call/utils/database-pool": [
+        "libs/utils/database-pool/src/index.ts"
       ]
     }
   },

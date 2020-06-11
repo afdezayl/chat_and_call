@@ -29,7 +29,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
     if (!this._server) {
       this._server = attach(httpServer, this._options);
-      this._logger.log('Server created');
+      this._logger.log('SocketCluster server created');
     }
 
     this._setInboundMiddleware();

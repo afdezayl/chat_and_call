@@ -37,6 +37,15 @@
     },
     "socketcluster-utils-crud-server": {
       "tags": []
+    },
+    "auth-data-access-auth-server": {
+      "tags": []
+    },
+    "auth-shared-auth-interfaces": {
+      "tags": []
+    },
+    "utils-database-pool": {
+      "tags": []
     }
   }
 }

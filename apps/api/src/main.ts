@@ -7,6 +7,7 @@ import { SocketClusterAdapter } from '@chat-and-call/socketcluster/adapter';
 
 import { AppModule } from './app/app.module';
 
+// TODO: Professional logger (Winston, ...);
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
@@ -25,9 +26,12 @@ async function bootstrap() {
   );
 
   const port = process.env.PORT || 3333;
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
-  });
+  await app.listen(port);
+
+  Logger.log(
+    'Listening at http://localhost:' + port + '/' + globalPrefix,
+    'bootstrap'
+  );
 
   const gatewayExplorer = new GatewayExplorerModule(app);
 }
