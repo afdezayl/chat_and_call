@@ -46,6 +46,12 @@
     },
     "utils-database-pool": {
       "tags": []
+    },
+    "auth-feature-auth-web": {
+      "tags": []
+    },
+    "socketcluster-socket-client-web": {
+      "tags": []
     }
   }
 }

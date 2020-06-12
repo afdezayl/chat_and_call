@@ -1,1 +1,13 @@
 <h1>{{ title | uppercase }}</h1>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="">Username</label>
+    <input type="text" formControlName="username" />
+  </div>
+  <div>
+    <label for="">Password</label>
+    <input type="password" formControlName="password" />
+  </div>
+  <button type="submit">Submit</button>
+</form>
+<h2>{{ (authorizeState$ | async) ? 'Ok' : 'Unauthorized' }}</h2>

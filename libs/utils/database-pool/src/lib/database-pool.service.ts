@@ -19,7 +19,6 @@ export class DatabasePoolService {
       queueLimit: 0,
       ...dbConnector,
     });
-
     Logger.log('Created database pool', this.constructor.name);
   }
 }

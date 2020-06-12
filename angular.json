@@ -374,6 +374,73 @@
           }
         }
       }
+    },
+    "auth-feature-auth-web": {
+      "projectType": "library",
+      "root": "libs/auth/feature-auth-web",
+      "sourceRoot": "libs/auth/feature-auth-web/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/auth/feature-auth-web/tsconfig.lib.json",
+              "libs/auth/feature-auth-web/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/auth/feature-auth-web/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/auth/feature-auth-web/jest.config.js",
+            "tsConfig": "libs/auth/feature-auth-web/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/auth/feature-auth-web/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "socketcluster-socket-client-web": {
+      "projectType": "library",
+      "root": "libs/socketcluster/socket-client-web",
+      "sourceRoot": "libs/socketcluster/socket-client-web/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/socketcluster/socket-client-web/tsconfig.lib.json",
+              "libs/socketcluster/socket-client-web/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/socketcluster/socket-client-web/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/socketcluster/socket-client-web/jest.config.js",
+            "tsConfig": "libs/socketcluster/socket-client-web/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/socketcluster/socket-client-web/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
     }
   },
   "cli": {

@@ -33,6 +33,12 @@
       ],
       "@chat-and-call/utils/database-pool": [
         "libs/utils/database-pool/src/index.ts"
+      ],
+      "@chat-and-call/auth/feature-auth-web": [
+        "libs/auth/feature-auth-web/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/socket-client-web": [
+        "libs/socketcluster/socket-client-web/src/index.ts"
       ]
     }
   },

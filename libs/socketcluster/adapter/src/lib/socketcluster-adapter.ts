@@ -112,7 +112,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         'authentication'
       )) {
         const serverInstance = this._server.clients[socket.id];
-        this._logger.log(authToken);
 
         if (serverInstance.authState === serverInstance.UNAUTHENTICATED) {
           await serverInstance.setAuthToken(authToken);

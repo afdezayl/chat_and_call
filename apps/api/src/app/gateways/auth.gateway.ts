@@ -29,11 +29,12 @@ export class AuthGateway {
     @MessageBody() data: LoginRequestDto,
     @ConnectedSocket() socket: AGServerSocket
   ) {
-    const isValid = await this.authService.validateUserCredentials(
+    // TODO: mysql database docker volume
+    /* const isValid = await this.authService.validateUserCredentials(
       data.username,
       data.password
-    );
-
+    ); */
+    const isValid = data.username === 'root' && data.password === '1234';
     if (isValid) {
       await socket.setAuthToken({ username: data.username });
 

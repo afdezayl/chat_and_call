@@ -15,7 +15,6 @@ export class AuthService {
     const hashedPassword = await this.authRepository.getHashedPassword(
       username
     );
-
     return await this.checkPassword(password, hashedPassword);
   }
 

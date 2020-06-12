@@ -18,7 +18,7 @@ export class DevTestsGateway {
     @MessageBody() data: any,
     @ConnectedSocket() socket: AGServerSocket
   ): string {
-    return 'Hello world!';
+    return socket.ok('Hello world!');
   }
 
   @SocketPost('echo')
