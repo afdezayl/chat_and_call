@@ -10,13 +10,7 @@ services:
       - ./:/app
       - /app/node_modules
     environment:
-      PORT: 3333
-      ENVIRONMENT: dev
-      JSON_WEBTOKEN_KEY: jwtsecretkey
-      DB_HOST: mysql
-      DB_USER: chatandcall
-      DB_PASS: chatandcall
-      DB_NAME: chatandcall
+      - .env
     depends_on:
       - "mysql"
   mysql:
@@ -27,6 +21,5 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: chatandcall
-      #MYSQL_DATABASE: chatandcall
 volumes:
   chat-mysql-data:
