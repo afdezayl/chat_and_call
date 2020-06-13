@@ -26,7 +26,10 @@ export class AuthEffects {
               ? AuthActions.loginSuccess()
               : AuthActions.loginFailure({ error: 'Unauthorized' })
           ),
-          catchError((error) => of(AuthActions.loginFailure({ error })))
+          catchError((error) => {
+            console.error(error);
+            return of(AuthActions.loginFailure({ error }));
+          })
         )
       )
     )

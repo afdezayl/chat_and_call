@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { SocketCrudRequest } from '../utils/AsyngularInterceptor';
 import { AGServerSocket } from 'socketcluster-server';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class AuthorizeGuard implements CanActivate {
@@ -15,13 +15,12 @@ export class AuthorizeGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const wsContext = context.switchToWs();
     const socket = wsContext.getClient() as AGServerSocket;
-    const request = wsContext.getData() as SocketCrudRequest;
 
     if (socket.authState === socket.AUTHENTICATED) {
       return true;
     }
 
-    request.error('Unauthorized');
+    throw new WsException('Unauthorized');
     return false;
   }
 }

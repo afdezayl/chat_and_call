@@ -1,4 +1,4 @@
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, WsResponse } from '@nestjs/websockets';
 import {
   SocketGet,
   SocketCrudGateway,
@@ -18,15 +18,16 @@ export class DevTestsGateway {
     @MessageBody() data: any,
     @ConnectedSocket() socket: AGServerSocket
   ): string {
-    return socket.ok('Hello world!');
+    return 'Hello world!';
   }
 
   @SocketPost('echo')
   echo(@MessageBody() data: any, @ConnectedSocket() socket: AGServerSocket) {
+    //return socket.ok(data);
     return data;
   }
 
-  @SocketGet('no-params')
+  @SocketGet('noparams')
   noParams() {
     return;
   }

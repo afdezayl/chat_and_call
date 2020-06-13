@@ -8,6 +8,9 @@ import { attach, AGServer, AGServerSocket } from 'socketcluster-server';
 import { Observable } from 'rxjs/internal/Observable';
 import { AGServerOptions } from 'socketcluster-server/server';
 import { IAGAction } from './IAGAction';
+import { of } from 'rxjs';
+import { tap, map, switchMap } from 'rxjs/operators';
+import { IAGRequest } from './IAGRequest';
 
 // TODO: Recover interfaces
 export class SocketClusterAdapter implements WebSocketAdapter {
@@ -51,17 +54,24 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
   // TODO: Rethink procedure/receiver convention
   bindMessageHandlers(
-    client: AGServerSocket,
+    socket: AGServerSocket,
     handlers: WsMessageHandler<string>[],
     transform: (data: any) => Observable<any>
   ) {
     for (const { message, callback } of handlers) {
       const consumer = message.startsWith('#')
-        ? client.procedure(message)
-        : client.receiver(message);
+        ? socket.procedure(message)
+        : socket.receiver(message);
       (async () => {
-        for await (const data of consumer) {
-          transform(callback(data));
+        for await (const request of consumer) {
+          const req = request as IAGRequest;
+          of(callback(request))
+            .pipe(switchMap(transform))
+            .subscribe((response) => {
+              if (!req.sent) {
+                req.end(response);
+              }
+            }, console.error);
         }
       })();
     }
@@ -113,19 +123,21 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       )) {
         const serverInstance = this._server.clients[socket.id];
 
+        if (serverInstance.authState === serverInstance.AUTHENTICATED) {
+          this._logger.debug(
+            'authorized - ' +
+              socket.id +
+              ' - ' +
+              socket.authState +
+              ' - server: ' +
+              this._server.clients[socket.id]['authState']
+          );
+        }
+
         if (serverInstance.authState === serverInstance.UNAUTHENTICATED) {
           await serverInstance.setAuthToken(authToken);
           this._logger.debug('second auth...');
         }
-
-        this._logger.debug(
-          'authorized - ' +
-            socket.id +
-            ' - ' +
-            socket.authState +
-            ' - server: ' +
-            this._server.clients[socket.id]['authState']
-        );
       }
     })();
   }

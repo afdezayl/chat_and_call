@@ -24,13 +24,20 @@ export class AppComponent {
 
   constructor(
     private store: Store<AuthState>,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private socket: SocketService
   ) {}
+
+  sendPost() {
+    this.socket
+      .post('dev/echo', { message: 'Hello!' })
+      .subscribe(console.log, console.error);
+  }
 
   onSubmit() {
     if (this.form.valid) {
       const loginRequest: LoginRequestDto = this.form.value;
-      console.log(loginRequest);
+
       this.store.dispatch(sendLoginRequest({ request: loginRequest }));
       return;
     }

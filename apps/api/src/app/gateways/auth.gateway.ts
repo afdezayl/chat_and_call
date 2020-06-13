@@ -5,7 +5,7 @@ import {
   ConnectedSocket,
   WsException,
 } from '@nestjs/websockets';
-import { Logger, NotImplementedException } from '@nestjs/common';
+import { Logger, NotImplementedException, UnauthorizedException } from '@nestjs/common';
 import {
   SocketCrudGateway,
   SocketPost,
@@ -29,12 +29,12 @@ export class AuthGateway {
     @MessageBody() data: LoginRequestDto,
     @ConnectedSocket() socket: AGServerSocket
   ) {
-    // TODO: mysql database docker volume
-    /* const isValid = await this.authService.validateUserCredentials(
+    const isValid = data.password === '1234';
+    /* await this.authService.validateUserCredentials(
       data.username,
       data.password
-    ); */
-    const isValid = data.username === 'root' && data.password === '1234';
+    );
+ */
     if (isValid) {
       await socket.setAuthToken({ username: data.username });
 
@@ -44,10 +44,10 @@ export class AuthGateway {
         }`
       );
 
-      return socket.ok(socket.authToken);
+      return socket.authToken;
     }
 
-    return socket.error('Unauthorized');
+    throw new WsException('Unauthorized');
   }
 
   @SocketPost('signup')
