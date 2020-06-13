@@ -14,7 +14,7 @@ export class AuthRepositoryService {
       const [rows] = await this.db.pool.execute('select password from users where nick = ?', [
         username,
       ]);
-      return rows[0].password;
+      return rows[0]?.password ?? null;
     } catch (error) {
       this.logger.error(error);
     }
