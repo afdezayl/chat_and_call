@@ -1,11 +1,5 @@
-import {
-  SubscribeMessage,
-  WebSocketGateway,
-  MessageBody,
-  ConnectedSocket,
-  WsException,
-} from '@nestjs/websockets';
-import { Logger, NotImplementedException, UnauthorizedException } from '@nestjs/common';
+import { MessageBody, ConnectedSocket, WsException } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 import {
   SocketCrudGateway,
   SocketPost,
@@ -29,12 +23,10 @@ export class AuthGateway {
     @MessageBody() data: LoginRequestDto,
     @ConnectedSocket() socket: AGServerSocket
   ) {
-    const isValid = data.password === '1234';
-    /* await this.authService.validateUserCredentials(
+    const isValid = await this.authService.validateUserCredentials(
       data.username,
       data.password
     );
- */
     if (isValid) {
       await socket.setAuthToken({ username: data.username });
 
@@ -51,10 +43,7 @@ export class AuthGateway {
   }
 
   @SocketPost('signup')
-  async signup(
-    @MessageBody() data: SignupRequestDto,
-    @ConnectedSocket() socket: AGServerSocket
-  ) {
+  async signup(@MessageBody() data: SignupRequestDto) {
     throw new WsException('not implemented');
   }
 }

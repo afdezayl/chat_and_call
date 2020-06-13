@@ -22,13 +22,12 @@ export class DevTestsGateway {
   }
 
   @SocketPost('echo')
-  echo(@MessageBody() data: any, @ConnectedSocket() socket: AGServerSocket) {
-    //return socket.ok(data);
+  echo(@MessageBody() data: any) {
     return data;
   }
 
-  @SocketGet('noparams')
+  @SocketPost('noparams')
   noParams() {
-    return;
+    return 'noparams';
   }
 }
