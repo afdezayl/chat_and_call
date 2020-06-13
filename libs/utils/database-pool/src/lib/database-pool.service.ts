@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { createPool, Pool } from 'mysql2/promise';
+import { createPool, Pool, PoolOptions } from 'mysql2/promise';
 
 @Injectable()
 export class DatabasePoolService {
   public readonly pool: Pool;
 
   constructor() {
-    const dbConnector = {
+    const dbConnector: PoolOptions = {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
-      database: process.env.DB_TABLE,
-      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
+      password: process.env.DB_PASS
     };
 
     this.pool = createPool({

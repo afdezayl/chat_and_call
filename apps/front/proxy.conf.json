@@ -3,7 +3,7 @@
     "target": "http://localhost:3333",
     "secure": false
   },
-  "/socket/": {
+  "/socket": {
     "target": "http://localhost:3333",
     "secure": false,
     "ws": true
