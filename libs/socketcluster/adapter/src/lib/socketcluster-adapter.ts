@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { AGServerOptions } from 'socketcluster-server/server';
 import { IAGAction } from './IAGAction';
 import { of } from 'rxjs';
-import { tap, map, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { IAGRequest } from './IAGRequest';
 
 // TODO: Recover interfaces
@@ -37,9 +37,12 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
     this._setInboundMiddleware();
     this._setConnectionLogs();
+    // Signed cookies?
+    // this._setHandshakeMiddleware();
 
     return this._server;
   }
+
   bindClientConnect(server: AGServer, callback: Function) {
     (async () => {
       for await (const { socket } of server.listener('connection')) {
@@ -71,7 +74,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
               if (!req.sent) {
                 req.end(response);
               }
-            }, console.error);
+            }, this._logger.error);
         }
       })();
     }
@@ -99,6 +102,20 @@ export class SocketClusterAdapter implements WebSocketAdapter {
             default:
               action.allow();
           }
+        }
+      }
+    );
+  }
+
+  private _setHandshakeMiddleware() {
+    this._server.setMiddleware(
+      this._server.MIDDLEWARE_HANDSHAKE,
+      async (stream: AsyncIterable<IAGAction>) => {
+        for await (const action of stream) {
+          console.log(action.type, Object.keys(action.request));
+          console.log(action.request?.headers.cookie);
+
+          action.allow()
         }
       }
     );

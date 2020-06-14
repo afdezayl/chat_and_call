@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 
 import { GatewayExplorerModule } from '@chat-and-call/utils/feature-gateway-explorer';
 import { SocketClusterAdapter } from '@chat-and-call/socketcluster/adapter';
@@ -15,6 +16,7 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
+  app.use(cookieParser());
   app.useWebSocketAdapter(
     new SocketClusterAdapter(app, {
       path: '/socket',

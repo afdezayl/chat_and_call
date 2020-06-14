@@ -44,6 +44,15 @@ export class AuthGateway {
 
   @SocketPost('signup')
   async signup(@MessageBody() data: SignupRequestDto) {
-    throw new WsException('not implemented');
+    const isCreated = await this.authService.createNewUser(
+      data.username,
+      data.password,
+      data.email
+    );
+
+    if (isCreated) {
+      this.logger.log(`${data.username} signed up`);
+    }
+    return isCreated;
   }
 }
