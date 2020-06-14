@@ -1,0 +1,44 @@
+<mat-card class="central-card">
+  <form (submit)="onSubmit()" [formGroup]="form" class="form">
+    <h2>Inicio de sesión</h2>
+    <mat-error *ngIf="!(isValidLoginAttempt$ | async)"
+      >Combinación de usuario y contraseña incorrecta</mat-error
+    >
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre de usuario</mat-label>
+      <input
+        matInput
+        formControlName="username"
+        required
+        type="text"
+        placeholder="Nombre de usuario"
+
+      />
+      <mat-error *ngIf=""></mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        formControlName="password"
+        required
+        type="password"
+        placeholder="Contraseña"
+      />
+    </mat-form-field>
+    <button
+      class="mat-primary mat-raised-button submit_btn"
+      type="submit"
+      [disabled]="form.invalid"
+    >
+      Enviar
+    </button>
+    <h3>¿No estás registrado?</h3>
+
+    <a [routerLink]="['/home', 'signup']" routerLinkActive="router-link-active"
+      >Regístrate</a
+    >
+
+    <p>{{ getErrorsByControl(form) | json }}</p>
+  </form>
+</mat-card>

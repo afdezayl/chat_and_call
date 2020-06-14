@@ -1,4 +1,4 @@
-import { Length, Matches, IsNotEmpty, IsAlphanumeric, IsEmail } from "class-validator";
+import { Length, Matches, IsNotEmpty, IsAlphanumeric, IsEmail, MaxLength } from "class-validator";
 
 export interface SignupRequest {
   email: string;
@@ -9,6 +9,7 @@ export interface SignupRequest {
 export class SignupRequestDto implements SignupRequest {
   @IsNotEmpty()
   @IsEmail()
+  @MaxLength(45)
   email: string;
 
   @IsNotEmpty()

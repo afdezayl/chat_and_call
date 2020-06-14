@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { LoginRequestDto } from '@chat-and-call/auth/shared-auth-interfaces';
+import {
+  LoginRequestDto,
+  SignupRequestDto,
+} from '@chat-and-call/auth/shared-auth-interfaces';
 import {
   AuthState,
   sendLoginRequest,
@@ -19,6 +22,11 @@ export class AppComponent {
   form: FormGroup = this.fb.group({
     username: this.fb.control('', [Validators.required]),
     password: this.fb.control('', [Validators.required]),
+  });
+  form2: FormGroup = this.fb.group({
+    username: this.fb.control('', [Validators.required]),
+    password: this.fb.control('', [Validators.required]),
+    email: this.fb.control('', [Validators.required]),
   });
   authorizeState$ = this.store.pipe(select(isLogged));
 
@@ -42,5 +50,15 @@ export class AppComponent {
       return;
     }
     console.log('Invalid', this.form.controls);
+  }
+
+  onSubmit2() {
+    if (this.form2.valid) {
+      const signupRequest: SignupRequestDto = this.form2.value;
+
+      this.socket
+        .post<boolean>('auth/signup', signupRequest)
+        .subscribe(console.log, console.error);
+    }
   }
 }

@@ -443,6 +443,41 @@
           "style": "scss"
         }
       }
+    },
+    "material-ui-material-design": {
+      "projectType": "library",
+      "root": "libs/material/ui-material-design",
+      "sourceRoot": "libs/material/ui-material-design/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/material/ui-material-design/tsconfig.lib.json",
+              "libs/material/ui-material-design/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/material/ui-material-design/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/material/ui-material-design/jest.config.js",
+            "tsConfig": "libs/material/ui-material-design/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/material/ui-material-design/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
     }
   },
   "cli": {

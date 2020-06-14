@@ -39,6 +39,9 @@
       ],
       "@chat-and-call/socketcluster/socket-client-web": [
         "libs/socketcluster/socket-client-web/src/index.ts"
+      ],
+      "@chat-and-call/material/ui-material-design": [
+        "libs/material/ui-material-design/src/index.ts"
       ]
     }
   },

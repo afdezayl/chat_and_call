@@ -1,5 +1,5 @@
 <h1>{{ title | uppercase }}</h1>
-<button (click)="sendPost()">Send POST</button>
+<!-- <button (click)="sendPost()">Send POST</button>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div>
     <label for="">Username</label>
@@ -11,4 +11,23 @@
   </div>
   <button type="submit">Submit</button>
 </form>
-<h2>{{ (authorizeState$ | async) ? 'Ok' : 'Unauthorized' }}</h2>
+<h3>{{ (authorizeState$ | async) ? 'Ok' : 'Unauthorized' }}</h3>
+
+<h2>Registro</h2>
+<form [formGroup]="form2" (ngSubmit)="onSubmit2()">
+  <div>
+    <label for="">Username</label>
+    <input type="text" formControlName="username" />
+  </div>
+  <div>
+    <label for="">Password</label>
+    <input type="password" formControlName="password" />
+  </div>
+  <div>
+    <label for="">Email</label>
+    <input type="text" formControlName="email" />
+  </div>
+  <button type="submit">Submit</button>
+  <p>{{ form2.value | json }}</p>
+</form> -->
+<router-outlet></router-outlet>

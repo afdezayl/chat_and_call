@@ -52,6 +52,9 @@
     },
     "socketcluster-socket-client-web": {
       "tags": []
+    },
+    "material-ui-material-design": {
+      "tags": []
     }
   }
 }

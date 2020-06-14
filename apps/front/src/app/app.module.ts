@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -11,13 +12,18 @@ import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import { FeatureAuthWebModule } from '@chat-and-call/auth/feature-auth-web';
-//import { SocketclusterClientModule } from '@chat-and-call/socketcluster/socket-client-web';
+import { MaterialDesignModule } from '@chat-and-call/material/ui-material-design';
+import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
+    AppRoutingModule,
     BrowserModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
-    RouterModule.forRoot([], { initialNavigation: 'enabled' }),
+    HttpClientModule,
     StoreModule.forRoot(
       {},
       {
@@ -32,9 +38,7 @@ import { FeatureAuthWebModule } from '@chat-and-call/auth/feature-auth-web';
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     StoreRouterConnectingModule.forRoot(),
     FeatureAuthWebModule,
-    //SocketclusterClientModule,
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
