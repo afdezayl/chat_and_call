@@ -20,6 +20,6 @@ services:
       - chat-mysql-data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
     environment:
-      MYSQL_ROOT_PASSWORD: chatandcall
+      MYSQL_ROOT_PASSWORD: root
 volumes:
   chat-mysql-data:

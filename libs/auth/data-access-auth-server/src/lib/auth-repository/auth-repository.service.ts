@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
-import { from, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class AuthRepositoryService {
@@ -11,7 +9,7 @@ export class AuthRepositoryService {
 
   async getHashedPassword(username: string): Promise<string> {
     try {
-      const [rows] = await this.db.pool.execute('select password from users where nick = ?', [
+      const [rows] = await this.db.pool.execute('select password from users where login = ?', [
         username,
       ]);
       return rows[0]?.password ?? null;

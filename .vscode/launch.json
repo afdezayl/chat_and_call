@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Chrome",
+      "name": "Debug front",
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:4200",
