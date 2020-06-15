@@ -12,9 +12,9 @@ import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import { FeatureAuthWebModule } from '@chat-and-call/auth/feature-auth-web';
-import { MaterialDesignModule } from '@chat-and-call/material/ui-material-design';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
+import { TranslocoRootModule } from './transloco-root.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +24,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    TranslocoRootModule,
     StoreModule.forRoot(
       {},
       {

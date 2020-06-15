@@ -30,4 +30,8 @@
   <button type="submit">Submit</button>
   <p>{{ form2.value | json }}</p>
 </form> -->
+<ng-container *transloco="let t">
+  <p>{{ t('hello') }}</p>
+</ng-container>
+
 <router-outlet></router-outlet>
