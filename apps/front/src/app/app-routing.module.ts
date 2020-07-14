@@ -22,13 +22,10 @@ export const routes: Routes = [
       },
     ],
   },
-  /* {
+  {
     path: 'chat',
-    loadChildren: () =>
-      import('@chat-and-call/material/ui-material-design').then(
-        (m) => m.MaterialDesignModule
-      ),
-  }, */
+    loadChildren: () => import('./chat/chat.module').then((m) => m.ChatModule),
+  },
   {
     path: '**',
     pathMatch: 'full',

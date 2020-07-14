@@ -51,16 +51,17 @@
  *  (window as any).__Zone_enable_cross_context_check = true;
  *
  */
-// Socketcluster requires global object
-(<any>window).global = window
-
 
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone'; // Included with Angular CLI.
+import 'zone.js/dist/zone';
+// Included with Angular CLI.
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// Socketcluster requires global object
+(<any>window).global = window;
 

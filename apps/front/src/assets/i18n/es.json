@@ -1,4 +1,3 @@
 {
-  "hello": "transloco es",
-  "dynamic": "transloco {{value}}"
+  "submit": "Enviar"
 }

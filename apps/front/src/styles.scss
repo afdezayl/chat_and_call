@@ -2,3 +2,12 @@
 @import '~normalize.css';
 /* Material prebuilt theme */
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+* {
+  box-sizing: border-box;
+}
+html, body {
+  font-family: Roboto, 'Helvetica Neue', 'sans-serif';
+  height: 100%;
+}
+

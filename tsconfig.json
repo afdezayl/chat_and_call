@@ -8,8 +8,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
+    "target": "ES2015",
+    "module": "ESNext",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
@@ -28,9 +28,6 @@
       "@chat-and-call/auth/data-access-auth-server": [
         "libs/auth/data-access-auth-server/src/index.ts"
       ],
-      "@chat-and-call/auth/shared-auth-interfaces": [
-        "libs/auth/shared-auth-interfaces/src/index.ts"
-      ],
       "@chat-and-call/utils/database-pool": [
         "libs/utils/database-pool/src/index.ts"
       ],
@@ -42,6 +39,14 @@
       ],
       "@chat-and-call/material/ui-material-design": [
         "libs/material/ui-material-design/src/index.ts"
+      ],
+      "@chat-and-call/channels/data-access-server": [
+        "libs/channels/data-access-server/src/index.ts"
+      ],
+      "@chat-and-call/channels/shared": ["libs/channels/shared/src/index.ts"],
+      "@chat-and-call/auth/shared": ["libs/auth/shared/src/index.ts"],
+      "@chat-and-call/socketcluster/shared": [
+        "libs/socketcluster/shared/src/index.ts"
       ]
     }
   },

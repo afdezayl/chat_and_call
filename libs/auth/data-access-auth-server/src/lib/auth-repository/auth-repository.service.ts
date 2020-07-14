@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
+import { throwIfEmpty } from 'rxjs/operators';
 
 @Injectable()
 export class AuthRepositoryService {
@@ -35,6 +36,21 @@ export class AuthRepositoryService {
         [username, hashedPassword, email]
       );
       return true;
+    } catch (error) {
+      this.logger.error(error);
+    }
+    return false;
+  }
+
+  async isUser(username: string) {
+    try {
+      const [rows] = await this.db.pool.execute(
+        `SELECT COUNT(login) as cnt
+          FROM users
+          WHERE login=?`,
+        [username]
+      );
+      return rows[0].cnt > 0;
     } catch (error) {
       this.logger.error(error);
     }

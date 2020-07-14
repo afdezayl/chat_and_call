@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { fetch } from '@nrwl/angular';
+import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 
 import * as AuthActions from './auth.actions';
 import { AuthService } from '../auth.service';
@@ -10,43 +11,76 @@ import {
   concatMap,
   mergeMap,
   catchError,
+  tap,
+  distinctUntilChanged,
+  distinct,
 } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, EMPTY } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthEffects {
-  loadAuth$ = createEffect(() =>
+  loginAttempt$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.sendLoginRequest),
-      map((action) => action.request),
       mergeMap((request) =>
         this.authService.sendLoginRequest(request).pipe(
-          map((isValid) =>
-            isValid
-              ? AuthActions.loginSuccess()
-              : AuthActions.loginFailure({ error: 'Unauthorized' })
-          ),
+          tap((token) => {
+            localStorage.setItem(TOKEN_KEY, token);
+          }),
+          map((token) => AuthActions.loginSuccess({ token })),
           catchError((error) => {
             console.error(error);
-            return of(AuthActions.loginFailure({ error }));
+            return of(AuthActions.loginFailure(error));
           })
         )
       )
     )
   );
 
-  constructor(private actions$: Actions, private authService: AuthService) {}
-}
+  validLogin$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.loginSuccess),
+        tap((x) => this.router.navigate(['chat']))
+      ),
+    { dispatch: false }
+  );
 
-/* (action) => {
-          // Your custom service 'load' logic goes here. For now just return a success action...
-          this.authService.sendLoginRequest(action.request).pipe(
+  signupAttempt$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.sendSignupRequest),
+      mergeMap((request) =>
+        this.authService.sendSignupRequest(request).pipe(
+          map(
+            (isCreated) =>
+              isCreated
+                ? AuthActions.signupSuccess()
+                : AuthActions.signupFailure({ error: 'ff' }) // TODO: errors...
+          ),
+          catchError((error) => of(AuthActions.signupFailure({ error })))
+        )
+      )
+    )
+  );
 
+  usernameCheck$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.getUsernameAvailability),
+      mergeMap(({ user }) =>
+        this.authService.isUsernameAvailable(user).pipe(
+          tap(console.log),
+          map((isValid) =>
+            AuthActions.setUsernameAvailability({ user, isAvailable: isValid })
           )
-          return action.request.password === '1234' ? AuthActions.loginSuccess() : AuthActions.loginFailure({error: 'Unauthorized'});
-        },
+        )
+      )
+    )
+  );
 
-        onError: (action, error) => {
-          console.error('Error', error);
-          return AuthActions.loginFailure({ error });
-        }, */
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+}
