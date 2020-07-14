@@ -81,7 +81,7 @@
               "apps/front/tsconfig.app.json",
               "apps/front/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/front/**"]
+            "exclude": ["**/node_modules/**", "!apps/front/**/*"]
           }
         },
         "test": {
@@ -139,7 +139,7 @@
               "apps/api/tsconfig.app.json",
               "apps/api/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/api/**"]
+            "exclude": ["**/node_modules/**", "!apps/api/**/*"]
           }
         },
         "test": {
@@ -174,7 +174,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/front-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/front-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/front-e2e/**/*"]
           }
         }
       }
@@ -194,7 +194,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/auth/data-access-auth-server/**"
+              "!libs/auth/data-access-auth-server/**/*"
             ]
           }
         },
@@ -221,7 +221,10 @@
               "libs/auth/feature-auth-web/tsconfig.lib.json",
               "libs/auth/feature-auth-web/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/auth/feature-auth-web/**"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/auth/feature-auth-web/**/*"
+            ]
           }
         },
         "test": {
@@ -253,7 +256,7 @@
               "libs/auth/shared/tsconfig.lib.json",
               "libs/auth/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/auth/shared/**"]
+            "exclude": ["**/node_modules/**", "!libs/auth/shared/**/*"]
           }
         },
         "test": {
@@ -281,7 +284,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/channels/data-access-server/**"
+              "!libs/channels/data-access-server/**/*"
             ]
           }
         },
@@ -308,7 +311,7 @@
               "libs/channels/shared/tsconfig.lib.json",
               "libs/channels/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/channels/shared/**"]
+            "exclude": ["**/node_modules/**", "!libs/channels/shared/**/*"]
           }
         },
         "test": {
@@ -336,7 +339,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/material/ui-material-design/**"
+              "!libs/material/ui-material-design/**/*"
             ]
           }
         },
@@ -369,7 +372,10 @@
               "libs/socketcluster/adapter/tsconfig.lib.json",
               "libs/socketcluster/adapter/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/socketcluster/adapter/**"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/socketcluster/adapter/**/*"
+            ]
           }
         },
         "test": {
@@ -407,7 +413,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/socketcluster/utils-crud-server/**"
+              "!libs/socketcluster/utils-crud-server/**/*"
             ]
           }
         },
@@ -446,7 +452,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/socketcluster/socket-client-web/**"
+              "!libs/socketcluster/socket-client-web/**/*"
             ]
           }
         },
@@ -479,7 +485,7 @@
               "libs/utils/database-pool/tsconfig.lib.json",
               "libs/utils/database-pool/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/utils/database-pool/**"]
+            "exclude": ["**/node_modules/**", "!libs/utils/database-pool/**/*"]
           }
         },
         "test": {
@@ -507,7 +513,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/utils/feature-gateway-explorer/**"
+              "!libs/utils/feature-gateway-explorer/**/*"
             ]
           }
         },
@@ -544,7 +550,7 @@
               "libs/socketcluster/shared/tsconfig.lib.json",
               "libs/socketcluster/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/socketcluster/shared/**"]
+            "exclude": ["**/node_modules/**", "!libs/socketcluster/shared/**/*"]
           }
         },
         "test": {
