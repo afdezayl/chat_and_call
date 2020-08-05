@@ -12,7 +12,25 @@ export class SocketService {
 
   constructor() {
     console.log('creating socket service...');
-    this._socket = create({ path: SOCKET_PATH, authTokenName: TOKEN_KEY, });
+    //console.log(localStorage.getItem(TOKEN_KEY));
+    this._socket = create({
+      path: SOCKET_PATH,
+      authTokenName: TOKEN_KEY,
+      autoReconnect: true,
+      autoConnect: true
+    });
+
+    (async () => {
+      for await (const { authToken, signedAuthToken } of this._socket.listener(
+        'authenticate'
+      )) {
+        console.log(authToken);
+      }
+    })();
+  }
+
+  publishToChannel(data: any, channel: string) {
+    return from(this._socket.transmitPublish(channel, data));
   }
 
   get<T = any>(path: string, request: any) {

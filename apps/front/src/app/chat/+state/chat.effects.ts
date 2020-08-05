@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, concatMap, mergeMap } from 'rxjs/operators';
+import {
+  catchError,
+  map,
+  concatMap,
+  mergeMap,
+  tap,
+  switchMap,
+} from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 
 import * as ChatActions from './chat.actions';
@@ -13,20 +20,42 @@ export class ChatEffects {
       ofType(ChatActions.loadChannels),
       concatMap(() =>
         this.chatSocket.getChannels().pipe(
-          map((data) => ChatActions.addChannels({ channels: data })),
+          switchMap((channels) => [
+            ChatActions.addChannels({ channels }),
+            ...channels.map((ch) =>
+              ChatActions.subscribeChannel({ channel: ch.id })
+            ),
+          ]),
+          tap((x) => console.log(x)),
           catchError((error) => of(ChatActions.loadChannelsFailure({ error })))
         )
       )
     );
   });
 
+  publishMessage$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ChatActions.sendMessage),
+        mergeMap((x) => {
+          return this.chatSocket.publishMessage(x.message);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   subscribeChannel$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.subscribeChannel),
       mergeMap(({ channel }) =>
         this.chatSocket
-          .subscribeToChannel(channel).asObservable()
-          .pipe(map((message) => ChatActions.incomingMessage({ message })))
+          .subscribeToChannel(channel)
+          .asObservable()
+          .pipe(
+            tap((x) => console.log(x)),
+            map((message) => ChatActions.incomingMessage({ message }))
+          )
       )
     );
   });

@@ -4,15 +4,14 @@
     <h2>Channels</h2>
     <ng-container *ngIf="channels$ | async as channels">
       <div *ngFor="let channel of channels">
-        <button  (click)="setFocus(channel.id)">
-          {{ channel | json }}
+        <button (click)="setFocus(channel.id)">
+          {{ channel.title }}
         </button>
       </div>
-
     </ng-container>
   </mat-sidenav>
-  <mat-sidenav-content>
-    <h2>{{ focus$ | async | json }}</h2>
+  <mat-sidenav-content *ngIf="focus$ | async as focus">
+    <h2>{{ focus | json }}</h2>
     <p>Count : {{ newMessagesCount }}</p>
     <div #message_container class="chat">
       <chat-and-call-message
@@ -25,9 +24,12 @@
         {{ m | json }}
       </p> -->
     </div>
-    <div>
-      <input type="text" />
-      <button>Enviar</button>
-    </div>
+    <form [formGroup]="messageForm" (submit)="sendMessage(focus.id)">
+      <input type="text" formControlName="text" />
+      <button type="submit">Enviar</button>
+      <input type="file" formControlName="file" />
+
+      {{ messageForm.value | json }}
+    </form>
   </mat-sidenav-content>
 </mat-sidenav-container>

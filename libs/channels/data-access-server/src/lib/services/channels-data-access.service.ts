@@ -8,6 +8,7 @@ export class ChannelsDataAccessService {
   async getChannels(user: string) {
     return (await this.repository.getChannels(user)).map((ch) => ({
       ...ch,
+      id: ch.id.toString(),
       public: !!ch.public,
     }));
   }

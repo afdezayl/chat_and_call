@@ -26,7 +26,7 @@ async function bootstrap() {
       authKey: config.get('JSON_WEBTOKEN_KEY'),
       socketChannelLimit: 1000,
       origins: '*:*',
-      authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60,
+      authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60
     })
   );
 

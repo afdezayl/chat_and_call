@@ -3,37 +3,24 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  Renderer2,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   loadChannels,
   setFocus,
   subscribeChannel,
+  sendMessage,
 } from '../+state/chat.actions';
 import {
   getChannels,
   getFocusedChannel,
-  getMessages,
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
-import { ChatSocketService } from '../services/chat-socket.service';
-import { Message } from '@chat-and-call/channels/shared';
-import {
-  tap,
-  take,
-  debounceTime,
-  throttleTime,
-  map,
-  skip,
-  skipWhile,
-  takeLast,
-  scan,
-
-} from 'rxjs/operators';
-import { fromEvent, from, of, Subject, BehaviorSubject } from 'rxjs';
+import { tap, map, skipWhile } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { BasicMessage } from 'libs/channels/shared/src/lib';
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -42,6 +29,7 @@ import { fromEvent, from, of, Subject, BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatLayoutComponent implements OnInit {
+  messageForm: FormGroup;
   // TODO: separate on components
   // channels-container
   channels$ = this.store.select(getChannels);
@@ -53,20 +41,22 @@ export class ChatLayoutComponent implements OnInit {
   newMessagesCount = 0;
   messages$ = this.store.select(getMessagesFromFocusChannel).pipe(
     skipWhile((x) => x.length === 0),
-    map( x => x.slice(-20)),
-    tap((x) => {
+    map((x) => x.slice(-20)),
+    tap(() => {
       this.newMessagesCount++;
-    }),
-
+    })
   );
 
   @ViewChild('message_container') messageContainer: ElementRef<HTMLDivElement>;
 
-  constructor(private store: Store, private cdRef: ChangeDetectorRef) {}
+  constructor(private store: Store, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.store.dispatch(loadChannels());
-    this.store.dispatch(subscribeChannel({ channel: '1' }));
+    this.messageForm = this.fb.group({
+      text: this.fb.control('', Validators.required),
+      file: this.fb.control(null),
+    });
   }
 
   onViewed(isViewed: boolean) {
@@ -77,5 +67,13 @@ export class ChatLayoutComponent implements OnInit {
 
   setFocus(id: number) {
     this.store.dispatch(setFocus({ id: '' + id }));
+  }
+
+  sendMessage(idChannel: string) {
+    const message: BasicMessage = {
+      text: this.messageForm.value.text,
+      channel: idChannel,
+    };
+    this.store.dispatch(sendMessage({ message }));
   }
 }

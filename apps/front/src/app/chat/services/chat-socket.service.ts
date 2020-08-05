@@ -8,7 +8,7 @@ import {
   interval,
   ReplaySubject,
 } from 'rxjs';
-import { Channel, Message } from '@chat-and-call/channels/shared';
+import { Channel, Message, BasicMessage } from '@chat-and-call/channels/shared';
 import {
   tap,
   delay,
@@ -28,7 +28,7 @@ export class ChatSocketService {
   constructor(private socket: SocketService) {}
 
   // Creates backpressure...
-  createSubjectFromIterator<T>(asyncIterable: any): ReplaySubject<T> {
+  private createSubjectFromIterator<T>(asyncIterable: any): ReplaySubject<T> {
     const subject$ = new ReplaySubject<T>();
     const iterator = asyncIterable[Symbol.asyncIterator]();
 
@@ -78,15 +78,20 @@ const fromAsyncIterable = iterable =>
     return this.socket.get<Array<Channel>>('channels/', null);
   }
 
-  subscribeToChannel(id: number | string) {
+  subscribeToChannel(id: number | string): ReplaySubject<Message> {
     const subject$ = new ReplaySubject<Message>();
 
-    (async() => {
-      for await(const data of this.socket.subscribeToChannel(id)) {
+    (async () => {
+      for await (const data of this.socket.subscribeToChannel(id)) {
+        console.log(data);
         subject$.next(data);
       }
     })();
 
     return subject$;
+  }
+
+  publishMessage(message: BasicMessage) {
+    return this.socket.publishToChannel(message, message.channel);
   }
 }

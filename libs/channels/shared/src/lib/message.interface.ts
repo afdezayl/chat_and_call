@@ -1,6 +1,6 @@
-export interface Message {
-  channel: string;
+import { BasicMessage } from './basic-message.interface';
+
+export interface Message extends BasicMessage {
   from: string;
-  text?: string;
   date: Date;
 }

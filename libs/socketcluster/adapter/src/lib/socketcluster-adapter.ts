@@ -43,20 +43,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     //this._setHandshakeMiddleware();
     //this._interceptRawMessage();
 
-    // Periodic message
-    interval(500)
-      .pipe(
-        tap(() => {
-          this._server.exchange.transmitPublish('1', {
-            channel: '1',
-            from: 'admin',
-            text: 'Ping',
-            date: new Date(),
-          });
-        })
-      )
-      .subscribe();
-
     return this._server;
   }
 
@@ -119,6 +105,19 @@ export class SocketClusterAdapter implements WebSocketAdapter {
             case action.TRANSMIT:
               this._logger.debug(`${action.type} - ${action.receiver}`);
               action.allow();
+              break;
+            case action.PUBLISH_IN:
+              const user = action.socket?.authToken?.username;
+              const channel = action.channel;
+              console.log(action?.socket?.authToken?.username);
+              action.data = {
+                ...action.data,
+                from: user,
+                date: new Date(),
+              };
+              this._server.exchange.transmitPublish(channel, action.data);
+              //console.log(action.allow.toString(), action['_resolve'].toString());
+              action.block(null);
               break;
             default:
               action.allow();
