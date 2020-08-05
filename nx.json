@@ -41,9 +41,6 @@
     "auth-data-access-auth-server": {
       "tags": []
     },
-    "auth-shared-auth-interfaces": {
-      "tags": []
-    },
     "utils-database-pool": {
       "tags": []
     },
@@ -54,6 +51,18 @@
       "tags": []
     },
     "material-ui-material-design": {
+      "tags": []
+    },
+    "channels-data-access-server": {
+      "tags": []
+    },
+    "channels-shared": {
+      "tags": []
+    },
+    "auth-shared": {
+      "tags": []
+    },
+    "socketcluster-shared": {
       "tags": []
     }
   }

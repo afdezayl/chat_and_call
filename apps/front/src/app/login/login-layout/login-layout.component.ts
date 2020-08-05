@@ -14,7 +14,7 @@ import {
   FormControl,
   FormArray,
 } from '@angular/forms';
-import { LoginRequestDto } from '@chat-and-call/auth/shared-auth-interfaces';
+import { LoginRequestDto } from '@chat-and-call/auth/shared';
 import { isEmpty } from 'class-validator';
 
 @Component({
@@ -38,7 +38,7 @@ export class LoginLayoutComponent {
     if (this.form.valid) {
       const loginRequest: LoginRequestDto = this.form.value;
 
-      this.store.dispatch(sendLoginRequest({ request: loginRequest }));
+      this.store.dispatch(sendLoginRequest(loginRequest));
       return;
     }
     return;

@@ -1,0 +1,33 @@
+<chat-and-call-chat-header></chat-and-call-chat-header>
+<mat-sidenav-container autosize>
+  <mat-sidenav #sidenav mode="side" opened>
+    <h2>Channels</h2>
+    <ng-container *ngIf="channels$ | async as channels">
+      <div *ngFor="let channel of channels">
+        <button  (click)="setFocus(channel.id)">
+          {{ channel | json }}
+        </button>
+      </div>
+
+    </ng-container>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <h2>{{ focus$ | async | json }}</h2>
+    <p>Count : {{ newMessagesCount }}</p>
+    <div #message_container class="chat">
+      <chat-and-call-message
+        *ngFor="let m of messages$ | async"
+        [message]="m"
+        (viewed)="onViewed($event)"
+      >
+      </chat-and-call-message>
+      <!-- <p *ngFor="let m of messages">
+        {{ m | json }}
+      </p> -->
+    </div>
+    <div>
+      <input type="text" />
+      <button>Enviar</button>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

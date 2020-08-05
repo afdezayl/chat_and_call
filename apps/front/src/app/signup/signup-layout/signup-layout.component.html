@@ -1,1 +1,83 @@
-<p>signup-layout works!</p>
+<ng-container *transloco="let t">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon [inline]="true">assignment</mat-icon>
+        <span>{{ t('signup.signupTitle') }}</span>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form
+        [formGroup]="form"
+        (submit)="onSubmit()"
+        class="form"
+        autocomplete="off"
+      >
+        <!-- <p>{{ getErrorsByControl(form) | json }}</p> -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ t('signup.user') }}</mat-label>
+          <input matInput type="text" formControlName="username" required />
+          <span matSuffix>
+            <mat-spinner
+              *ngIf="form.controls['username']?.hasError('checking')"
+              [diameter]="20"
+            ></mat-spinner>
+            <mat-icon
+              *ngIf="form.controls['username'].valid"
+              style="color: green;"
+              >check_circle_outline</mat-icon
+            >
+          </span>
+
+          <mat-error *ngIf="form.controls['username']?.hasError('unavailable')"
+            >Usuario ya existente</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ t('signup.mail') }}</mat-label>
+          <input
+            matInput
+            [placeholder]="t('signup.mail')"
+            formControlName="email"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ t('signup.password') }}</mat-label>
+          <input
+            matInput
+            [placeholder]="t('signup.password')"
+            formControlName="password"
+            type="password"
+            required
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ t('signup.repeatPassword') }}</mat-label>
+          <input
+            matInput
+            [placeholder]="t('signup.repeatPassword')"
+            formControlName="password2"
+            type="password"
+            required
+          />
+        </mat-form-field>
+        <button
+          class="mat-primary mat-raised-button btn--big"
+          type="submit"
+          [disabled]="!form.valid"
+        >
+          {{ t('submit') }}
+        </button>
+      </form>
+    </mat-card-content>
+    <mat-card-footer>
+      <h3>¿Ya estás registrado?</h3>
+      <a [routerLink]="['/home', 'login']" routerLinkActive="router-link-active"
+        >Inicia sesión</a
+      >
+    </mat-card-footer>
+  </mat-card>
+</ng-container>

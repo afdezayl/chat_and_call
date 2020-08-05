@@ -5,14 +5,26 @@ export const AUTH_FEATURE_KEY = 'auth';
 
 export interface AuthState {
   authorized: boolean;
-  validAttempt: boolean;
+  isValidLoginAttempt: boolean;
   error: string;
+  usernameSearch: UserSearch;
+  createdUser: boolean;
+}
+
+export interface UserSearch {
+  user: string;
+  isAvailable: boolean;
 }
 
 export const initialState: AuthState = {
   authorized: false,
-  validAttempt: true,
+  isValidLoginAttempt: true,
   error: null,
+  usernameSearch: {
+    user: null,
+    isAvailable: false,
+  },
+  createdUser: false,
 };
 
 const authReducer = createReducer(
@@ -26,8 +38,23 @@ const authReducer = createReducer(
   on(AuthActions.loginFailure, (state, { error }) => ({
     ...state,
     authorized: false,
-    validAttempt: false,
+    isValidLoginAttempt: false,
     error,
+  })),
+  on(AuthActions.setUsernameAvailability, (state, { user, isAvailable }) => ({
+    ...state,
+    usernameSearch: {
+      user,
+      isAvailable,
+    },
+  })),
+  on(AuthActions.signupSuccess, (state) => ({
+    ...state,
+    createdUser: true,
+  })),
+  on(AuthActions.signupFailure, (state, { error }) => ({
+    ...state,
+    createdUser: false,
   }))
 );
 

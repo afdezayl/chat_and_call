@@ -1,16 +1,34 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
-import { LoginRequestDto } from '@chat-and-call/auth/shared-auth-interfaces';
-import { Observable, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
+import { Observable, config } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private socket: SocketService) {}
+  constructor(private http: HttpClient) {}
 
-  sendLoginRequest(request: LoginRequestDto): Observable<boolean> {
-    return this.socket.post('auth/login', request);
+  sendLoginRequest(request: LoginRequestDto): Observable<string> {
+    return this.http
+      .post<{ token: string }>('api/auth/login', request, {
+        withCredentials: true,
+      })
+      .pipe(map((x) => x.token));
+  }
+
+  sendSignupRequest(request: SignupRequestDto): Observable<boolean> {
+    return this.http.post<boolean>('api/auth/signup', request);
+  }
+
+  isUsernameAvailable(username: string) {
+    console.log('service', username);
+    return this.http.get<boolean>('api/auth/username', {
+      params: {
+        user: username,
+      },
+    });
   }
 }

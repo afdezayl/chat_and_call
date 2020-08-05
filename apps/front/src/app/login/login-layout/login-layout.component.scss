@@ -1,20 +1,16 @@
 :host {
   display: block;
   padding: 1em;
-  background: radial-gradient(#45606d, #000);
 }
 
 .central-card {
-  max-width: 600px;
+  padding: 3em 5em;
   margin: auto;
+  text-align: center;
 }
 
 .form {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.submit_btn {
-  padding: 1em 3em;
 }

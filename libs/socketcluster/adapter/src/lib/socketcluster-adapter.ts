@@ -8,9 +8,11 @@ import { attach, AGServer, AGServerSocket } from 'socketcluster-server';
 import { Observable } from 'rxjs/internal/Observable';
 import { AGServerOptions } from 'socketcluster-server/server';
 import { IAGAction } from './IAGAction';
-import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { of, interval } from 'rxjs';
+import { switchMap, tap, take } from 'rxjs/operators';
 import { IAGRequest } from './IAGRequest';
+import { Action } from 'rxjs/internal/scheduler/Action';
+import * as cookieUtility from 'cookie';
 
 // TODO: Recover interfaces
 export class SocketClusterAdapter implements WebSocketAdapter {
@@ -38,7 +40,22 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     this._setInboundMiddleware();
     this._setConnectionLogs();
     // Signed cookies?
-    // this._setHandshakeMiddleware();
+    //this._setHandshakeMiddleware();
+    //this._interceptRawMessage();
+
+    // Periodic message
+    interval(500)
+      .pipe(
+        tap(() => {
+          this._server.exchange.transmitPublish('1', {
+            channel: '1',
+            from: 'admin',
+            text: 'Ping',
+            date: new Date(),
+          });
+        })
+      )
+      .subscribe();
 
     return this._server;
   }
@@ -91,6 +108,10 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       async (middlewareStream: AsyncIterable<IAGAction>) => {
         for await (const action of middlewareStream) {
           switch (action.type) {
+            case action.AUTHENTICATE:
+              console.log('authenticate', action?.socket?.authState);
+              action.allow();
+              break;
             case action.SUBSCRIBE:
               this._logger.debug(`${action.type} - ${action.channel}`);
               action.allow();
@@ -112,10 +133,48 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       this._server.MIDDLEWARE_HANDSHAKE,
       async (stream: AsyncIterable<IAGAction>) => {
         for await (const action of stream) {
-          console.log(action.type, Object.keys(action.request));
-          console.log(action.request?.headers.cookie);
+          const request = action.request;
+          console.log(action.type, action?.socket?.state);
+          let cookies = action.request?.headers?.cookie ?? '';
 
-          action.allow()
+          const parsed = cookies
+            .split(';')
+            .map((x) => x.trim())
+            .map((x) => x.split('='))
+            .reduce((acc, pair) => {
+              const [key, value] = pair;
+              acc[key] = value;
+              return acc;
+            }, {});
+
+          console.log(parsed);
+
+          action.allow();
+        }
+      }
+    );
+  }
+
+  private _interceptRawMessage() {
+    this._server.setMiddleware(
+      this._server.MIDDLEWARE_INBOUND_RAW,
+      async (stream: AsyncIterable<IAGAction>) => {
+        for await (const action of stream) {
+          const isHandshake = (action?.data as string).startsWith(
+            '{"event":"#handshake"'
+          );
+          if (isHandshake) {
+            try {
+              const message = JSON.parse(action?.data);
+              const token = message?.data?.authToken;
+              console.log('handshake:', token);
+              console.log(action.socket.isAuthTokenExpired(token));
+            } catch (error) {
+              action.block(new Error('Untrusted connection'));
+            }
+          }
+
+          action.allow();
         }
       }
     );
@@ -155,6 +214,19 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           await serverInstance.setAuthToken(authToken);
           this._logger.debug('second auth...');
         }
+      }
+    })();
+
+    (async () => {
+      for await (const {
+        authError,
+        signedAuthToken,
+        socket,
+      } of this._server.listener('badSocketAuthToken')) {
+        const cookies = socket?.request?.headers?.cookie ?? '';
+        const parsedCookies = cookieUtility.parse(cookies);
+
+        console.log(authError, signedAuthToken, parsedCookies);
       }
     })();
   }

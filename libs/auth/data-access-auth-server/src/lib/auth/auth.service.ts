@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthRepositoryService } from '../auth-repository/auth-repository.service';
 import { Observable, from, of } from 'rxjs';
 import { compare, hash } from 'bcrypt';
@@ -6,7 +7,10 @@ import { catchError, switchMap, map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthService {
-  constructor(private authRepository: AuthRepositoryService) {}
+  constructor(
+    private authRepository: AuthRepositoryService,
+    private jwtService: JwtService
+  ) {}
 
   async validateUserCredentials(
     username: string,
@@ -15,7 +19,17 @@ export class AuthService {
     const hashedPassword = await this.authRepository.getHashedPassword(
       username
     );
-    return await this.checkPassword(password, hashedPassword);
+    return await this._checkPassword(password, hashedPassword);
+  }
+
+  async getTokens(username: string): Promise<{ jwt: string; refresh: string }> {
+    const jwt = await this.jwtService.signAsync({username});
+    const refresh = await this.jwtService.signAsync({username}, {expiresIn: '24h'});
+
+    return {
+      jwt,
+      refresh
+    };
   }
 
   async createNewUser(
@@ -23,7 +37,7 @@ export class AuthService {
     password: string,
     email: string
   ): Promise<boolean> {
-    const hashedPassword = await this.hashPassword(password);
+    const hashedPassword = await this._hashPassword(password);
     const isCreated = await this.authRepository.createUser(
       username,
       hashedPassword,
@@ -32,8 +46,12 @@ export class AuthService {
     return isCreated;
   }
 
+  async isUser(username: string) {
+    return await this.authRepository.isUser(username);
+  }
+
   //Private
-  private async checkPassword(
+  private async _checkPassword(
     password: string,
     hashedPassword: string
   ): Promise<boolean> {
@@ -45,7 +63,7 @@ export class AuthService {
     }
   }
 
-  private async hashPassword(password: string): Promise<string> {
+  private async _hashPassword(password: string): Promise<string> {
     return await hash(password, 12);
   }
 }

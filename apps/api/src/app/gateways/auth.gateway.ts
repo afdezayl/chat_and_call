@@ -10,7 +10,7 @@ import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
 import {
   LoginRequestDto,
   SignupRequestDto,
-} from '@chat-and-call/auth/shared-auth-interfaces';
+} from '@chat-and-call/auth/shared';
 
 @SocketCrudGateway('auth')
 export class AuthGateway {
