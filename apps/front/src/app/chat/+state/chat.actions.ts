@@ -1,5 +1,9 @@
 import { createAction, props } from '@ngrx/store';
+<<<<<<< HEAD
 import { Channel, Message, BasicMessage } from '@chat-and-call/channels/shared';
+=======
+import { Channel, Message } from '@chat-and-call/channels/shared';
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');
@@ -21,12 +25,16 @@ export const removeChannels = createAction(
 
 export const subscribeChannel = createAction(
   '[Chat] Subscribe channel',
+<<<<<<< HEAD
   props<{ channel: string | number }>()
 );
 
 export const sendMessage = createAction(
   '[Chat] Send message',
   props<{ message: BasicMessage }>()
+=======
+  props<{ channel: string | number}>()
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 );
 
 export const incomingMessage = createAction(

@@ -66,8 +66,12 @@ function symlinkNgCLItoNxCLI() {
        * Such that it works in all shells and works with npx.
        */
       ['', '.cmd', '.ps1'].forEach((ext) => {
+<<<<<<< HEAD
         if (fs.existsSync(nxPath + ext))
           fs.writeFileSync(ngPath + ext, fs.readFileSync(nxPath + ext));
+=======
+        fs.writeFileSync(ngPath + ext, fs.readFileSync(nxPath + ext));
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
       });
     } else {
       // If unix-based, symlink

@@ -29,7 +29,11 @@ export const getFocusedChannel = createSelector(
 export const getMessagesFromFocusChannel = createSelector(
   getFocus,
   getMessages,
+<<<<<<< HEAD
   (focus, messages) => messages.filter(m => m?.channel === focus)
+=======
+  (focus, messages) => messages.filter(m => m.channel === focus)
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 )
 
 

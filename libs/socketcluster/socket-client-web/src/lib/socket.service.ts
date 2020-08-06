@@ -31,6 +31,7 @@ export class SocketService {
 
   publishToChannel(data: any, channel: string) {
     return from(this._socket.transmitPublish(channel, data));
+    this._socket = create({ path: SOCKET_PATH, authTokenName: TOKEN_KEY, });
   }
 
   get<T = any>(path: string, request: any) {

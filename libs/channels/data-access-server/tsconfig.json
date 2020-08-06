@@ -1,9 +1,14 @@
 {
+<<<<<<< HEAD
   "extends": "../../../tsconfig.base.json",
+=======
+  "extends": "../../../tsconfig.json",
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
   "compilerOptions": {
     "types": ["node", "jest"],
     "target": "es2019"
   },
+<<<<<<< HEAD
   "include": [],
   "files": [],
   "references": [
@@ -14,4 +19,7 @@
       "path": "./tsconfig.spec.json"
     }
   ]
+=======
+  "include": ["**/*.ts"]
+>>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 }
