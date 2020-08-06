@@ -112,7 +112,7 @@
             "production": {
               "optimization": true,
               "extractLicenses": true,
-              "inspect": false,
+              "inspect": true,
               "fileReplacements": [
                 {
                   "replace": "apps/api/src/environments/environment.ts",
