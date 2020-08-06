@@ -11,7 +11,6 @@ import { IAGAction } from './IAGAction';
 import { of, interval } from 'rxjs';
 import { switchMap, tap, take } from 'rxjs/operators';
 import { IAGRequest } from './IAGRequest';
-import { Action } from 'rxjs/internal/scheduler/Action';
 import * as cookieUtility from 'cookie';
 
 // TODO: Recover interfaces
@@ -107,18 +106,22 @@ export class SocketClusterAdapter implements WebSocketAdapter {
               action.allow();
               break;
             case action.PUBLISH_IN:
-              const user = action.socket?.authToken?.username;
+              const user = action.socket?.authToken?.username ?? null;
               const channel = action.channel;
-              console.log(action?.socket?.authToken?.username);
-              action.data = {
+
+              const newMessage = {
                 ...action.data,
                 from: user,
                 date: new Date(),
               };
-              this._server.exchange.transmitPublish(channel, action.data);
-              //console.log(action.allow.toString(), action['_resolve'].toString());
-              action.block(null);
+
+              // FIX in serversocket.js
+              // OPTIONAL:
+              // this._server.exchange.transmitPublish(channel, action.data);
+              action.allow({ data: newMessage });
               break;
+            case action.PUBLISH_OUT:
+              console.log('out...', action.data);
             default:
               action.allow();
           }

@@ -20,7 +20,7 @@ import {
 import { tap, map, skipWhile } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { BasicMessage } from 'libs/channels/shared/src/lib';
+import { BasicMessage } from '@chat-and-call/channels/shared';
 
 @Component({
   selector: 'chat-and-call-chat-layout',
