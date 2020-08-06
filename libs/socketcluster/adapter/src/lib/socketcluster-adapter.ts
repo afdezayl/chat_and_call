@@ -11,10 +11,6 @@ import { IAGAction } from './IAGAction';
 import { of, interval } from 'rxjs';
 import { switchMap, tap, take } from 'rxjs/operators';
 import { IAGRequest } from './IAGRequest';
-<<<<<<< HEAD
-=======
-import { Action } from 'rxjs/internal/scheduler/Action';
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 import * as cookieUtility from 'cookie';
 
 // TODO: Recover interfaces
@@ -45,23 +41,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     // Signed cookies?
     //this._setHandshakeMiddleware();
     //this._interceptRawMessage();
-<<<<<<< HEAD
-=======
-
-    // Periodic message
-    interval(500)
-      .pipe(
-        tap(() => {
-          this._server.exchange.transmitPublish('1', {
-            channel: '1',
-            from: 'admin',
-            text: 'Ping',
-            date: new Date(),
-          });
-        })
-      )
-      .subscribe();
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 
     return this._server;
   }
@@ -177,7 +156,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       }
     );
   }
-<<<<<<< HEAD
 
   private _interceptRawMessage() {
     this._server.setMiddleware(
@@ -198,28 +176,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
             }
           }
 
-=======
-
-  private _interceptRawMessage() {
-    this._server.setMiddleware(
-      this._server.MIDDLEWARE_INBOUND_RAW,
-      async (stream: AsyncIterable<IAGAction>) => {
-        for await (const action of stream) {
-          const isHandshake = (action?.data as string).startsWith(
-            '{"event":"#handshake"'
-          );
-          if (isHandshake) {
-            try {
-              const message = JSON.parse(action?.data);
-              const token = message?.data?.authToken;
-              console.log('handshake:', token);
-              console.log(action.socket.isAuthTokenExpired(token));
-            } catch (error) {
-              action.block(new Error('Untrusted connection'));
-            }
-          }
-
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
           action.allow();
         }
       }

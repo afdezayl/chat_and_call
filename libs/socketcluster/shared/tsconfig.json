@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "types": ["node", "jest"]
@@ -14,11 +13,4 @@
       "path": "./tsconfig.spec.json"
     }
   ]
-=======
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "types": ["node", "jest"]
-  },
-  "include": ["**/*.ts"]
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
 }

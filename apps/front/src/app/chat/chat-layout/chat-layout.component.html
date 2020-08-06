@@ -4,26 +4,14 @@
     <h2>Channels</h2>
     <ng-container *ngIf="channels$ | async as channels">
       <div *ngFor="let channel of channels">
-<<<<<<< HEAD
         <button (click)="setFocus(channel.id)">
-          {{ channel.title }}
+          {{ channel | json }}
         </button>
       </div>
     </ng-container>
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
     <h2>{{ focus | json }}</h2>
-=======
-        <button  (click)="setFocus(channel.id)">
-          {{ channel | json }}
-        </button>
-      </div>
-
-    </ng-container>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <h2>{{ focus$ | async | json }}</h2>
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
     <p>Count : {{ newMessagesCount }}</p>
     <div #message_container class="chat">
       <chat-and-call-message
@@ -32,11 +20,7 @@
         (viewed)="onViewed($event)"
       >
       </chat-and-call-message>
-      <!-- <p *ngFor="let m of messages">
-        {{ m | json }}
-      </p> -->
     </div>
-<<<<<<< HEAD
     <form [formGroup]="messageForm" (submit)="sendMessage(focus.id)">
       <input type="text" formControlName="text" />
       <button type="submit">Enviar</button>
@@ -44,11 +28,5 @@
 
       {{ messageForm.value | json }}
     </form>
-=======
-    <div>
-      <input type="text" />
-      <button>Enviar</button>
-    </div>
->>>>>>> 8eee2eb840a842b76c95f35ec7bd3f81803a7f11
   </mat-sidenav-content>
 </mat-sidenav-container>

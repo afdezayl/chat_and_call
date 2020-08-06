@@ -64,6 +64,9 @@
     },
     "socketcluster-shared": {
       "tags": []
+    },
+    "contacts-feature-server-contacts": {
+      "tags": []
     }
   },
   "affected": {

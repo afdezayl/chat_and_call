@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
-import { Channel } from '@chat-and-call/channels/shared'
+import { Channel } from '@chat-and-call/channels/shared';
 
 @Injectable()
 export class ChannelsRepositoryService {

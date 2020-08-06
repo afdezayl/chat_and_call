@@ -558,6 +558,35 @@
           }
         }
       }
+    },
+    "contacts-feature-server-contacts": {
+      "root": "libs/contacts/feature-server-contacts",
+      "sourceRoot": "libs/contacts/feature-server-contacts/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/contacts/feature-server-contacts/tsconfig.lib.json",
+              "libs/contacts/feature-server-contacts/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/contacts/feature-server-contacts/**/*"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/contacts/feature-server-contacts/jest.config.js",
+            "tsConfig": "libs/contacts/feature-server-contacts/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

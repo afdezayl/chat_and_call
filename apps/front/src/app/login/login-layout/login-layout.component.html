@@ -28,7 +28,7 @@
           placeholder="Contraseña"
         />
       </mat-form-field>
-      <mat-error *ngIf="!(isValidLoginAttempt$ | async)"
+      <mat-error *ngIf="(isValidLoginAttempt$ | async) === false"
         >Combinación de usuario y contraseña incorrecta</mat-error
       >
       <button
