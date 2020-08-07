@@ -56,7 +56,7 @@
     "@ngrx/store": "9.2.0",
     "async-stream-emitter": "^4.0.0",
     "bcrypt": "^5.0.0",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
