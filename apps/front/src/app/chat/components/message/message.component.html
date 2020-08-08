@@ -1,1 +1,6 @@
-<p>{{ message | json }}</p>
+<mat-card class="message">
+  <div>
+    <em>{{ message.from }} - {{ message.date | date }}</em>
+  </div>
+  <p>{{ message.text }}</p>
+</mat-card>

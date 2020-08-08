@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { TOKEN_KEY, SOCKET_PATH } from '@chat-and-call/socketcluster/shared';
+import { SOCKET_PATH, TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
+import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server';
+import { from, Observable } from 'rxjs';
 import { AGClientSocket, create } from 'socketcluster-client';
-import { Observable, from, of, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,13 +11,11 @@ export class SocketService {
   private _socket: AGClientSocket = null;
 
   constructor() {
-    console.log('creating socket service...');
-    //console.log(localStorage.getItem(TOKEN_KEY));
     this._socket = create({
       path: SOCKET_PATH,
       authTokenName: TOKEN_KEY,
       autoReconnect: true,
-      autoConnect: true
+      autoConnect: true,
     });
 
     (async () => {
@@ -30,8 +28,8 @@ export class SocketService {
   }
 
   publishToChannel(data: any, channel: string) {
-    return from(this._socket.transmitPublish(channel, data));
-    this._socket = create({ path: SOCKET_PATH, authTokenName: TOKEN_KEY, });
+    //return from(this._socket.transmitPublish(channel, data));
+    return from(this._socket.invoke('#channels/publish', data));
   }
 
   get<T = any>(path: string, request: any) {
@@ -59,7 +57,7 @@ export class SocketService {
     path: string,
     request: any
   ): Observable<T> {
-    const payload = {
+    const payload: SocketCrudModel = {
       method,
       path,
       body: request,

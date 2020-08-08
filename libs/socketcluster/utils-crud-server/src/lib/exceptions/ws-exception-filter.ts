@@ -1,4 +1,4 @@
-import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
 @Catch(WsException)
@@ -12,8 +12,11 @@ export class SocketClusterExceptionFilter
     const error = exception.getError();
 
     const response = this.isObject(error) ? JSON.stringify(error) : error;
-
-    request.error(response);
+    if (request.error) {
+      request.error(response);
+    } else {
+      console.log(error);
+    }
   }
 
   // Including arrays

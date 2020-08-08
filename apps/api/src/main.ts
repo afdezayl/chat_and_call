@@ -27,6 +27,7 @@ async function bootstrap() {
       socketChannelLimit: 1000,
       origins: '*:*',
       authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60,
+      allowClientPublish: false,
     })
   );
 

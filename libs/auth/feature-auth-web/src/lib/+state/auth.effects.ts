@@ -1,22 +1,11 @@
 import { Injectable } from '@angular/core';
-import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { fetch } from '@nrwl/angular';
-import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
-
-import * as AuthActions from './auth.actions';
-import { AuthService } from '../auth.service';
-import {
-  map,
-  exhaustMap,
-  concatMap,
-  mergeMap,
-  catchError,
-  tap,
-  distinctUntilChanged,
-  distinct,
-} from 'rxjs/operators';
-import { of, EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
+import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { AuthService } from '../auth.service';
+import * as AuthActions from './auth.actions';
 
 @Injectable()
 export class AuthEffects {

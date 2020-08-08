@@ -37,7 +37,7 @@ export class AuthController {
     if (isValid) {
       const tokens = await this.authService.getTokens(data.username);
 
-      // Set as cookie
+      // Set tokens as cookie
       response.cookie('jwt', tokens.jwt, { httpOnly: true });
       response.cookie('refresh_jwt', tokens.refresh, {
         httpOnly: true,
@@ -67,7 +67,6 @@ export class AuthController {
   @Get('username')
   async chechUsername(@Query('user') username: string) {
     const isUser = await this.authService.isUser(username);
-    console.log(isUser);
-    return of(!isUser); //.pipe(delay(3000));
+    return of(!isUser);
   }
 }

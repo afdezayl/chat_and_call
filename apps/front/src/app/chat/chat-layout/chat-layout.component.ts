@@ -1,26 +1,21 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnInit,
   ViewChild,
-  ElementRef,
-  ChangeDetectionStrategy,
 } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BasicMessage } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
-import {
-  loadChannels,
-  setFocus,
-  subscribeChannel,
-  sendMessage,
-} from '../+state/chat.actions';
+import { BehaviorSubject } from 'rxjs';
+import { map, skipWhile, tap } from 'rxjs/operators';
+import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
   getChannels,
   getFocusedChannel,
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
-import { tap, map, skipWhile } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { BasicMessage } from '@chat-and-call/channels/shared';
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -58,7 +53,7 @@ export class ChatLayoutComponent implements OnInit {
       file: this.fb.control(null),
     });
 
-    this.focus$.subscribe(console.log)
+    this.focus$.subscribe(console.log);
   }
 
   onViewed(isViewed: boolean) {

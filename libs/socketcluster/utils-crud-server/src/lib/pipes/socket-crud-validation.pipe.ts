@@ -2,9 +2,10 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { SocketCrudModel } from '../models';
 
 @Injectable()
-export class SocketValidationPipe implements PipeTransform<any> {
+export class SocketCrudValidationPipe implements PipeTransform<any> {
   async transform(request: any, metadata: ArgumentMetadata) {
     const { metatype } = metadata;
     const value = request?.data ?? request;
@@ -13,7 +14,14 @@ export class SocketValidationPipe implements PipeTransform<any> {
       return request;
     }
 
-    const entity = plainToClass(metatype, value);
+    const crudEntity = plainToClass(SocketCrudModel, value);
+    const crudErrors = await validate(crudEntity);
+
+    if (crudErrors.length > 0) {
+      throw new WsException(crudErrors);
+    }
+
+    const entity = plainToClass(metatype, value?.body);
     const errors = await validate(entity);
 
     if (errors.length > 0) {

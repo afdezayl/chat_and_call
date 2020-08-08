@@ -3,15 +3,16 @@
   <mat-sidenav #sidenav mode="side" opened>
     <h2>Channels</h2>
     <ng-container *ngIf="channels$ | async as channels">
-      <div *ngFor="let channel of channels">
-        <button (click)="setFocus(channel.id)">
-          {{ channel | json }}
+      <ng-container *ngFor="let channel of channels; let first = first">
+        <mat-divider *ngIf="first === false"></mat-divider>
+        <button style="width: 100%; text-align: left;" mat-button (click)="setFocus(channel.id)">
+          <p>{{ channel.title }}</p>
         </button>
-      </div>
+      </ng-container>
     </ng-container>
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
-    <h2>{{ focus | json }}</h2>
+    <h2>{{ focus.title }}</h2>
     <p>Count : {{ newMessagesCount }}</p>
     <div #message_container class="chat">
       <chat-and-call-message

@@ -1,1 +1,1 @@
-export * from './lib/socketcluster-shared';
+export * from './lib';

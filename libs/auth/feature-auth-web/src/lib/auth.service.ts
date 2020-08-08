@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
 import { Observable, config } from 'rxjs';
 import { HttpClient } from '@angular/common/http';

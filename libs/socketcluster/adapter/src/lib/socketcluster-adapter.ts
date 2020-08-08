@@ -1,17 +1,17 @@
 import {
-  WebSocketAdapter,
-  Logger,
   INestApplication,
+  Logger,
+  WebSocketAdapter,
   WsMessageHandler,
 } from '@nestjs/common';
-import { attach, AGServer, AGServerSocket } from 'socketcluster-server';
+import * as cookieUtility from 'cookie';
+import { of } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
+import { switchMap } from 'rxjs/operators';
+import { AGServer, AGServerSocket, attach } from 'socketcluster-server';
 import { AGServerOptions } from 'socketcluster-server/server';
 import { IAGAction } from './IAGAction';
-import { of, interval } from 'rxjs';
-import { switchMap, tap, take } from 'rxjs/operators';
 import { IAGRequest } from './IAGRequest';
-import * as cookieUtility from 'cookie';
 
 // TODO: Recover interfaces
 export class SocketClusterAdapter implements WebSocketAdapter {
@@ -36,7 +36,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       this._logger.log('SocketCluster server created');
     }
 
-    this._setInboundMiddleware();
+    // this._setInboundMiddleware();
     this._setConnectionLogs();
     // Signed cookies?
     //this._setHandshakeMiddleware();
@@ -63,8 +63,11 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     handlers: WsMessageHandler<string>[],
     transform: (data: any) => Observable<any>
   ) {
-    for (const { message, callback } of handlers) {
-      const consumer = message.startsWith('#')
+    for (const handler of handlers) {
+      const { message, callback } = handler;
+      const isProcedure = message.startsWith('#');
+
+      const consumer = isProcedure
         ? socket.procedure(message)
         : socket.receiver(message);
       (async () => {
@@ -73,10 +76,10 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           of(callback(request))
             .pipe(switchMap(transform))
             .subscribe((response) => {
-              if (!req.sent) {
+              if (isProcedure && !req.sent) {
                 req.end(response);
               }
-            }, this._logger.error);
+            }, console.error);
         }
       })();
     }
@@ -94,7 +97,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         for await (const action of middlewareStream) {
           switch (action.type) {
             case action.AUTHENTICATE:
-              console.log('authenticate', action?.socket?.authState);
+              this._logger.log('authenticated' + action?.socket?.authState);
               action.allow();
               break;
             case action.SUBSCRIBE:
@@ -136,7 +139,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
       async (stream: AsyncIterable<IAGAction>) => {
         for await (const action of stream) {
           const request = action.request;
-          console.log(action.type, action?.socket?.state);
           let cookies = action.request?.headers?.cookie ?? '';
 
           const parsed = cookies
@@ -185,14 +187,14 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   private _setConnectionLogs() {
     (async () => {
       for await (const { socket, id } of this._server.listener('connection')) {
-        this._logger.debug(
+        this._logger.log(
           'Clients: ' + this._server.clientsCount + ' -> connected - ' + id
         );
       }
     })();
     (async () => {
       for await (const { socket } of this._server.listener('disconnection')) {
-        this._logger.debug('disconnected - ' + socket.id);
+        this._logger.log('disconnected - ' + socket.id);
       }
     })();
     (async () => {
@@ -202,7 +204,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         const serverInstance = this._server.clients[socket.id];
 
         if (serverInstance.authState === serverInstance.AUTHENTICATED) {
-          this._logger.debug(
+          this._logger.log(
             'authorized - ' +
               socket.id +
               ' - ' +
@@ -214,7 +216,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
         if (serverInstance.authState === serverInstance.UNAUTHENTICATED) {
           await serverInstance.setAuthToken(authToken);
-          this._logger.debug('second auth...');
+          this._logger.log('second auth...');
         }
       }
     })();

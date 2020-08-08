@@ -32,7 +32,9 @@ export class GatewayExplorerModule {
 
       const methods = this.getGatewayMethods(gateway);
       methods.forEach((m) =>
-        console.log('--> ' + Reflect.getMetadata(MESSAGE_METADATA, m))
+        console.log(
+          '--> ' + Reflect.getMetadata(MESSAGE_METADATA, m)
+        )
       );
     });
   }
