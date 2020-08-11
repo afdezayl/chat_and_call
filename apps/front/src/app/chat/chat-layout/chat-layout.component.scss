@@ -1,10 +1,6 @@
 :host {
-  width: 100%;
-  /* align-self: stretch;
-  align-items: stretch;
-  justify-self: stretch;
-  justify-items: stretch; */
   position: absolute;
+  width: 100%;
   top: 0;
   bottom: 0;
   left: 0;
@@ -27,6 +23,4 @@ mat-sidenav-content {
 .chat {
   background-color: papayawhip;
   flex: 1;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
 }

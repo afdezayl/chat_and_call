@@ -4,5 +4,11 @@ export interface Channel {
   id: string;
   title: string;
   admin?: string;
-  public: boolean;
+  type: ChannelType;
+}
+
+export enum ChannelType {
+  Public,
+  Private,
+  Personal,
 }

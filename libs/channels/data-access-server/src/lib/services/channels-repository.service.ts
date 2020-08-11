@@ -1,15 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
-import { Channel } from '@chat-and-call/channels/shared';
+import { Injectable, Logger } from '@nestjs/common';
+import { IChannelEntity } from '../models/channel.entity';
 
 @Injectable()
 export class ChannelsRepositoryService {
   constructor(private db: DatabasePoolService, private logger: Logger) {
     this.logger.setContext(this.constructor.name);
   }
-  async getChannels(user: string): Promise<Array<Channel>> {
+  async getChannels(user: string): Promise<Array<IChannelEntity>> {
     try {
-      const [rows, fields] = await this.db.pool.execute(
+      const [rows] = await this.db.pool.execute<Array<IChannelEntity>>(
         `
         SELECT ch.id, ch.title, ch.public, ch.admin
         FROM channels ch
@@ -23,7 +23,7 @@ export class ChannelsRepositoryService {
         [user]
       );
 
-      return rows as Array<Channel>;
+      return rows;
     } catch (error) {
       this.logger.error(error);
     }

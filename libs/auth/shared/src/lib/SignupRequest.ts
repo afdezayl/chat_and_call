@@ -1,4 +1,11 @@
-import { Length, Matches, IsNotEmpty, IsAlphanumeric, IsEmail, MaxLength } from "class-validator";
+import {
+  IsAlphanumeric,
+  IsEmail,
+  IsNotEmpty,
+  Length,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export interface SignupRequest {
   email: string;

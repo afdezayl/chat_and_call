@@ -1,0 +1,27 @@
+<mat-card>
+  <ng-container *ngIf="mediaDevices$ | async as devices">
+    <h3>Devices</h3>
+    <span [matTooltip]="device | json" *ngFor="let device of devices">
+      {{ device.kind }}
+    </span>
+  </ng-container>
+  <div class="video-container">
+    <div class="local-video-container">
+      <h3>Local</h3>
+      <video #local playsinline autoplay muted></video>
+    </div>
+    <div class="remote-video-container">
+      <h3>Remote</h3>
+      <video playsinline autoplay></video>
+    </div>
+  </div>
+  <button mat-fab color="accent" (click)="takePhoto()">
+    <mat-icon>camera</mat-icon>
+  </button>
+  <button mat-fab color="primary" (click)="call()">
+    <mat-icon>phone</mat-icon>
+  </button>
+  <button mat-fab color="primary" (click)="videocall()">
+    <mat-icon>videocam</mat-icon>
+  </button>
+</mat-card>

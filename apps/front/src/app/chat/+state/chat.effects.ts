@@ -26,7 +26,6 @@ export class ChatEffects {
               ChatActions.subscribeChannel({ channel: ch.id })
             ),
           ]),
-          tap((x) => console.log(x)),
           catchError((error) => of(ChatActions.loadChannelsFailure({ error })))
         )
       )
@@ -50,7 +49,8 @@ export class ChatEffects {
       ofType(ChatActions.subscribeChannel),
       mergeMap(({ channel }) =>
         this.chatSocket
-          .subscribeToChannel(channel).asObservable()
+          .subscribeToChannel(channel)
+          .asObservable()
           .pipe(map((message) => ChatActions.incomingMessage({ message })))
       )
     );

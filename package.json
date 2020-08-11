@@ -7,6 +7,7 @@
     "nx": "nx",
     "start": "ng serve",
     "start:front": "ng serve front",
+    "start:front:network":  "ng serve front --host 0.0.0.0 --ssl",
     "start:api": "ng serve api",
     "start:only-db": "docker-compose -f db-docker-compose.yml up",
     "build": "ng build",
@@ -66,7 +67,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.0",
     "socketcluster-client": "^16.0.1",
-    "socketcluster-server": "^16.0.0",
+    "socketcluster-server": "^16.0.1",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {

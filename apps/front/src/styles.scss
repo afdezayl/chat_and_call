@@ -6,8 +6,15 @@
 * {
   box-sizing: border-box;
 }
-html, body {
+html {
+  position: relative;
+  max-width: 1900px;
+  margin: 0 auto;
+  background-color: #777;
+}
+
+html,
+body {
   font-family: Roboto, 'Helvetica Neue', 'sans-serif';
   height: 100%;
 }
-

@@ -1,33 +1,87 @@
 <chat-and-call-chat-header></chat-and-call-chat-header>
+<!-- <chat-and-call-video-call></chat-and-call-video-call> -->
 <mat-sidenav-container autosize>
   <mat-sidenav #sidenav mode="side" opened>
     <h2>Channels</h2>
-    <ng-container *ngIf="channels$ | async as channels">
-      <ng-container *ngFor="let channel of channels; let first = first">
-        <mat-divider *ngIf="first === false"></mat-divider>
-        <button style="width: 100%; text-align: left;" mat-button (click)="setFocus(channel.id)">
-          <p>{{ channel.title }}</p>
-        </button>
-      </ng-container>
-    </ng-container>
+    <mat-selection-list
+      [multiple]="false"
+      *ngIf="channels$ | async as channels"
+      dense
+    >
+      <mat-list-option
+        *ngFor="let channel of channels; let first = first"
+        (click)="setFocus(channel.id)"
+      >
+        <mat-icon mat-list-icon>home</mat-icon>
+        <p>{{ channel.title }}</p>
+      </mat-list-option>
+    </mat-selection-list>
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
     <h2>{{ focus.title }}</h2>
-    <p>Count : {{ newMessagesCount }}</p>
-    <div #message_container class="chat">
+    <ng-container *ngIf="messages$ | async as messages">
+      <div>
+        <span>Index: {{ index$ | async }}</span>
+        <span>Viewed: {{ newMessagesCount }}</span>
+        <span>Total messages: {{ messages.length }}</span>
+        <button mat-mini-fab (click)="goToEnd(messages.length)" color="">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <button (click)="fakeMessages(focus)">Test messages</button>
+      </div>
+
+      <cdk-virtual-scroll-viewport
+
+        class="chat"
+        (scrolledIndexChange)="index$.next($event)"
+      >
+        <ng-container *cdkVirtualFor="let m of messages">
+          <chat-and-call-message
+            [message]="m"
+            (viewed)="onViewed($event)"
+          ></chat-and-call-message>
+        </ng-container>
+      </cdk-virtual-scroll-viewport>
+    </ng-container>
+
+    <!-- <div #message_container class="chat">
       <chat-and-call-message
         *ngFor="let m of messages$ | async"
         [message]="m"
         (viewed)="onViewed($event)"
       >
       </chat-and-call-message>
-    </div>
-    <form [formGroup]="messageForm" (submit)="sendMessage(focus.id)">
-      <input type="text" formControlName="text" />
-      <button type="submit">Enviar</button>
-      <input type="file" formControlName="file" />
+    </div> -->
+    <form
+      [formGroup]="messageForm"
+      (submit)="sendMessage(focus.id)"
+      autocomplete="off"
+    >
+      <mat-form-field>
+        <input matInput type="text" formControlName="text" />
+      </mat-form-field>
+      <button
+        type="submit"
+        [disabled]="!messageForm.valid"
+        mat-mini-fab
+        color=""
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-mini-fab
+        color=""
+        *ngIf="focus.type === 2"
+        (click)="file_input.click()"
+      >
+        <mat-icon>attach_file</mat-icon>
+      </button>
 
-      {{ messageForm.value | json }}
+      <input [hidden]="true" #file_input type="file" formControlName="file" />
+      <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
+        <mat-icon>videocam</mat-icon>
+      </button>
     </form>
   </mat-sidenav-content>
 </mat-sidenav-container>

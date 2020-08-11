@@ -20,17 +20,17 @@ export class MessageComponent implements AfterViewInit {
   @Input() message: Message;
   @Output() viewed = new EventEmitter<boolean>();
 
-  isFirstLoad = true;
-
   constructor(private elementRef: ElementRef<HTMLElement>) {}
 
   ngAfterViewInit() {
-    const parent = this.elementRef.nativeElement.parentElement;
-    const observer = new IntersectionObserver(this.emitViewed.bind(this), {
+    const wrapper = this.elementRef.nativeElement.parentElement;
+    const parent = wrapper.parentElement;
+
+    /* const observer = new IntersectionObserver(this.emitViewed.bind(this), {
       root: parent,
       threshold: 0.5,
     });
-    observer.observe(this.elementRef.nativeElement);
+    observer.observe(this.elementRef.nativeElement); */
   }
 
   emitViewed(
@@ -38,23 +38,9 @@ export class MessageComponent implements AfterViewInit {
     observer: IntersectionObserver
   ) {
     entries.forEach((entry) => {
-      if (this.isFirstLoad) {
-        const element = this.elementRef.nativeElement;
-        const container = this.elementRef.nativeElement.parentElement;
-
-        const yRelative = element.offsetTop - container.offsetTop;
-        const containerHeight = container.clientHeight;
-        const shouldScroll = yRelative - container.scrollTop - containerHeight * 1.35 < 0;
-
-        if(shouldScroll) {
-          container.scrollTop = container.scrollHeight;
-        } else{
-          this.viewed.next(false);
-        }
-        this.isFirstLoad = false;
-      }
+      console.log(entry);
       if (entry.isIntersecting) {
-        this.elementRef.nativeElement.style.backgroundColor = 'yellowgreen';
+        //this.elementRef.nativeElement.style.backgroundColor = 'yellowgreen';
         observer.unobserve(this.elementRef.nativeElement);
 
         this.viewed.next(true);

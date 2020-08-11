@@ -5,6 +5,7 @@ import {
   SocketCrudGateway,
   SocketGet,
   SocketProcedure,
+  SocketPost,
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
@@ -35,5 +36,12 @@ export class ChannelsGateway {
 
     socket.server.exchange.transmitPublish(data.channel, newMessage);
     //return newMessage;
+  }
+
+  @SocketPost('call')
+  call(@ConnectedSocket() socket: AGServerSocket, @MessageBody() data: any) {
+    console.log(data);
+    //socket.server.exchange
+    return data;
   }
 }

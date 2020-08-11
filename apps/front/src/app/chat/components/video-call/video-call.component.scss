@@ -1,0 +1,19 @@
+.video-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.local-video-container {
+  & > video {
+    border: 1px solid red;
+  }
+}
+
+.remote-video-container {
+  & > video {
+    border: 1px solid blue;
+  }
+}
+

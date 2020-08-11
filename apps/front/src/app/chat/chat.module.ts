@@ -11,10 +11,11 @@ import * as fromChat from './+state/chat.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ChatEffects } from './+state/chat.effects';
 import { MessageComponent } from './components/message/message.component';
+import { VideoCallComponent } from './components/video-call/video-call.component';
 
 
 @NgModule({
-  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent],
+  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent, VideoCallComponent],
   imports: [
     CommonModule,
     ChatRoutingModule,

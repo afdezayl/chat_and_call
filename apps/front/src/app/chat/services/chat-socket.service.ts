@@ -93,4 +93,8 @@ const fromAsyncIterable = iterable =>
   publishMessage(message: BasicMessage) {
     return this.socket.publishToChannel(message, message.channel);
   }
+
+  videoCall(description: RTCSessionDescriptionInit) {
+    return this.socket.post('channels/call', description);
+  }
 }
