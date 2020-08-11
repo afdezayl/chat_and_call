@@ -1,8 +1,7 @@
+import { Channel, ChannelType } from '@chat-and-call/channels/shared';
+import { ContactsRepository } from '@chat-and-call/contacts/feature-server-contacts';
 import { Injectable } from '@nestjs/common';
 import { ChannelsRepositoryService } from './channels-repository.service';
-import { ContactsRepository } from '@chat-and-call/contacts/feature-server-contacts';
-import { Channel, ChannelType } from '@chat-and-call/channels/shared';
-import { win32 } from 'path';
 
 @Injectable()
 export class ChannelsDataAccessService {

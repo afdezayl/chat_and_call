@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
-import { throwIfEmpty } from 'rxjs/operators';
 
 @Injectable()
 export class AuthRepositoryService {
