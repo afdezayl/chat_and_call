@@ -13,7 +13,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { switchMap } from 'rxjs/operators';
 import { AGServer, AGServerSocket, attach } from 'socketcluster-server';
 import { AGServerOptions } from 'socketcluster-server/server';
-import { IAGAction, IAGRequest, AGAction } from './interfaces';
+import { IAGRequest, AGAction } from './interfaces';
 import {
   MiddlewareInboundStrategy,
   MIDDLEWARE_INBOUND_TOKEN,

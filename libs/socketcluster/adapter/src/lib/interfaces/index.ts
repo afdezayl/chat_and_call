@@ -1,2 +1,2 @@
-export * from './IAGAction';
+export * from './AGActions';
 export * from './IAGRequest';
