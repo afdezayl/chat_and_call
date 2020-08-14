@@ -1,1 +1,1 @@
-export * from './lib/socketcluster-adapter';
+export * from './lib';

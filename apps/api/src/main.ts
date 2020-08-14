@@ -20,16 +20,9 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
 
-  app.useWebSocketAdapter(
-    new SocketClusterAdapter(app, {
-      path: SOCKET_PATH,
-      authKey: config.get('JSON_WEBTOKEN_KEY'),
-      socketChannelLimit: 1000,
-      origins: '*:*',
-      authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60,
-      allowClientPublish: false,
-    })
-  );
+  // Socketcluster adapter module
+  const wsAdapter = app.get(SocketClusterAdapter);
+  app.useWebSocketAdapter(wsAdapter);
 
   const port = process.env.PORT || 3333;
   await app.listen(port);

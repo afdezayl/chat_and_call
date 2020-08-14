@@ -15,9 +15,8 @@ import { ControllersModule } from './api/controllers/controllers.module';
     ControllersModule,
     DatabasePoolModule,
     GatewaysModule,
-    LoggerModule,
+    LoggerModule
   ],
   controllers: [],
-
 })
 export class AppModule {}
