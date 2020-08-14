@@ -27,9 +27,9 @@ export class SocketService {
     })();
   }
 
-  publishToChannel(data: any, channel: string) {
+  publishToChannel<T = any>(data: any, channel: string) {
     //return from(this._socket.transmitPublish(channel, data));
-    return from(this._socket.invoke('#channels/publish', data));
+    return <Observable<T>>from(this._socket.invoke('#channels/publish', data));
   }
 
   get<T = any>(path: string, request: any) {

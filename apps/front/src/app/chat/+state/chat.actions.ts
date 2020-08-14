@@ -29,6 +29,16 @@ export const sendMessage = createAction(
   props<{ message: BasicMessage }>()
 );
 
+export const serverReceivedMessage = createAction(
+  '[Chat] Received message',
+  props<{ message: BasicMessage }>()
+);
+
+export const serverFailMessage = createAction(
+  '[Chat] Denied message',
+  props<{ message: BasicMessage }>()
+);
+
 export const incomingMessage = createAction(
   '[Chat] Incoming message',
   props<{ message: Message }>()

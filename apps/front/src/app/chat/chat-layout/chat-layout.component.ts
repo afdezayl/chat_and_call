@@ -1,6 +1,7 @@
 import {
   CdkVirtualScrollViewport,
   VIRTUAL_SCROLL_STRATEGY,
+  FixedSizeVirtualScrollStrategy,
 } from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
@@ -39,6 +40,7 @@ import {
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
 import { ChatScrollStrategy } from './chat-scroll-strategy';
+
 export const factory = () => new ChatScrollStrategy(50, 100);
 
 @Component({
@@ -167,7 +169,7 @@ export class ChatLayoutComponent implements OnInit {
   }
 
   fakeMessages(channel: Channel) {
-    interval(10)
+    interval(100)
       .pipe(
         map((x, i) => {
           const message: BasicMessage = {
@@ -176,7 +178,7 @@ export class ChatLayoutComponent implements OnInit {
           };
           return message;
         }),
-        take(50)
+        take(100)
       )
       .subscribe((m) => this.store.dispatch(sendMessage({ message: m })));
   }

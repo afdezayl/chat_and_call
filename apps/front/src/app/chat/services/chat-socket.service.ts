@@ -87,11 +87,11 @@ const fromAsyncIterable = iterable =>
       }
     })();
 
-    return subject$;
+    return subject$.asObservable();
   }
 
   publishMessage(message: BasicMessage) {
-    return this.socket.publishToChannel(message, message.channel);
+    return this.socket.publishToChannel<void>(message, message.channel);
   }
 
   videoCall(description: RTCSessionDescriptionInit) {

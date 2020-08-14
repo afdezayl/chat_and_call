@@ -26,23 +26,31 @@ export class ChatEffects {
               ChatActions.subscribeChannel({ channel: ch.id })
             ),
           ]),
-          catchError((error) => of(ChatActions.loadChannelsFailure({ error })))
+          catchError((error) => {
+            // TODO: Handle error
+            console.error(error);
+            return of(ChatActions.loadChannelsFailure({ error }));
+          })
         )
       )
     );
   });
 
-  publishMessage$ = createEffect(
-    () => {
-      return this.actions$.pipe(
-        ofType(ChatActions.sendMessage),
-        mergeMap((x) => {
-          return this.chatSocket.publishMessage(x.message);
-        })
-      );
-    },
-    { dispatch: false }
-  );
+  publishMessage$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ChatActions.sendMessage),
+      mergeMap((x) =>
+        this.chatSocket.publishMessage(x.message).pipe(
+          map((_) => ChatActions.serverReceivedMessage({ message: x.message })),
+          catchError((err) => {
+            // TODO: Handle error
+            console.error(err);
+            return of(ChatActions.serverFailMessage({ message: x.message }));
+          })
+        )
+      )
+    );
+  });
 
   subscribeChannel$ = createEffect(() => {
     return this.actions$.pipe(
@@ -50,7 +58,6 @@ export class ChatEffects {
       mergeMap(({ channel }) =>
         this.chatSocket
           .subscribeToChannel(channel)
-          .asObservable()
           .pipe(map((message) => ChatActions.incomingMessage({ message })))
       )
     );

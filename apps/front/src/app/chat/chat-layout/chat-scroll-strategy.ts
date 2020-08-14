@@ -7,7 +7,6 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { ListRange } from '@angular/cdk/collections';
 import { Injectable } from '@angular/core';
 
-
 @Injectable()
 export class ChatScrollStrategy implements VirtualScrollStrategy {
   /* private index$ = new Subject<number>();
@@ -51,8 +50,10 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   scrolledIndexChange = new Observable<number>(() => {
     // TODO(mmalerba): Implement.
-    throw Error('cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
-        ' autosize scroll strategy');
+    throw Error(
+      'cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
+        ' autosize scroll strategy'
+    );
   });
 
   /** The attached viewport. */
@@ -91,7 +92,11 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
    *     rendering cycle (as long as the amount of buffer is still greater than `minBufferPx`).
    * @param averager The averager used to estimate the size of unseen items.
    */
-  constructor(minBufferPx: number, maxBufferPx: number, averager = new ItemSizeAverager()) {
+  constructor(
+    minBufferPx: number,
+    maxBufferPx: number,
+    averager = new ItemSizeAverager()
+  ) {
     this._minBufferPx = minBufferPx;
     this._maxBufferPx = maxBufferPx;
     this._averager = averager;
@@ -115,6 +120,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   onContentScrolled() {
     if (this._viewport) {
+      console.log('on scroll...');
       this._updateRenderedContentAfterScroll();
     }
   }
@@ -144,8 +150,10 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   /** Scroll to the offset for the given index. */
   scrollToIndex(): void {
     // TODO(mmalerba): Implement.
-    throw Error('cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize'
-        + ' scroll strategy');
+    throw Error(
+      'cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize' +
+        ' scroll strategy'
+    );
   }
 
   /**
@@ -156,7 +164,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
    */
   updateBufferSize(minBufferPx: number, maxBufferPx: number) {
     if (maxBufferPx < minBufferPx) {
-      throw('CDK virtual scroll: maxBufferPx must be greater than or equal to minBufferPx');
+      throw 'CDK virtual scroll: maxBufferPx must be greater than or equal to minBufferPx';
     }
     this._minBufferPx = minBufferPx;
     this._maxBufferPx = maxBufferPx;
@@ -173,6 +181,8 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     // The magnitude of the scroll delta.
     let scrollMagnitude = Math.abs(scrollDelta);
 
+    console.log('magnitude', scrollMagnitude);
+
     // The currently rendered range.
     const renderedRange = viewport.getRenderedRange();
 
@@ -182,19 +192,26 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     let offsetCorrection = 0;
     if (scrollDelta < 0) {
       // The content offset we would expect based on the average item size.
-      const predictedOffset = renderedRange.start * this._averager.getAverageItemSize();
+      const predictedOffset =
+        renderedRange.start * this._averager.getAverageItemSize();
       // The difference between the predicted size of the unrendered content at the beginning and
       // the actual available space to scroll over. We need to reduce this to zero by the time the
       // user scrolls to the top.
       // - 0 indicates that the predicted size and available space are the same.
       // - A negative number that the predicted size is smaller than the available space.
       // - A positive number indicates the predicted size is larger than the available space
-      const offsetDifference = predictedOffset - this._lastRenderedContentOffset;
+      const offsetDifference =
+        predictedOffset - this._lastRenderedContentOffset;
       // The amount of difference to correct during this scroll event. We calculate this as a
       // percentage of the total difference based on the percentage of the distance toward the top
       // that the user scrolled.
-      offsetCorrection = Math.round(offsetDifference *
-          Math.max(0, Math.min(1, scrollMagnitude / (scrollOffset + scrollMagnitude))));
+      offsetCorrection = Math.round(
+        offsetDifference *
+          Math.max(
+            0,
+            Math.min(1, scrollMagnitude / (scrollOffset + scrollMagnitude))
+          )
+      );
 
       // Based on the offset correction above, we pretend that the scroll delta was bigger or
       // smaller than it actually was, this way we can start to eliminate the difference.
@@ -203,14 +220,19 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     }
 
     // The current amount of buffer past the start of the viewport.
-    const startBuffer = this._lastScrollOffset - this._lastRenderedContentOffset;
+    const startBuffer =
+      this._lastScrollOffset - this._lastRenderedContentOffset;
     // The current amount of buffer past the end of the viewport.
-    const endBuffer = (this._lastRenderedContentOffset + this._lastRenderedContentSize) -
-        (this._lastScrollOffset + viewport.getViewportSize());
+    const endBuffer =
+      this._lastRenderedContentOffset +
+      this._lastRenderedContentSize -
+      (this._lastScrollOffset + viewport.getViewportSize());
     // The amount of unfilled space that should be filled on the side the user is scrolling toward
     // in order to safely absorb the scroll delta.
-    const underscan = scrollMagnitude + this._minBufferPx -
-        (scrollDelta < 0 ? startBuffer : endBuffer);
+    const underscan =
+      scrollMagnitude +
+      this._minBufferPx -
+      (scrollDelta < 0 ? startBuffer : endBuffer);
 
     // Check if there's unfilled space that we need to render new elements to fill.
     if (underscan > 0) {
@@ -225,25 +247,40 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
         // The number of new items to render on the side the user is scrolling towards. Rather than
         // just filling the underscan space, we actually fill enough to have a buffer size of
         // `maxBufferPx`. This gives us a little wiggle room in case our item size estimate is off.
-        const addItems = Math.max(0, Math.ceil((underscan - this._minBufferPx + this._maxBufferPx) /
-            this._averager.getAverageItemSize()));
+        const addItems = Math.max(
+          0,
+          Math.ceil(
+            (underscan - this._minBufferPx + this._maxBufferPx) /
+              this._averager.getAverageItemSize()
+          )
+        );
         // The amount of filled space beyond what is necessary on the side the user is scrolling
         // away from.
-        const overscan = (scrollDelta < 0 ? endBuffer : startBuffer) - this._minBufferPx +
-            scrollMagnitude;
+        const overscan =
+          (scrollDelta < 0 ? endBuffer : startBuffer) -
+          this._minBufferPx +
+          scrollMagnitude;
         // The number of currently rendered items to remove on the side the user is scrolling away
         // from. If removal has failed in recent cycles we are less aggressive in how much we try to
         // remove.
         const unboundedRemoveItems = Math.floor(
-            overscan / this._averager.getAverageItemSize() / (this._removalFailures + 1));
-        const removeItems =
-            Math.min(renderedRange.end - renderedRange.start, Math.max(0, unboundedRemoveItems));
+          overscan /
+            this._averager.getAverageItemSize() /
+            (this._removalFailures + 1)
+        );
+        const removeItems = Math.min(
+          renderedRange.end - renderedRange.start,
+          Math.max(0, unboundedRemoveItems)
+        );
 
         // The new range we will tell the viewport to render. We first expand it to include the new
         // items we want rendered, we then contract the opposite side to remove items we no longer
         // want rendered.
         const range = this._expandRange(
-            renderedRange, scrollDelta < 0 ? addItems : 0, scrollDelta > 0 ? addItems : 0);
+          renderedRange,
+          scrollDelta < 0 ? addItems : 0,
+          scrollDelta > 0 ? addItems : 0
+        );
         if (scrollDelta < 0) {
           range.end = Math.max(range.start + 1, range.end - removeItems);
         } else {
@@ -264,13 +301,16 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
           // Check that we're not removing too much.
           if (removedSize <= overscan) {
             contentOffset =
-                this._lastRenderedContentOffset + this._lastRenderedContentSize - removedSize;
+              this._lastRenderedContentOffset +
+              this._lastRenderedContentSize -
+              removedSize;
             this._removalFailures = 0;
           } else {
             // If the removal is more than the overscan can absorb just undo it and record the fact
             // that the removal failed so we can be less aggressive next time.
             range.end = renderedRange.end;
-            contentOffset = this._lastRenderedContentOffset + this._lastRenderedContentSize;
+            contentOffset =
+              this._lastRenderedContentOffset + this._lastRenderedContentSize;
             this._removalFailures++;
           }
           contentOffsetTo = 'to-end';
@@ -295,12 +335,17 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
         // Set the range and offset we calculated above.
         viewport.setRenderedRange(range);
-        viewport.setRenderedContentOffset(contentOffset + offsetCorrection, contentOffsetTo);
+        viewport.setRenderedContentOffset(
+          contentOffset + offsetCorrection,
+          contentOffsetTo
+        );
       }
     } else if (offsetCorrection) {
       // Even if the rendered range didn't change, we may still need to adjust the content offset to
       // simulate scrolling slightly slower or faster than the user actually scrolled.
-      viewport.setRenderedContentOffset(this._lastRenderedContentOffset + offsetCorrection);
+      viewport.setRenderedContentOffset(
+        this._lastRenderedContentOffset + offsetCorrection
+      );
     }
 
     // Save the scroll offset to be compared to the new value on the next scroll event.
@@ -314,7 +359,10 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   private _checkRenderedContentSize() {
     const viewport = this._viewport!;
     this._lastRenderedContentSize = viewport.measureRenderedContentSize();
-    this._averager.addSample(viewport.getRenderedRange(), this._lastRenderedContentSize);
+    this._averager.addSample(
+      viewport.getRenderedRange(),
+      this._lastRenderedContentSize
+    );
     this._updateTotalContentSize(this._lastRenderedContentSize);
   }
 
@@ -335,11 +383,17 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     this._removalFailures = 0;
 
     const itemSize = this._averager.getAverageItemSize();
-    const firstVisibleIndex =
-        Math.min(viewport.getDataLength() - 1, Math.floor(scrollOffset / itemSize));
+    console.log('itemsize', itemSize);
+    const firstVisibleIndex = Math.min(
+      viewport.getDataLength() - 1,
+      Math.floor(scrollOffset / itemSize)
+    );
     const bufferSize = Math.ceil(this._maxBufferPx / itemSize);
     const range = this._expandRange(
-        this._getVisibleRangeForIndex(firstVisibleIndex), bufferSize, bufferSize);
+      this._getVisibleRangeForIndex(firstVisibleIndex),
+      bufferSize,
+      bufferSize
+    );
 
     viewport.setRenderedRange(range);
     viewport.setRenderedContentOffset(itemSize * range.start);
@@ -358,8 +412,11 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const viewport = this._viewport!;
     const range: ListRange = {
       start: startIndex,
-      end: startIndex +
-          Math.ceil(viewport.getViewportSize() / this._averager.getAverageItemSize())
+      end:
+        startIndex +
+        Math.ceil(
+          viewport.getViewportSize() / this._averager.getAverageItemSize()
+        ),
     };
     const extra = range.end - viewport.getDataLength();
     if (extra > 0) {
@@ -377,24 +434,30 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
    * @param expandEnd The number of items to expand the end of the range by.
    * @return The expanded range.
    */
-  private _expandRange(range: ListRange, expandStart: number, expandEnd: number): ListRange {
+  private _expandRange(
+    range: ListRange,
+    expandStart: number,
+    expandEnd: number
+  ): ListRange {
     const viewport = this._viewport!;
     const start = Math.max(0, range.start - expandStart);
     const end = Math.min(viewport.getDataLength(), range.end + expandEnd);
-    return {start, end};
+    return { start, end };
   }
 
   /** Update the viewport's total content size. */
   private _updateTotalContentSize(renderedContentSize: number) {
+    console.log('total size');
     const viewport = this._viewport!;
     const renderedRange = viewport.getRenderedRange();
-    const totalSize = renderedContentSize +
-        (viewport.getDataLength() - (renderedRange.end - renderedRange.start)) *
+    const totalSize =
+      renderedContentSize +
+      (viewport.getDataLength() - (renderedRange.end - renderedRange.start)) *
         this._averager.getAverageItemSize();
+    console.log('total size', totalSize);
     viewport.setTotalContentSize(totalSize);
   }
 }
-
 
 export class ItemSizeAverager {
   /** The total amount of weight behind the current average. */
@@ -426,7 +489,7 @@ export class ItemSizeAverager {
     const newTotalWeight = this._totalWeight + range.end - range.start;
     if (newTotalWeight) {
       const newAverageItemSize =
-          (size + this._averageItemSize * this._totalWeight) / newTotalWeight;
+        (size + this._averageItemSize * this._totalWeight) / newTotalWeight;
       if (newAverageItemSize) {
         this._averageItemSize = newAverageItemSize;
         this._totalWeight = newTotalWeight;
