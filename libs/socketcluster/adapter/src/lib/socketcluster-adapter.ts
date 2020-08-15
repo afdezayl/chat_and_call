@@ -102,11 +102,14 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           const req = request as IAGRequest;
           of(callback(request))
             .pipe(switchMap(transform))
-            .subscribe((response) => {
-              if (isProcedure && !req.sent) {
-                req.end(response);
-              }
-            }, console.error);
+            .subscribe(
+              (response) => {
+                if (isProcedure && !req.sent) {
+                  req.end(response);
+                }
+              },
+              (err) => this.logger.error(err)
+            );
         }
       })();
     }
@@ -117,50 +120,6 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     server.close();
   }
 
-  private _setInboundMiddleware(inbound: MiddlewareInboundStrategy) {
-    if (inbound) {
-      this.logger.debug('Middleware inbound -> ' + inbound.constructor.name);
-
-      this._server.setMiddleware(
-        this._server.MIDDLEWARE_INBOUND,
-        async (middlewareStream: AsyncIterable<AGAction>) => {
-          for await (const action of middlewareStream) {
-            switch (action.type) {
-              case action.AUTHENTICATE:
-                inbound.onAuthenticate
-                  ? inbound.onAuthenticate(action)
-                  : inbound.default(action);
-                break;
-              case action.SUBSCRIBE:
-                inbound.onSubscribe
-                  ? inbound.onSubscribe(action)
-                  : inbound.default(action);
-                break;
-              case action.TRANSMIT:
-                inbound.onTransmit
-                  ? inbound.onTransmit(action)
-                  : inbound.default;
-                break;
-              case action.INVOKE:
-                inbound.onInvoke
-                  ? inbound.onInvoke(action)
-                  : inbound.default(action);
-                break;
-              case action.PUBLISH_IN:
-                inbound.onPublishIn
-                  ? inbound.onPublishIn(action)
-                  : inbound.default(action);
-                break;
-              default:
-                this.logger.warn(`Not implemented type "${action.type}"!`);
-                inbound.default(action);
-            }
-          }
-        }
-      );
-    }
-  }
-
   private _setHandshakeMiddleware(handshake: MiddlewareHandshakeStrategy) {
     if (handshake) {
       this.logger.debug(`Handshake middleware - ${handshake.constructor.name}`);
@@ -169,24 +128,31 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         this._server.MIDDLEWARE_HANDSHAKE,
         async (stream: AsyncIterable<AGAction>) => {
           for await (const action of stream) {
-            switch (action.type) {
-              case action.HANDSHAKE_WS:
-                handshake.onWSHandshake
-                  ? handshake.onWSHandshake(action)
-                  : handshake.default(action);
-                break;
-              case action.HANDSHAKE_SC:
-                handshake.onSCHandshake
-                  ? handshake.onSCHandshake(action)
-                  : handshake.default(action);
-                break;
-              default:
-                this.logger.warn(`Not implemented type "${action.type}"!`);
-                handshake.default(action);
-            }
+            this._handleHandshakeAction(action, handshake);
           }
         }
       );
+    }
+  }
+
+  private _handleHandshakeAction(
+    action: AGAction,
+    handshake: MiddlewareHandshakeStrategy
+  ) {
+    switch (action.type) {
+      case action.HANDSHAKE_WS:
+        handshake.onWSHandshake
+          ? handshake.onWSHandshake(action)
+          : handshake.default(action);
+        break;
+      case action.HANDSHAKE_SC:
+        handshake.onSCHandshake
+          ? handshake.onSCHandshake(action)
+          : handshake.default(action);
+        break;
+      default:
+        this.logger.warn(`Not implemented type "${action.type}"!`);
+        handshake.default(action);
     }
   }
 
@@ -198,16 +164,71 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         this._server.MIDDLEWARE_INBOUND_RAW,
         async (stream: AsyncIterable<AGAction>) => {
           for await (const action of stream) {
-            switch (action.type) {
-              case action.MESSAGE:
-                inboundRaw.onMessage(action);
-                break;
-              default:
-                this.logger.warn(`Not implemented type "${action.type}"!`);
-            }
+            this._handleInboundRawAction(action, inboundRaw);
           }
         }
       );
+    }
+  }
+
+  private _handleInboundRawAction(
+    action: AGAction,
+    inboundRaw: MiddlewareInboundRawStrategy
+  ) {
+    switch (action.type) {
+      case action.MESSAGE:
+        inboundRaw.onMessage(action);
+        break;
+      default:
+        this.logger.warn(`Not implemented type "${action.type}"!`);
+        action.allow();
+    }
+  }
+
+  private _setInboundMiddleware(inbound: MiddlewareInboundStrategy) {
+    if (inbound) {
+      this.logger.debug('Middleware inbound -> ' + inbound.constructor.name);
+
+      this._server.setMiddleware(
+        this._server.MIDDLEWARE_INBOUND,
+        async (middlewareStream: AsyncIterable<AGAction>) => {
+          for await (const action of middlewareStream) {
+            this._handleInboundAction(action, inbound);
+          }
+        }
+      );
+    }
+  }
+
+  private _handleInboundAction(
+    action: AGAction,
+    inbound: MiddlewareInboundStrategy
+  ) {
+    switch (action.type) {
+      case action.AUTHENTICATE:
+        inbound.onAuthenticate
+          ? inbound.onAuthenticate(action)
+          : inbound.default(action);
+        break;
+      case action.SUBSCRIBE:
+        inbound.onSubscribe
+          ? inbound.onSubscribe(action)
+          : inbound.default(action);
+        break;
+      case action.TRANSMIT:
+        inbound.onTransmit ? inbound.onTransmit(action) : inbound.default;
+        break;
+      case action.INVOKE:
+        inbound.onInvoke ? inbound.onInvoke(action) : inbound.default(action);
+        break;
+      case action.PUBLISH_IN:
+        inbound.onPublishIn
+          ? inbound.onPublishIn(action)
+          : inbound.default(action);
+        break;
+      default:
+        this.logger.warn(`Not implemented type "${action.type}"!`);
+        inbound.default(action);
     }
   }
 
@@ -219,16 +240,24 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         this._server.MIDDLEWARE_OUTBOUND,
         async (stream: AsyncIterable<AGAction>) => {
           for await (const action of stream) {
-            switch (action.type) {
-              case action.PUBLISH_OUT:
-                outbound.onPublishOut(action);
-                break;
-              default:
-                this.logger.warn(`Not implemented type "${action.type}"!`);
-            }
+            this._handleOutboundAction(action, outbound);
           }
         }
       );
+    }
+  }
+
+  private _handleOutboundAction(
+    action: AGAction,
+    outbound: MiddlewareOutboundStrategy
+  ) {
+    switch (action.type) {
+      case action.PUBLISH_OUT:
+        outbound.onPublishOut(action);
+        break;
+      default:
+        this.logger.warn(`Not implemented type "${action.type}"!`);
+        action.allow();
     }
   }
 
