@@ -1,4 +1,12 @@
 
 .message {
   margin: 0.5em;
+  max-width: 60%;
+  word-wrap: break-word;
+  text-align: justify;
+}
+
+.message.self {
+  margin-left: auto;
+  background-color: rgb(155, 231, 241);;
 }

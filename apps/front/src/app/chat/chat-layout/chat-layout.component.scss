@@ -9,6 +9,10 @@
   flex-direction: column;
 }
 
+mat-sidenav {
+  min-width: 200px;
+}
+
 mat-sidenav-container {
   flex: 1;
   max-height: 100%;
@@ -23,4 +27,10 @@ mat-sidenav-content {
 .chat {
   background-color: papayawhip;
   flex: 1;
+  max-width: 100%;
+}
+
+:host ::ng-deep .chat > div.cdk-virtual-scroll-content-wrapper {
+  max-width: 100%;
+  border: 1px solid red;
 }

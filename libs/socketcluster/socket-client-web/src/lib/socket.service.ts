@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { SOCKET_PATH, TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server';
-import { from, Observable } from 'rxjs';
+import { from, Observable, BehaviorSubject, EMPTY, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { AGClientSocket, create } from 'socketcluster-client';
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
-  public authenticated$;
+  private _authenticated$ = new BehaviorSubject<string>(null);
+  private _deauthenticated$ = new BehaviorSubject<void>(null);
   private _socket: AGClientSocket = null;
 
   constructor() {
@@ -22,9 +24,21 @@ export class SocketService {
       for await (const { authToken, signedAuthToken } of this._socket.listener(
         'authenticate'
       )) {
-        console.log(authToken);
+        this._authenticated$.next(authToken.username);
       }
     })();
+
+    (async () => {
+      for await (const x of this._socket.listener(
+        'authStateChange'
+      )) {
+        console.log('auth change', x);
+      }
+    })();
+  }
+
+  get authenticated$() {
+    return this._authenticated$.asObservable();
   }
 
   publishToChannel<T = any>(data: any, channel: string) {
@@ -63,8 +77,10 @@ export class SocketService {
       body: request,
     };
 
-    const response$ = from(
-      this._socket.invoke(`#${method.toLowerCase()}:${path}`, payload)
+    const response$ = of(EMPTY).pipe(
+      switchMap(() =>
+        this._socket.invoke(`#${method.toLowerCase()}:${path}`, payload)
+      )
     ) as Observable<T>;
 
     return response$;

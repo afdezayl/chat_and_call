@@ -1,31 +1,42 @@
 import { Injectable } from '@angular/core';
+import { BasicMessage, Channel, Message } from '@chat-and-call/channels/shared';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
-import {
-  Observable,
-  BehaviorSubject,
-  Subject,
-  from,
-  interval,
-  ReplaySubject,
-} from 'rxjs';
-import { Channel, Message, BasicMessage } from '@chat-and-call/channels/shared';
-import {
-  tap,
-  delay,
-  expand,
-  filter,
-  map,
-  exhaust,
-  take,
-  finalize,
-  takeUntil,
-} from 'rxjs/operators';
-
+import { Store } from '@ngrx/store';
+import { Observable, ReplaySubject } from 'rxjs';
+import { userAuthenticated } from '../+state/chat.actions';
 @Injectable({
   providedIn: 'root',
 })
 export class ChatSocketService {
-  constructor(private socket: SocketService) {}
+  constructor(private socket: SocketService, store: Store) {
+    socket.authenticated$.subscribe((username) => {
+      store.dispatch(userAuthenticated({ username }));
+    });
+  }
+
+  getChannels(): Observable<Array<Channel>> {
+    return this.socket.get<Array<Channel>>('channels/', null);
+  }
+
+  subscribeToChannel(id: number | string) {
+    const subject$ = new ReplaySubject<Message>();
+
+    (async () => {
+      for await (const data of this.socket.subscribeToChannel(id)) {
+        subject$.next(data);
+      }
+    })();
+
+    return subject$.asObservable();
+  }
+
+  publishMessage(message: BasicMessage) {
+    return this.socket.publishToChannel<void>(message, message.channel);
+  }
+
+  videoCall(description: RTCSessionDescriptionInit) {
+    return this.socket.post('channels/call', description);
+  }
 
   // Creates backpressure...
   private createSubjectFromIterator<T>(asyncIterable: any): ReplaySubject<T> {
@@ -45,56 +56,5 @@ export class ChatSocketService {
 
     push();
     return subject$;
-  }
-  /* Maybe a backpressure test?
-const fromAsyncIterable = iterable =>
-  from(iterable.next()).pipe(
-    expand(() => iterable.next()),
-    filter(x => !x.done),
-    map(x => x.value)
-  );
-----------------------------------------------------
-  const { BehaviorSubject } = require('rxjs')
-
-  function createIteratorSubject(iterator) {
-    const subject$ = new BehaviorSubject();
-
-    subject$.push = function(value) {
-      const {done, value} = iterator.next(value);.
-
-      if (done && value === undefined) {
-          subject$.complete();
-      } else {
-          subject$.next(value);
-      }
-    }
-
-    subject$.push()
-
-    return subject$
-  }
-*/
-  getChannels(): Observable<Array<Channel>> {
-    return this.socket.get<Array<Channel>>('channels/', null);
-  }
-
-  subscribeToChannel(id: number | string) {
-    const subject$ = new ReplaySubject<Message>();
-
-    (async() => {
-      for await(const data of this.socket.subscribeToChannel(id)) {
-        subject$.next(data);
-      }
-    })();
-
-    return subject$.asObservable();
-  }
-
-  publishMessage(message: BasicMessage) {
-    return this.socket.publishToChannel<void>(message, message.channel);
-  }
-
-  videoCall(description: RTCSessionDescriptionInit) {
-    return this.socket.post('channels/call', description);
   }
 }

@@ -120,7 +120,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   onContentScrolled() {
     if (this._viewport) {
-      console.log('on scroll...');
+      //console.log('on scroll...');
       this._updateRenderedContentAfterScroll();
     }
   }
@@ -181,7 +181,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     // The magnitude of the scroll delta.
     let scrollMagnitude = Math.abs(scrollDelta);
 
-    console.log('magnitude', scrollMagnitude);
+    //console.log('magnitude', scrollMagnitude);
 
     // The currently rendered range.
     const renderedRange = viewport.getRenderedRange();
@@ -383,7 +383,6 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     this._removalFailures = 0;
 
     const itemSize = this._averager.getAverageItemSize();
-    console.log('itemsize', itemSize);
     const firstVisibleIndex = Math.min(
       viewport.getDataLength() - 1,
       Math.floor(scrollOffset / itemSize)
@@ -447,14 +446,14 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
   /** Update the viewport's total content size. */
   private _updateTotalContentSize(renderedContentSize: number) {
-    console.log('total size');
+    //console.log('total size');
     const viewport = this._viewport!;
     const renderedRange = viewport.getRenderedRange();
     const totalSize =
       renderedContentSize +
       (viewport.getDataLength() - (renderedRange.end - renderedRange.start)) *
         this._averager.getAverageItemSize();
-    console.log('total size', totalSize);
+    //console.log('total size', totalSize);
     viewport.setTotalContentSize(totalSize);
   }
 }

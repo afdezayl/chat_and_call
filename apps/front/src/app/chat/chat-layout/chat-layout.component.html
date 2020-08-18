@@ -31,11 +31,10 @@
       </div>
 
       <cdk-virtual-scroll-viewport
-
         class="chat"
         (scrolledIndexChange)="index$.next($event)"
       >
-        <ng-container *cdkVirtualFor="let m of messages">
+        <ng-container *cdkVirtualFor="let m of messages; let isLast = last">
           <chat-and-call-message
             [message]="m"
             (viewed)="onViewed($event)"

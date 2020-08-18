@@ -13,22 +13,22 @@ import { Observable } from 'rxjs/internal/Observable';
 import { switchMap } from 'rxjs/operators';
 import { AGServer, AGServerSocket, attach } from 'socketcluster-server';
 import { AGServerOptions } from 'socketcluster-server/server';
-import { IAGRequest, AGAction } from './interfaces';
+import { AGAction, IAGRequest } from './interfaces';
+import {
+  MiddlewareHandshakeStrategy,
+  MIDDLEWARE_HANDSHAKE_TOKEN,
+} from './middlewares/middleware-handshake-strategy';
+import {
+  MiddlewareInboundRawStrategy,
+  MIDDLEWARE_INBOUND_RAW_TOKEN,
+} from './middlewares/middleware-inbound-raw-strategy';
 import {
   MiddlewareInboundStrategy,
   MIDDLEWARE_INBOUND_TOKEN,
 } from './middlewares/middleware-inbound-strategy';
 import {
-  MIDDLEWARE_HANDSHAKE_TOKEN,
-  MiddlewareHandshakeStrategy,
-} from './middlewares/middleware-handshake-strategy';
-import {
-  MIDDLEWARE_INBOUND_RAW_TOKEN,
-  MiddlewareInboundRawStrategy,
-} from './middlewares/middleware-inbound-raw-strategy';
-import {
-  MIDDLEWARE_OUTBOUND_TOKEN,
   MiddlewareOutboundStrategy,
+  MIDDLEWARE_OUTBOUND_TOKEN,
 } from './middlewares/middleware-outbound-strategy';
 
 export const SOCKETCLUSTER_OPTIONS_TOKEN = 'SOCKETCLUSTER_SERVER_OPTIONS';
@@ -55,6 +55,10 @@ export class SocketClusterAdapter implements WebSocketAdapter {
     private outbound: MiddlewareOutboundStrategy
   ) {
     this.logger.setContext(this.constructor.name);
+  }
+
+  get server() {
+    return this._server;
   }
 
   create(port: number, options?: AGServerOptions) {
@@ -123,6 +127,13 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   private _setHandshakeMiddleware(handshake: MiddlewareHandshakeStrategy) {
     if (handshake) {
       this.logger.debug(`Handshake middleware - ${handshake.constructor.name}`);
+
+      if (handshake.onServer) {
+        this.logger.debug(
+          `Raw server middleware - ${handshake.constructor.name}`
+        );
+        handshake.onServer(this.server);
+      }
 
       this._server.setMiddleware(
         this._server.MIDDLEWARE_HANDSHAKE,

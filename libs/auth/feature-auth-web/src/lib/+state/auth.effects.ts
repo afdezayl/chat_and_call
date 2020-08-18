@@ -58,7 +58,6 @@ export class AuthEffects {
       ofType(AuthActions.getUsernameAvailability),
       mergeMap(({ user }) =>
         this.authService.isUsernameAvailable(user).pipe(
-          tap(console.log),
           map((isValid) =>
             AuthActions.setUsernameAvailability({ user, isAvailable: isValid })
           )

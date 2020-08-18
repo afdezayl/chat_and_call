@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepositoryService } from '../auth-repository/auth-repository.service';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from, of, fromEventPattern } from 'rxjs';
 import { compare, hash } from 'bcrypt';
 import { catchError, switchMap, map } from 'rxjs/operators';
+import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepositoryService,
+    private channelService: ChannelsDataAccessService,
     private jwtService: JwtService
   ) {}
 
@@ -22,14 +24,32 @@ export class AuthService {
     return await this._checkPassword(password, hashedPassword);
   }
 
+  getTokenContent(username: string) {
+    return from(this.channelService.getChannels(username)).pipe(
+      map((channels) => channels.map((ch) => ch.id)),
+      map((channels) => ({ username, channels }))
+    );
+  }
+
   async getTokens(username: string): Promise<{ jwt: string; refresh: string }> {
-    const jwt = await this.jwtService.signAsync({username});
-    const refresh = await this.jwtService.signAsync({username}, {expiresIn: '24h'});
+    const channels = (await this.channelService.getChannels(username)).map(
+      (ch) => ch.id
+    );
+
+    const jwt = await this.jwtService.signAsync({ username, channels });
+    const refresh = await this.jwtService.signAsync(
+      { username },
+      { expiresIn: '24h' }
+    );
 
     return {
       jwt,
-      refresh
+      refresh,
     };
+  }
+
+  validateToken(token: string) {
+    return this.jwtService.verifyAsync(token);
   }
 
   async createNewUser(

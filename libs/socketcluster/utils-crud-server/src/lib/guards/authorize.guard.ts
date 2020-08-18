@@ -21,6 +21,5 @@ export class AuthorizeGuard implements CanActivate {
     }
 
     throw new WsException('Unauthorized');
-    return false;
   }
 }

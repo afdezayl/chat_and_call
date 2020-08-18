@@ -1,6 +1,12 @@
 import { createAction, props } from '@ngrx/store';
 import { Channel, Message, BasicMessage } from '@chat-and-call/channels/shared';
 
+// Authentication
+export const userAuthenticated = createAction(
+  '[Chat] User authenticated',
+  props<{ username: string }>()
+);
+
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');
 

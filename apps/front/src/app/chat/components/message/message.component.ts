@@ -9,6 +9,8 @@ import {
   ElementRef,
 } from '@angular/core';
 import { Message } from '@chat-and-call/channels/shared';
+import { Store } from '@ngrx/store';
+import { getUsername } from '../../+state/chat.selectors';
 
 @Component({
   selector: 'chat-and-call-message',
@@ -19,8 +21,12 @@ import { Message } from '@chat-and-call/channels/shared';
 export class MessageComponent implements AfterViewInit {
   @Input() message: Message;
   @Output() viewed = new EventEmitter<boolean>();
+  username$ = this.store.select(getUsername);
 
-  constructor(private elementRef: ElementRef<HTMLElement>) {}
+  constructor(
+    private store: Store,
+    private elementRef: ElementRef<HTMLElement>
+  ) {}
 
   ngAfterViewInit() {
     const wrapper = this.elementRef.nativeElement.parentElement;
@@ -38,7 +44,6 @@ export class MessageComponent implements AfterViewInit {
     observer: IntersectionObserver
   ) {
     entries.forEach((entry) => {
-      console.log(entry);
       if (entry.isIntersecting) {
         //this.elementRef.nativeElement.style.backgroundColor = 'yellowgreen';
         observer.unobserve(this.elementRef.nativeElement);

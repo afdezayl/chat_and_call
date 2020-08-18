@@ -4,11 +4,13 @@ import {
   AuthorizeGuard,
   SocketCrudGateway,
   SocketGet,
-  SocketProcedure,
   SocketPost,
+  SocketProcedure,
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { UseGuards } from '@nestjs/common';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
+import { from, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 
 @UseGuards(AuthorizeGuard)
@@ -26,15 +28,23 @@ export class ChannelsGateway {
   publishMessageWithResponse(
     @ConnectedSocket() socket: AGServerSocket,
     @MessageBody() data: BasicMessage
-  ): void {
+  ) {
+    const channels: Array<string> = socket?.authToken?.channels ?? [];
     const user = socket?.authToken?.username;
+
+    if (channels.includes(data.channel) === false) {
+      throw new WsException('Unauthorized');
+    }
+
     const newMessage = {
       ...data,
       from: user,
       date: new Date(),
     };
 
-    socket.server.exchange.transmitPublish(data.channel, newMessage);
+    return from(
+      socket.server.exchange.transmitPublish(data.channel, newMessage)
+    );
     //return newMessage;
   }
 

@@ -1,4 +1,10 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
+import {
+  DynamicModule,
+  Module,
+  Type,
+  ModuleMetadata,
+  Provider,
+} from '@nestjs/common';
 import { AGServerOptions } from 'socketcluster-server/server';
 import {
   MiddlewareInboundStrategy,
@@ -27,7 +33,7 @@ export class SocketClusterAdapterModule {
   ): DynamicModule {
     return {
       module: SocketClusterAdapterModule,
-      exports: [],
+      exports: [SocketClusterAdapter],
       imports: [],
       providers: [
         SocketClusterAdapter,
@@ -35,28 +41,71 @@ export class SocketClusterAdapterModule {
           provide: SOCKETCLUSTER_OPTIONS_TOKEN,
           useValue: options,
         },
-        {
-          provide: MIDDLEWARE_HANDSHAKE_TOKEN,
-          useClass: middlewares?.handshake,
-        },
-        {
-          provide: MIDDLEWARE_INBOUND_RAW_TOKEN,
-          useClass: middlewares?.inboundRaw,
-        },
-        {
-          provide: MIDDLEWARE_INBOUND_TOKEN,
-          useClass: middlewares?.inbound,
-        },
-        {
-          provide: MIDDLEWARE_OUTBOUND_TOKEN,
-          useClass: middlewares?.outbound,
-        },
+        ...this.createMiddlewaresProviders(middlewares),
       ],
     };
   }
+
+  static forRootAsync(
+    options: SocketclusterAsyncOptions,
+    middlewares?: SocketClusterMiddlewares
+  ): DynamicModule {
+    return {
+      module: SocketClusterAdapterModule,
+      imports: options.imports || [],
+      exports: [SocketClusterAdapter],
+      providers: [
+        SocketClusterAdapter,
+        ...this.createAsyncOptionsProvider(options),
+        ...this.createMiddlewaresProviders(middlewares),
+      ],
+    };
+  }
+
+  private static createAsyncOptionsProvider(
+    options: SocketclusterAsyncOptions
+  ): Array<Provider> {
+    return [
+      {
+        provide: SOCKETCLUSTER_OPTIONS_TOKEN,
+        useFactory: options.useFactory,
+        inject: options.inject || [],
+      },
+    ];
+  }
+
+  private static createMiddlewaresProviders(
+    middlewares: SocketClusterMiddlewares
+  ): Array<Provider> {
+    return [
+      {
+        provide: MIDDLEWARE_HANDSHAKE_TOKEN,
+        //useClass: middlewares?.handshake,
+        useExisting: middlewares?.handshake
+      },
+      {
+        provide: MIDDLEWARE_INBOUND_RAW_TOKEN,
+        useClass: middlewares?.inboundRaw,
+      },
+      {
+        provide: MIDDLEWARE_INBOUND_TOKEN,
+        useClass: middlewares?.inbound,
+      },
+      {
+        provide: MIDDLEWARE_OUTBOUND_TOKEN,
+        useClass: middlewares?.outbound,
+      },
+    ];
+  }
 }
 
-export class SocketClusterMiddlewares {
+export interface SocketclusterAsyncOptions
+  extends Pick<ModuleMetadata, 'imports'> {
+  useFactory: (...args: any[]) => Promise<AGServerOptions> | AGServerOptions;
+  inject?: any[];
+}
+
+export interface SocketClusterMiddlewares {
   handshake?: Type<MiddlewareHandshakeStrategy>;
   inboundRaw?: Type<MiddlewareInboundRawStrategy>;
   inbound?: Type<MiddlewareInboundStrategy>;

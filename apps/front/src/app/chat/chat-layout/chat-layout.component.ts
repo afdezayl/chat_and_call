@@ -1,7 +1,6 @@
 import {
   CdkVirtualScrollViewport,
   VIRTUAL_SCROLL_STRATEGY,
-  FixedSizeVirtualScrollStrategy,
 } from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
@@ -11,27 +10,26 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BasicMessage, Message, Channel } from '@chat-and-call/channels/shared';
+import { BasicMessage, Channel } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import {
   BehaviorSubject,
   EMPTY,
   interval,
-  Observable,
   of,
   ReplaySubject,
   Subscription,
+  throwError,
 } from 'rxjs';
 import {
+  debounceTime,
   delay,
-  expand,
   map,
   switchMap,
-  tap,
-  concatMap,
   take,
-  reduce,
-  debounceTime,
+  tap,
+  retryWhen,
+  concatMap,
 } from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
@@ -40,8 +38,9 @@ import {
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
 import { ChatScrollStrategy } from './chat-scroll-strategy';
+import { ChatSocketService } from '../services/chat-socket.service';
 
-export const factory = () => new ChatScrollStrategy(50, 100);
+export const factory = () => new ChatScrollStrategy(200, 500);
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -59,6 +58,7 @@ export class ChatLayoutComponent implements OnInit {
   messageForm: FormGroup;
   // TODO: separate on components
   // channels-container
+
   channels$ = this.store.select(getChannels);
   focus$ = this.store
     .select(getFocusedChannel)
@@ -82,13 +82,12 @@ export class ChatLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(loadChannels());
+
     this.messageForm = this.fb.group({
       text: this.fb.control('', Validators.required),
       file: this.fb.control(null),
     });
     this.setFocus(1);
-
-    this.focus$.subscribe(console.log);
   }
 
   onViewed(isViewed: boolean) {
@@ -98,7 +97,7 @@ export class ChatLayoutComponent implements OnInit {
   }
 
   setFocus(id: number) {
-    this.store.dispatch(setFocus({ id: '' + id }));
+    this.store.dispatch(setFocus({ id: id.toString() }));
   }
 
   sendMessage(idChannel: string) {
@@ -157,14 +156,14 @@ export class ChatLayoutComponent implements OnInit {
         offset,
         'to-start'
       ); */
-      this.scrollSubscription = of(EMPTY)
+      /* this.scrollSubscription = of(EMPTY)
         .pipe(
           tap((_) => this.viewport.scrollTo({ bottom: 0 })),
           delay(200),
           tap((_) => this.viewport.scrollTo({ bottom: 0 }))
         )
-        .subscribe();
-      //this.viewport.getElementRef().nativeElement.scrollTo({top: 80})
+        .subscribe(); */
+      //this.viewport.scrollTo({bottom: 0})
     }
   }
 

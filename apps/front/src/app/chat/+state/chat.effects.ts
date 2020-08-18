@@ -1,25 +1,39 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of, throwError } from 'rxjs';
 import {
   catchError,
-  map,
   concatMap,
+  delay,
+  map,
   mergeMap,
-  tap,
+  retryWhen,
   switchMap,
+  take,
+  tap,
+  last,
+  retry,
 } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
-
-import * as ChatActions from './chat.actions';
 import { ChatSocketService } from '../services/chat-socket.service';
+import * as ChatActions from './chat.actions';
 
 @Injectable()
 export class ChatEffects {
   loadChannels$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.loadChannels),
-      concatMap(() =>
+      switchMap(() =>
         this.chatSocket.getChannels().pipe(
+          retryWhen((errors) =>
+            errors.pipe(
+              concatMap((e, i) => {
+                if (i >= 3) {
+                  return throwError(e);
+                }
+                return of(e).pipe(delay(1000));
+              })
+            )
+          ),
           switchMap((channels) => [
             ChatActions.addChannels({ channels }),
             ...channels.map((ch) =>

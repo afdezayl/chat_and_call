@@ -1,6 +1,11 @@
-<mat-card class="message">
-  <div>
-    <em>{{ message.from }} - {{ message.date | date }}</em>
-  </div>
-  <p>{{ message.text }}</p>
-</mat-card>
+<ng-container>
+  <mat-card
+    class="message"
+    [ngClass]="{ self: message.from === (username$ | async) }"
+  >
+    <div>
+      <em>{{ message.from }} - {{ message.date | date }}</em>
+    </div>
+    <p>{{ message.text }}</p>
+  </mat-card>
+</ng-container>
