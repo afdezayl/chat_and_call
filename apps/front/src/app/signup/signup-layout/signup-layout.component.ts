@@ -37,6 +37,7 @@ import { ValidationError } from 'class-validator';
   styleUrls: ['./signup-layout.component.scss'],
 })
 export class SignupLayoutComponent {
+  // TODO: Validations
   form: FormGroup = this.fb.group(
     {
       username: this.fb.control(

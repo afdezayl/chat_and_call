@@ -17,7 +17,13 @@
         <!-- <p>{{ getErrorsByControl(form) | json }}</p> -->
         <mat-form-field appearance="outline">
           <mat-label>{{ t('signup.user') }}</mat-label>
-          <input matInput type="text" formControlName="username" required />
+          <input
+            autofocus
+            matInput
+            type="text"
+            formControlName="username"
+            required
+          />
           <span matSuffix>
             <mat-spinner
               *ngIf="form.controls['username']?.hasError('checking')"
