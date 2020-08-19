@@ -23,8 +23,9 @@ export class AuthController {
 
   @Get('refresh')
   refresh(@Req() request: Request, @Res() response: Response) {
-    console.log(request.cookies);
+    console.log(request.cookies, request.signedCookies);
     throw new NotImplementedException();
+    //return response.send(request.signedCookies);
   }
 
   @Post('login')
@@ -38,10 +39,11 @@ export class AuthController {
       const tokens = await this.authService.getTokens(data.username);
 
       // Set tokens as cookie
-      response.cookie('jwt', tokens.jwt, { httpOnly: true });
+      response.cookie('jwt', tokens.jwt, { httpOnly: true, signed: true });
       response.cookie('refresh_jwt', tokens.refresh, {
         httpOnly: true,
         sameSite: 'strict',
+        signed: true
       });
 
       return response.status(200).send({ token: tokens.jwt });

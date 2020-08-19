@@ -14,7 +14,7 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  app.use(cookieParser());
+  app.use(cookieParser(config.get('COOKIE_SECRET')));
   app.useGlobalPipes(new ValidationPipe());
 
   // Socketcluster adapter module

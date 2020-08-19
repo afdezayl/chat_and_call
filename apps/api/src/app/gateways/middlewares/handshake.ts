@@ -5,9 +5,12 @@ import {
 } from '@chat-and-call/socketcluster/adapter';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import * as cookieUtility from 'cookie';
-import { from, of, throwError } from 'rxjs';
+import * as cookieParser from 'cookie-parser';
+import { from, of, throwError, EMPTY } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AGServer } from 'socketcluster-server';
+import { IncomingMessage } from 'http';
+import { ConfigService } from '@nestjs/config';
 
 type ConnectEvent = {
   id: string;
@@ -19,6 +22,7 @@ type ConnectEvent = {
 export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   constructor(
     private logger: Logger,
+    private config: ConfigService,
     @Inject(forwardRef(() => AuthService)) private authService: AuthService
   ) {
     super();
@@ -36,12 +40,16 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   // TODO: unified type of errors
   onSCHandshake(action: HandshakeSCAction) {
     const socket = action.socket;
-    const rawCookies = action.request?.headers?.cookie ?? '';
-    const cookies = cookieUtility.parse(rawCookies);
+    const signedCookies = this.getSignedCookiesFromRequest(action.request);
 
-    const refreshToken = cookies?.refresh_jwt ?? null;
+    // Remove falsy values, don´t use coalesce operator (??)
+    const refreshToken = signedCookies?.refresh_jwt || null;
+    const authToken = signedCookies?.jwt || null;
 
-    const tryRefresh$ = from(this.authService.validateToken(refreshToken)).pipe(
+    //console.log(refreshToken, authToken);
+
+    const tryRefresh$ = of(EMPTY).pipe(
+      switchMap(() => this.authService.validateToken(refreshToken)),
       switchMap((decoded) =>
         this.authService.getTokenContent(decoded.username)
       ),
@@ -65,5 +73,16 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
       );
 
     action.allow();
+  }
+
+  private getSignedCookiesFromRequest(request: IncomingMessage) {
+    // Cookie parser middleware not applied, socketcluster intercepts handshake request
+    const rawCookies = request?.headers?.cookie ?? '';
+    const cookies = cookieUtility.parse(rawCookies);
+    const signedCookies = cookieParser.signedCookies(cookies, [
+      this.config.get('COOKIE_SECRET'),
+    ]);
+
+    return signedCookies;
   }
 }
