@@ -30,6 +30,7 @@ import {
   tap,
   retryWhen,
   concatMap,
+  expand,
 } from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
@@ -87,7 +88,7 @@ export class ChatLayoutComponent implements OnInit {
       text: this.fb.control('', Validators.required),
       file: this.fb.control(null),
     });
-    this.setFocus(1);
+    // this.setFocus(1);
   }
 
   onViewed(isViewed: boolean) {
@@ -119,7 +120,7 @@ export class ChatLayoutComponent implements OnInit {
       const scrollBottom$ = of(EMPTY).pipe(
         switchMap(() => of(this.viewport.measureScrollOffset())),
         tap(() => this.viewport.scrollTo({ bottom: 0 })),
-        debounceTime(1000),
+        debounceTime(200),
         delay(200),
         map(
           (initialScroll) =>
@@ -127,7 +128,7 @@ export class ChatLayoutComponent implements OnInit {
         )
       );
 
-      /* this.scrollSubscription = scrollBottom$
+      this.scrollSubscription = scrollBottom$
         .pipe(
           expand((isScrolling) => {
             if (isScrolling) {
@@ -137,33 +138,7 @@ export class ChatLayoutComponent implements OnInit {
             return EMPTY;
           }, 1)
         )
-        .subscribe(); */
-      /* const totalData = this.viewport.getDataLength();
-      const currentRange = this.viewport.getRenderedRange();
-      const itemsDisplayed = currentRange.end - currentRange.start;
-
-      const updatedItemsCount = Math.min(itemsDisplayed);
-
-      console.log(this.viewport.getDataLength(), itemsDisplayed, updatedItemsCount);
-      this.viewport.setRenderedRange({
-        start: totalData - updatedItemsCount,
-        end: totalData,
-      });
-      const offset = this.viewport.getOffsetToRenderedContentStart();
-      console.log(offset, 84 * (totalData - updatedItemsCount));
-
-      this.viewport.setRenderedContentOffset(
-        offset,
-        'to-start'
-      ); */
-      /* this.scrollSubscription = of(EMPTY)
-        .pipe(
-          tap((_) => this.viewport.scrollTo({ bottom: 0 })),
-          delay(200),
-          tap((_) => this.viewport.scrollTo({ bottom: 0 }))
-        )
-        .subscribe(); */
-      //setTimeout(() => this.viewport.scrollToIndex(0), 1000);
+        .subscribe();
     }
   }
 
