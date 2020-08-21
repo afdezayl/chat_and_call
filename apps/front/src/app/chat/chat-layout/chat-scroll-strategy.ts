@@ -127,19 +127,25 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   private getRangeForScrollOffset(offset: number): ListRange {
     let acc = 0;
     let first = 0;
+    let onViewport = 0;
     for (let i = 0; i < this.itemsHeights.length; i++) {
       const height = this.itemsHeights[i] ?? this.DEFAULT_HEIGHT;
       acc += height;
-      if (acc > offset) {
-        first = i;
+
+      if (acc <= offset) {
+        first++;
+      } else if (acc <= offset + this.viewport.getViewportSize()) {
+        onViewport++;
+      } else {
         break;
       }
     }
+    console.log(first, onViewport);
 
     const start = Math.max(0, first - this.BUFFER_ITEMS_COUNT);
     const end = Math.min(
       this.viewport.getDataLength(),
-      first + 5 + this.BUFFER_ITEMS_COUNT
+      first + onViewport + this.BUFFER_ITEMS_COUNT
     );
 
     return {
