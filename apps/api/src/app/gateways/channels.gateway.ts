@@ -7,16 +7,21 @@ import {
   SocketPost,
   SocketProcedure,
 } from '@chat-and-call/socketcluster/utils-crud-server';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, Logger } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
-import { from, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { from, of, EMPTY, throwError } from 'rxjs';
+import { catchError, map, tap, switchMap, retry } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 
 @UseGuards(AuthorizeGuard)
 @SocketCrudGateway('channels')
 export class ChannelsGateway {
-  constructor(private channelService: ChannelsDataAccessService) {}
+  constructor(
+    private channelService: ChannelsDataAccessService,
+    private logger: Logger
+  ) {
+    this.logger.setContext(this.constructor.name);
+  }
 
   @SocketGet('')
   async getChannels(@ConnectedSocket() socket: AGServerSocket) {
@@ -51,6 +56,24 @@ export class ChannelsGateway {
   @SocketPost('call')
   call(@ConnectedSocket() socket: AGServerSocket, @MessageBody() data: any) {
     console.log(data);
+    const username = socket.authToken.username;
+
+    // TODO: check if target user is current user contact
+
+    return of(EMPTY).pipe(
+      switchMap(() =>
+        socket.server.exchange.invokePublish(`${data.to}-call`, {
+          from: username,
+          streamCandidate: data.candidate,
+        })
+      ),
+      retry(3),
+      catchError((err) => {
+        this.logger.error(err);
+        return throwError('Unavailable')
+      })
+    );
+
     //socket.server.exchange
     return data;
   }
