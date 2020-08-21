@@ -40,7 +40,7 @@ import {
 import { ChatScrollStrategy } from './chat-scroll-strategy';
 import { ChatSocketService } from '../services/chat-socket.service';
 
-export const factory = () => new ChatScrollStrategy(200, 500);
+//export const factory = () => new ChatScrollStrategy();
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -49,7 +49,7 @@ export const factory = () => new ChatScrollStrategy(200, 500);
   providers: [
     {
       provide: VIRTUAL_SCROLL_STRATEGY,
-      useFactory: factory,
+      useClass: ChatScrollStrategy,
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -163,7 +163,7 @@ export class ChatLayoutComponent implements OnInit {
           tap((_) => this.viewport.scrollTo({ bottom: 0 }))
         )
         .subscribe(); */
-      //this.viewport.scrollTo({bottom: 0})
+      //setTimeout(() => this.viewport.scrollToIndex(0), 1000);
     }
   }
 

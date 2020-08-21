@@ -1,20 +1,39 @@
+import { ListRange } from '@angular/cdk/collections';
 import {
   CdkVirtualScrollViewport,
   VirtualScrollStrategy,
 } from '@angular/cdk/scrolling';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { ListRange } from '@angular/cdk/collections';
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject, Observable, of, from } from 'rxjs';
+import { distinctUntilChanged, map, reduce, tap } from 'rxjs/operators';
 
 @Injectable()
 export class ChatScrollStrategy implements VirtualScrollStrategy {
-  /* private index$ = new Subject<number>();
+  private index$ = new BehaviorSubject<number>(0);
   private viewport: CdkVirtualScrollViewport | null = null;
+  private elementsHeights: Array<number> = [];
+  private checkedElements: number = 0;
+
+  // TODO: DEFAULT_VALUE or @Input() or average
+  private readonly DEFAULT_HEIGHT = 80;
+  private readonly BUFFER_ITEMS_COUNT = 5;
+
+  // Check resizing, emit datalengthchanged.
+  // maybe resize event with debounce time is better
+  private lastScrollOffset: number = 0;
+  private lastViewportWidth: number = 0;
+  private lastViewportHeight: number = 0;
+
   scrolledIndexChange = this.index$.pipe(distinctUntilChanged());
+
+  constructor(
+    private _changeDetectorRef: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
   attach(viewport: CdkVirtualScrollViewport): void {
     this.viewport = viewport;
+    console.log('attach', this.viewport.getViewportSize());
   }
 
   detach(): void {
@@ -24,29 +43,160 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   }
 
   onContentScrolled(): void {
-    console.log('scrolled');
+    const viewport = this.viewport;
+
+    const scrollOffset = viewport.measureScrollOffset();
+    const scrollDelta = scrollOffset - this.lastScrollOffset;
+    const scrollMagnitude = Math.abs(scrollDelta);
+
+    const range = viewport.getRenderedRange();
+    console.log(this.lastScrollOffset, scrollDelta);
+
+    const direction = scrollDelta < 0 ? -1 : 1;
+    // UP
+    if (scrollDelta < 0) {
+      console.log('up');
+    } else {
+      console.log('down');
+    }
+
+    // 1. calculate the new range BUFFER + VISIBLE ITEMS + BUFFER
+    // 2. set the rendered range
+    // 3. emit index$ position
+    this.lastScrollOffset = scrollOffset;
+
+    // TODO: index$(currentScroll, range)
 
     //throw new Error('Method not implemented.');
   }
   onDataLengthChanged(): void {
-    console.log('data length');
+    //console.log('data length');
+    const totalElements = this.viewport.getDataLength();
+    if (totalElements > this.checkedElements) {
+      this.updateRenderedRange(this.viewport);
+    }
+    // TODO: handle resize event
 
     //throw new Error('Method not implemented.');
   }
   onContentRendered(): void {
-    console.log('rendering...');
+    const currentRange = this.viewport.getRenderedRange();
+    this.ngZone.runOutsideAngular(() =>
+      this.awaitChangeDetection(() => {
+        //console.time('render');
+        const isResized = this.isResized(this.viewport);
+        if (isResized) {
+          this.elementsHeights.fill(undefined);
+        }
 
-    //throw new Error('Method not implemented.');
+        const currentRangeHeight = this.getCurrentRangeHeight(currentRange);
+        this.setCurrentRangeOffset(currentRangeHeight);
+
+        // Other dirty hack...
+        this.awaitChangeDetection(() => {
+          this.viewport.scrollTo({ bottom: 0 });
+          this.lastScrollOffset = this.viewport.measureScrollOffset();
+
+          //console.timeEnd('render');
+        });
+      })
+    );
   }
+
   onRenderedOffsetChanged(): void {
     console.log('render offset');
-
     //throw new Error('Method not implemented.');
   }
-  scrollToIndex(index: number, behavior: ScrollBehavior): void {
-    throw new Error('Method not implemented.');
-  } */
 
+  // TODO: index is last message or first in view?
+  scrollToIndex(index: number, behavior: ScrollBehavior): void {
+    const absolutIndex =
+      index < 0
+        ? Math.max(0, this.viewport.getDataLength() + index)
+        : Math.min(index, this.viewport.getDataLength() - 1);
+    console.log('index: ', index, '-> ', absolutIndex);
+  }
+
+  /**
+   * Only call this function after change detection
+   */
+  private getCurrentRangeHeight(currentRange: ListRange) {
+    const indexOffset = currentRange.start;
+    const items = Array.from(
+      this.viewport._contentWrapper.nativeElement.children
+    );
+
+    let currentRangeHeight = 0;
+    from(items)
+      .pipe(
+        map((m, i) => [m.getBoundingClientRect().height, i + indexOffset]),
+        tap(([h, i]) => (this.elementsHeights[i] = h)),
+        map(([h, i]) => h),
+        reduce((acc, h) => acc + h, 0)
+      )
+      .subscribe((sum) => (currentRangeHeight = sum));
+
+    return currentRangeHeight;
+  }
+
+  private setCurrentRangeOffset(currentRangeHeight: number) {
+    from(this.elementsHeights)
+      .pipe(
+        map((height) => height ?? this.DEFAULT_HEIGHT),
+        reduce((acc, height) => acc + height, 0),
+        tap((totalSize) => this.viewport.setTotalContentSize(totalSize)),
+        map((totalSize) => totalSize - currentRangeHeight)
+      )
+      .subscribe((newOffset) =>
+        this.viewport.setRenderedContentOffset(newOffset)
+      );
+  }
+
+  private updateRenderedRange(viewport: CdkVirtualScrollViewport) {
+    const viewportSize = viewport.getViewportSize();
+    const offset = viewport.measureScrollOffset();
+    const currentRange = viewport.getRenderedRange();
+    const totalHeight = viewport.measureRangeSize(currentRange);
+
+    const dataLength = viewport.getDataLength();
+
+    // TODO: Range must depend on viewport and scroll
+    const newRange: ListRange = {
+      start: currentRange.end > 7 ? currentRange.start + 1 : currentRange.start,
+      end: dataLength,
+    };
+
+    while (this.elementsHeights.length < dataLength) {
+      //console.log('pushing element height...');
+      this.elementsHeights.push(undefined);
+    }
+
+    this.checkedElements = dataLength;
+    viewport.setRenderedRange(newRange);
+  }
+
+  private awaitChangeDetection(fn: () => void) {
+    Promise.resolve().then(fn);
+  }
+
+  private isResized(viewport: CdkVirtualScrollViewport): boolean {
+    const nativeViewport = this.viewport.elementRef.nativeElement;
+    const currentHeight = nativeViewport.clientHeight;
+    const currentWidth = nativeViewport.clientWidth;
+
+    const isResized =
+      currentHeight !== this.lastViewportHeight ||
+      currentWidth !== this.lastViewportWidth;
+
+    this.lastViewportHeight = currentHeight;
+    this.lastViewportWidth = currentWidth;
+
+    //console.log(isResized, currentHeight, currentWidth);
+    return isResized;
+  }
+}
+@Injectable()
+export class AutosizeScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   scrolledIndexChange = new Observable<number>(() => {
     // TODO(mmalerba): Implement.
