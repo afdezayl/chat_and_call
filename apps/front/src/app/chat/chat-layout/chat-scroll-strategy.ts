@@ -72,6 +72,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
       this.viewport.setRenderedRange(range);
       this.setCurrentRangeOffset(range);
+      this.setTotalSize();
       this.updateRangeHeights(range);
 
       this.lastScrollOffset = this.viewport.measureScrollOffset();
@@ -140,7 +141,6 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
         break;
       }
     }
-    console.log(first, onViewport);
 
     const start = Math.max(0, first - this.BUFFER_ITEMS_COUNT);
     const end = Math.min(
