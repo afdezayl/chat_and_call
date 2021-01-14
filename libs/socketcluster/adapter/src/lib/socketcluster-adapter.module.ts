@@ -81,7 +81,7 @@ export class SocketClusterAdapterModule {
       {
         provide: MIDDLEWARE_HANDSHAKE_TOKEN,
         //useClass: middlewares?.handshake,
-        useExisting: middlewares?.handshake
+        useExisting: middlewares?.handshake,
       },
       {
         provide: MIDDLEWARE_INBOUND_RAW_TOKEN,
@@ -89,7 +89,7 @@ export class SocketClusterAdapterModule {
       },
       {
         provide: MIDDLEWARE_INBOUND_TOKEN,
-        useClass: middlewares?.inbound,
+        useExisting: middlewares?.inbound,
       },
       {
         provide: MIDDLEWARE_OUTBOUND_TOKEN,
