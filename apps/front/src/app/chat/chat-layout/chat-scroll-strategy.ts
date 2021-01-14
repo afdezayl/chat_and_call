@@ -15,12 +15,13 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   private checkedElements: number = 0;
 
   // TODO: DEFAULT_VALUE or @Input() or average
-  private readonly DEFAULT_HEIGHT = 80;
+  private readonly DEFAULT_HEIGHT = 84;
   private readonly BUFFER_ITEMS_COUNT = 5;
 
   // Check resizing, emit datalengthchanged.
   // maybe resize event with debounce time is better
   private lastScrollOffset: number = 0;
+  private lastVisible: number = 0;
   private lastViewportWidth: number = 0;
   private lastViewportHeight: number = 0;
 
@@ -33,15 +34,20 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
   attach(viewport: CdkVirtualScrollViewport): void {
     this.viewport = viewport;
+    if (viewport.getDataLength()) {
+      this.onDataLengthChanged();
+    }
   }
 
   detach(): void {
     this.index$.complete();
     this.viewport = null;
-    //this.viewport.
   }
 
   onContentScrolled(): void {
+    if (!this.viewport) {
+      return;
+    }
     const viewport = this.viewport;
 
     const scrollOffset = viewport.measureScrollOffset();
@@ -59,28 +65,31 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
     this.lastScrollOffset = scrollOffset;
     // 3. emit index$ position
-    // TODO: index$(currentScroll, range)
+    this.index$.next(this.lastVisible);
   }
 
   onDataLengthChanged(): void {
+    if (!this.viewport) {
+      return;
+    }
     const totalElements = this.viewport.getDataLength();
-    const scrollOffset = this.viewport.measureScrollOffset();
+    const scrollOffset = this.viewport.measureScrollOffset('top');
+    const range = this.getRangeForScrollOffset(scrollOffset);
 
     if (totalElements > this.checkedElements) {
       this.updateItemListSize(this.viewport);
-      const range = this.getRangeForScrollOffset(scrollOffset);
-
-      this.viewport.setRenderedRange(range);
-      this.setCurrentRangeOffset(range);
-      this.setTotalSize();
-      this.updateRangeHeights(range);
-
-      this.lastScrollOffset = this.viewport.measureScrollOffset();
+      /* this.updateRangeHeights(range);
+      this.setTotalSize(); */
     }
+
+    this.viewport.setRenderedRange(range);
 
     // TODO: Resize event?
   }
   onContentRendered(): void {
+    if (!this.viewport) {
+      return;
+    }
     const currentRange = this.viewport.getRenderedRange();
     this.ngZone.runOutsideAngular(() =>
       this.awaitChangeDetection(() => {
@@ -102,6 +111,9 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
   // TODO: index is last message or first in view?
   scrollToIndex(index: number, behavior: ScrollBehavior): void {
+    if (!this.viewport) {
+      return;
+    }
     const absolutIndex =
       index < 0
         ? Math.max(0, this.viewport.getDataLength() + index)
@@ -129,17 +141,22 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     let acc = 0;
     let first = 0;
     let onViewport = 0;
+
+    const visibleOffset = offset + this.viewport.getViewportSize();
+
+    // TODO: need fix
     for (let i = 0; i < this.itemsHeights.length; i++) {
       const height = this.itemsHeights[i] ?? this.DEFAULT_HEIGHT;
-      acc += height;
 
-      if (acc <= offset) {
+      if (acc <= offset + height) {
         first++;
-      } else if (acc <= offset + this.viewport.getViewportSize()) {
+      } else if (acc <= visibleOffset) {
         onViewport++;
       } else {
+        //console.log(i);
         break;
       }
+      acc += height;
     }
 
     const start = Math.max(0, first - this.BUFFER_ITEMS_COUNT);
@@ -147,6 +164,18 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
       this.viewport.getDataLength(),
       first + onViewport + this.BUFFER_ITEMS_COUNT
     );
+
+    /* console.log(
+      //this.itemsHeights,
+      acc,
+      offset,
+      visibleOffset,
+      //this.viewport.elementRef.nativeElement.scro
+    ); */
+
+    this.lastVisible = Math.max(0, first + onViewport);
+
+    //this.index$.next(Math.max(0, first + onViewport - 1));
 
     return {
       start,
@@ -161,8 +190,12 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
       reduce((acc, height) => acc + height, 0)
     );
 
-    rangeOffsetTop$.subscribe((newOffset) =>
-      this.viewport.setRenderedContentOffset(newOffset)
+    console.log(currentRange, this.viewport.getOffsetToRenderedContentStart());
+
+    rangeOffsetTop$.subscribe((newOffset) =>{
+      console.log(newOffset);
+
+      this.viewport.setRenderedContentOffset(newOffset)}
     );
   }
 
@@ -171,8 +204,10 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
       map((height) => height ?? this.DEFAULT_HEIGHT),
       reduce((acc, height) => acc + height, 0)
     );
-    totalSize$.subscribe((totalSize) =>
-      this.viewport.setTotalContentSize(totalSize)
+    totalSize$.subscribe((totalSize) =>{
+      //console.log('total size -', totalSize);
+
+      this.viewport.setTotalContentSize(totalSize)}
     );
   }
 

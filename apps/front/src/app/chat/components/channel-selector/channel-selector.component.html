@@ -1,0 +1,13 @@
+<mat-selection-list
+  [multiple]="false"
+  *ngIf="channels$ | async as channels"
+  dense
+>
+  <mat-list-option
+    *ngFor="let channel of channels; let first = first"
+    (click)="setFocus(channel.id)"
+  >
+    <mat-icon mat-list-icon>home</mat-icon>
+    <p>{{ channel.title }}</p>
+  </mat-list-option>
+</mat-selection-list>

@@ -15,11 +15,12 @@ export class AuthRepositoryService {
         'select password from users where login = ?',
         [username]
       );
+
       return rows[0]?.password ?? null;
     } catch (error) {
       this.logger.error(error);
+      throw error;
     }
-    return null;
   }
 
   async createUser(

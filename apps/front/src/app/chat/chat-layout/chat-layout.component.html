@@ -3,27 +3,15 @@
 <mat-sidenav-container autosize>
   <mat-sidenav #sidenav mode="side" opened>
     <h2>Channels</h2>
-    <mat-selection-list
-      [multiple]="false"
-      *ngIf="channels$ | async as channels"
-      dense
-    >
-      <mat-list-option
-        *ngFor="let channel of channels; let first = first"
-        (click)="setFocus(channel.id)"
-      >
-        <mat-icon mat-list-icon>home</mat-icon>
-        <p>{{ channel.title }}</p>
-      </mat-list-option>
-    </mat-selection-list>
+    <chat-and-call-channel-selector></chat-and-call-channel-selector>
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
-    <h2>{{ focus.title }}</h2>
+    <chat-and-call-channel-info></chat-and-call-channel-info>
+
     <ng-container *ngIf="messages$ | async as messages">
       <div>
         <span>Index: {{ index$ | async }}</span>
         <span>Viewed: {{ newMessagesCount }}</span>
-        <span>Total messages: {{ messages.length }}</span>
         <button mat-mini-fab (click)="goToEnd(messages.length)" color="">
           <mat-icon>arrow_downward</mat-icon>
         </button>
@@ -43,44 +31,6 @@
       </cdk-virtual-scroll-viewport>
     </ng-container>
 
-    <!-- <div #message_container class="chat">
-      <chat-and-call-message
-        *ngFor="let m of messages$ | async"
-        [message]="m"
-        (viewed)="onViewed($event)"
-      >
-      </chat-and-call-message>
-    </div> -->
-    <form
-      [formGroup]="messageForm"
-      (submit)="sendMessage(focus.id)"
-      autocomplete="off"
-    >
-      <mat-form-field>
-        <input matInput type="text" formControlName="text" />
-      </mat-form-field>
-      <button
-        type="submit"
-        [disabled]="!messageForm.valid"
-        mat-mini-fab
-        color=""
-      >
-        <mat-icon>send</mat-icon>
-      </button>
-      <button
-        type="button"
-        mat-mini-fab
-        color=""
-        *ngIf="focus.type === 2"
-        (click)="file_input.click()"
-      >
-        <mat-icon>attach_file</mat-icon>
-      </button>
-
-      <input [hidden]="true" #file_input type="file" formControlName="file" />
-      <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
-        <mat-icon>videocam</mat-icon>
-      </button>
-    </form>
+    <chat-and-call-message-bar></chat-and-call-message-bar>
   </mat-sidenav-content>
 </mat-sidenav-container>

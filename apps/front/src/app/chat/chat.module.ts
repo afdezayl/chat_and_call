@@ -12,10 +12,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { ChatEffects } from './+state/chat.effects';
 import { MessageComponent } from './components/message/message.component';
 import { VideoCallComponent } from './components/video-call/video-call.component';
+import { ChannelSelectorComponent } from './components/channel-selector/channel-selector.component';
+import { MessageBarComponent } from './components/message-bar/message-bar.component';
+import { ChannelInfoComponent } from './components/channel-info/channel-info.component';
 
 
 @NgModule({
-  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent, VideoCallComponent],
+  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent, VideoCallComponent, ChannelSelectorComponent, MessageBarComponent, ChannelInfoComponent],
   imports: [
     CommonModule,
     ChatRoutingModule,

@@ -20,6 +20,7 @@ import {
   ReplaySubject,
   Subscription,
   throwError,
+  Subject,
 } from 'rxjs';
 import {
   debounceTime,
@@ -56,11 +57,8 @@ import { ChatSocketService } from '../services/chat-socket.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatLayoutComponent implements OnInit {
-  messageForm: FormGroup;
   // TODO: separate on components
   // channels-container
-
-  channels$ = this.store.select(getChannels);
   focus$ = this.store
     .select(getFocusedChannel)
     .pipe(tap((focus) => this.goToEnd()));
@@ -73,7 +71,7 @@ export class ChatLayoutComponent implements OnInit {
     .select(getMessagesFromFocusChannel)
     .pipe(tap((messages) => this.goToEnd()));
 
-  index$ = new ReplaySubject<number>(0);
+  index$ = new Subject<number>();
   scrollSubscription: Subscription;
 
   @ViewChild('message_container') messageContainer: ElementRef<HTMLDivElement>;
@@ -84,10 +82,8 @@ export class ChatLayoutComponent implements OnInit {
   ngOnInit(): void {
     this.store.dispatch(loadChannels());
 
-    this.messageForm = this.fb.group({
-      text: this.fb.control('', Validators.required),
-      file: this.fb.control(null),
-    });
+
+    //this.index$.subscribe((index) => console.log('index change -> ', index));
     // this.setFocus(1);
   }
 
@@ -97,19 +93,6 @@ export class ChatLayoutComponent implements OnInit {
     }
   }
 
-  setFocus(id: number) {
-    this.store.dispatch(setFocus({ id: id.toString() }));
-  }
-
-  sendMessage(idChannel: string) {
-    const message: BasicMessage = {
-      text: this.messageForm.value.text,
-      channel: idChannel,
-    };
-    this.messageForm.reset();
-
-    this.store.dispatch(sendMessage({ message }));
-  }
 
   goToEnd() {
     if (this.viewport) {
@@ -128,7 +111,7 @@ export class ChatLayoutComponent implements OnInit {
         )
       );
 
-      this.scrollSubscription = scrollBottom$
+      /* this.scrollSubscription = scrollBottom$
         .pipe(
           expand((isScrolling) => {
             if (isScrolling) {
@@ -138,7 +121,7 @@ export class ChatLayoutComponent implements OnInit {
             return EMPTY;
           }, 1)
         )
-        .subscribe();
+        .subscribe(); */
     }
   }
 
