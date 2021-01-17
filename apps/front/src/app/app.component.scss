@@ -1,17 +1,15 @@
 chat-and-call-root {
   display: flex;
-  min-height: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+  height: 100%;
   justify-content: center;
   align-items: center;
   background: radial-gradient(#45606d, #000);
 }
 
 mat-card-title {
-  mat-icon{
+  mat-icon {
     transform: translateY(3px);
-    &:after{
+    &:after {
       content: '';
       margin-right: 6px;
     }
@@ -20,4 +18,24 @@ mat-card-title {
 
 .btn--big {
   padding: 1em 3em;
+}
+
+/* @supports (height: -webkit-fill-available) {
+  chat-and-call-root {
+    height: 100vh;
+    border: 1px solid blue;
+  }
+} */
+
+/* Android Firefox strange behaviour with mat-sidenav
+* TODO: try to fix bug
+*/
+@supports (min-height: -moz-available) {
+  chat-and-call-root {
+    /* position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0; */
+  }
 }

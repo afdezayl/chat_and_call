@@ -2,14 +2,17 @@ import {
   CdkVirtualScrollViewport,
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
+import { MediaMatcher } from '@angular/cdk/layout';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { BasicMessage, Channel } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import {
@@ -17,32 +20,25 @@ import {
   EMPTY,
   interval,
   of,
-  ReplaySubject,
-  Subscription,
-  throwError,
   Subject,
+  Subscription,
 } from 'rxjs';
 import {
   debounceTime,
   delay,
+  expand,
   map,
   switchMap,
   take,
   tap,
-  retryWhen,
-  concatMap,
-  expand,
 } from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
-  getChannels,
   getFocusedChannel,
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
 import { ChatScrollStrategy } from './chat-scroll-strategy';
-import { ChatSocketService } from '../services/chat-socket.service';
-
-//export const factory = () => new ChatScrollStrategy();
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -56,12 +52,19 @@ import { ChatSocketService } from '../services/chat-socket.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatLayoutComponent implements OnInit {
+export class ChatLayoutComponent implements OnInit, OnDestroy {
   // TODO: separate on components
   // channels-container
-  focus$ = this.store
-    .select(getFocusedChannel)
-    .pipe(tap((focus) => this.goToEnd()));
+  focus$ = this.store.select(getFocusedChannel).pipe(
+    //tap((focus) => this.goToEnd()),
+    tap((focus) => {
+      if (this.mobileQuery?.matches) {
+        this.sidenav?.close();
+      }
+    })
+  );
+
+  mobileQuery: MediaQueryList;
 
   // messageContainer
   unreaded$ = new BehaviorSubject<number>(0);
@@ -69,22 +72,44 @@ export class ChatLayoutComponent implements OnInit {
   newMessagesCount = 0;
   messages$ = this.store
     .select(getMessagesFromFocusChannel)
-    .pipe(tap((messages) => this.goToEnd()));
+    .pipe(
+      //tap((messages) => this.goToEnd())
+      );
 
   index$ = new Subject<number>();
   scrollSubscription: Subscription;
 
   @ViewChild('message_container') messageContainer: ElementRef<HTMLDivElement>;
+  @ViewChild(MatSidenav) sidenav: MatSidenav;
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
-  constructor(private store: Store, private fb: FormBuilder) {}
+  private _mobileListener: () => void;
+
+  constructor(
+    private store: Store,
+    private fb: FormBuilder,
+    changeDetectorRef: ChangeDetectorRef,
+    media: MediaMatcher
+  ) {
+    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this._mobileListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addEventListener('change', this._mobileListener);
+  }
+
+  ngOnDestroy(): void {
+    this.mobileQuery.removeEventListener('change', this._mobileListener);
+  }
 
   ngOnInit(): void {
     this.store.dispatch(loadChannels());
 
-
     //this.index$.subscribe((index) => console.log('index change -> ', index));
     // this.setFocus(1);
+  }
+
+  openMenu() {
+    this.store.dispatch(setFocus({ id: null }));
+    this.sidenav.open();
   }
 
   onViewed(isViewed: boolean) {
@@ -92,7 +117,6 @@ export class ChatLayoutComponent implements OnInit {
       this.newMessagesCount++;
     }
   }
-
 
   goToEnd() {
     if (this.viewport) {
@@ -111,7 +135,7 @@ export class ChatLayoutComponent implements OnInit {
         )
       );
 
-      /* this.scrollSubscription = scrollBottom$
+      this.scrollSubscription = scrollBottom$
         .pipe(
           expand((isScrolling) => {
             if (isScrolling) {
@@ -121,12 +145,12 @@ export class ChatLayoutComponent implements OnInit {
             return EMPTY;
           }, 1)
         )
-        .subscribe(); */
+        .subscribe();
     }
   }
 
   fakeMessages(channel: Channel) {
-    interval(100)
+    interval(10)
       .pipe(
         map((x, i) => {
           const message: BasicMessage = {

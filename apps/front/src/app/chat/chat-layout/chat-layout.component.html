@@ -1,12 +1,17 @@
 <chat-and-call-chat-header></chat-and-call-chat-header>
 <!-- <chat-and-call-video-call></chat-and-call-video-call> -->
-<mat-sidenav-container autosize>
-  <mat-sidenav #sidenav mode="side" opened>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav [mode]="mobileQuery.matches ? 'over' : 'side'" opened>
     <h2>Channels</h2>
     <chat-and-call-channel-selector></chat-and-call-channel-selector>
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
+    <button *ngIf="!sidenav.opened" mat-mini-fab color="primary" (click)="openMenu()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
     <chat-and-call-channel-info></chat-and-call-channel-info>
+    <div></div>
 
     <ng-container *ngIf="messages$ | async as messages">
       <div>

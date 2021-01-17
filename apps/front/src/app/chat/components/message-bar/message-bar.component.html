@@ -5,7 +5,7 @@
     autocomplete="off"
   >
     <mat-form-field>
-      <input matInput type="text" formControlName="text" />
+      <input matInput type="text" formControlName="text" #textInput />
     </mat-form-field>
     <button type="submit" [disabled]="!messageForm.valid" mat-mini-fab color="">
       <mat-icon>send</mat-icon>
