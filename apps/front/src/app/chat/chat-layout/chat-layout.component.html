@@ -7,7 +7,7 @@
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
     <button
-      *ngIf="!(sidenav.openedChange.asObservable() | async)"
+      *ngIf="isMobileWidth$ | async"
       mat-mini-fab
       color="primary"
       (click)="openMenu()"

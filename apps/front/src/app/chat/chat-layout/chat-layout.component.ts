@@ -58,7 +58,7 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
   focus$ = this.store.select(getFocusedChannel);
 
-  isMobileWidth$ = this.breakpointObserver.observe('(max-width: 600px)').pipe(
+  isMobileWidth$ = this.breakpointObserver.observe('(max-width: 800px)').pipe(
     filter((state) => Boolean(state)),
     map((state) => state.matches)
   );
