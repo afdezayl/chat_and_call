@@ -1,42 +1,46 @@
+
 <chat-and-call-chat-header></chat-and-call-chat-header>
-<!-- <chat-and-call-video-call></chat-and-call-video-call> -->
-<mat-sidenav-container>
-  <mat-sidenav #sidenav [mode]="'side'" opened disableClose>
-    <h2>Channels</h2>
-    <chat-and-call-channel-selector></chat-and-call-channel-selector>
-  </mat-sidenav>
-  <mat-sidenav-content *ngIf="focus$ | async as focus">
-    <button
-      *ngIf="isMobileWidth$ | async"
-      mat-mini-fab
-      color="primary"
-      (click)="openMenu()"
-    >
-      <mat-icon>menu</mat-icon>
-    </button>
-
-    <chat-and-call-channel-info></chat-and-call-channel-info>
-    <div></div>
-
-    <ng-container *ngIf="messages$ | async as messages">
-      <div>
-        <span>Index: {{ index$ | async }}</span>
-        <button mat-mini-fab (click)="goToEnd()" color="">
-          <mat-icon>arrow_downward</mat-icon>
+  <!-- <chat-and-call-video-call></chat-and-call-video-call> -->
+  <mat-sidenav-container >
+    <mat-sidenav #sidenav [mode]="'side'" opened disableClose>
+      <h2>Channels</h2>
+      <chat-and-call-channel-selector></chat-and-call-channel-selector>
+    </mat-sidenav>
+    <mat-sidenav-content *ngIf="focus$ | async as focus" >
+      <div class="content">
+        <button
+          *ngIf="isMobileWidth$ | async"
+          mat-mini-fab
+          color="primary"
+          (click)="openMenu()"
+        >
+          <mat-icon>menu</mat-icon>
         </button>
-        <button (click)="fakeMessages(focus)">Test messages</button>
-      </div>
 
-      <cdk-virtual-scroll-viewport
-        class="chat"
-        (scrolledIndexChange)="index$.next($event)"
-      >
-        <ng-container *cdkVirtualFor="let m of messages; let isLast = last">
-          <chat-and-call-message [message]="m"></chat-and-call-message>
+        <chat-and-call-channel-info></chat-and-call-channel-info>
+        <div></div>
+
+        <ng-container *ngIf="messages$ | async as messages">
+          <div>
+            <span>Index: {{ index$ | async }}</span>
+            <button mat-mini-fab (click)="goToEnd()" color="">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            <button (click)="fakeMessages(focus)">Test messages</button>
+          </div>
+
+          <cdk-virtual-scroll-viewport
+            class="chat"
+            (scrolledIndexChange)="index$.next($event)"
+          >
+            <ng-container *cdkVirtualFor="let m of messages; let isLast = last">
+              <chat-and-call-message [message]="m"></chat-and-call-message>
+            </ng-container>
+          </cdk-virtual-scroll-viewport>
         </ng-container>
-      </cdk-virtual-scroll-viewport>
-    </ng-container>
 
-    <chat-and-call-message-bar></chat-and-call-message-bar>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+        <chat-and-call-message-bar></chat-and-call-message-bar>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+

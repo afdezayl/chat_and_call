@@ -1,8 +1,11 @@
 chat-and-call-root {
   display: flex;
-  height: 100%;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100%;
+  width: 100%;
+  overflow: hidden;
   background: radial-gradient(#45606d, #000);
 }
 
