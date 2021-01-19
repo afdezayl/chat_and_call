@@ -32,9 +32,10 @@ mat-sidenav-content {
   max-width: 100%;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   mat-sidenav {
-    min-width: 90%;
+    min-width: 98%;
+    margin-right: 2%;
   }
 }
 

@@ -3,10 +3,9 @@ import {
   CdkVirtualScrollViewport,
   VirtualScrollStrategy,
 } from '@angular/cdk/scrolling';
-import { summaryFileName } from '@angular/compiler/src/aot/util';
-import { ChangeDetectorRef, Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, from, Observable } from 'rxjs';
-import { distinctUntilChanged, map, reduce, take } from 'rxjs/operators';
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable()
 export class ChatScrollStrategy implements VirtualScrollStrategy {
@@ -21,27 +20,26 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
   // Check resizing, emit datalengthchanged.
   // maybe resize event with debounce time is better
-  private lastScrollOffset: number = 0;
-  private lastVisible: number = 0;
+  private lastVisibleIndex: number = 0;
   private lastViewportWidth: number = 0;
   private lastViewportHeight: number = 0;
 
+  /** Emits when the index of the last element visible in the viewport changes. */
   scrolledIndexChange = this.index$.pipe(distinctUntilChanged());
 
-  constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
-    private ngZone: NgZone
-  ) {}
+  constructor(private ngZone: NgZone) {}
 
   attach(viewport: CdkVirtualScrollViewport): void {
     this.viewport = viewport;
+    this.index$.next(0);
+
     if (viewport.getDataLength()) {
       this.onDataLengthChanged();
+      this.onContentRendered();
     }
   }
 
   detach(): void {
-    this.index$.complete();
     this.viewport = null;
   }
 
@@ -58,29 +56,13 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const newRange = this.getRangeForScrollOffset(scrollOffset);
 
     const delta = range.start + range.end - (newRange.start + newRange.end);
-    //console.log(delta);
 
-    // TODO: Reduce rerender cycles using top and bottom buffer
-    if (
-      Math.abs(delta) >
-      this.BUFFER_ITEMS_COUNT /
-        2 /* range.start !== newRange.start || range.end !== newRange.end */
-    ) {
-      // 2. set the rendered range
+    // 2. Reduce rerender cycles using top and bottom buffer
+    if (Math.abs(delta) > this.BUFFER_ITEMS_COUNT / 2) {
       viewport.setRenderedRange(newRange);
     }
-    // 3. emit index$ position
-    //this.index$.next(this.lastVisible);
-    this.onContentRendered();
 
-    /* this.ngZone.runOutsideAngular(() => {
-      this.awaitChangeDetection(() => {
-        this.lastScrollOffset = scrollOffset;
-        //this.setTotalSize();
-        // 3. emit index$ position
-        this.index$.next(this.lastVisible);
-      });
-    }); */
+    this.onContentRendered();
   }
 
   onDataLengthChanged(): void {
@@ -94,15 +76,12 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
     if (totalElements > this.checkedElements) {
       this.updateItemListSize(this.viewport);
-      /* this.updateRangeHeights(range);
-      this.setTotalSize(); */
     }
 
     this.viewport.setRenderedRange(range);
     this.onContentRendered();
-
-    // TODO: Resize event?
   }
+
   onContentRendered(): void {
     if (!this.viewport) {
       return;
@@ -110,24 +89,21 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const currentRange = this.viewport.getRenderedRange();
     this.ngZone.runOutsideAngular(() =>
       this.awaitChangeDetection(() => {
-        const isResized = this.isResized(this.viewport);
-        if (isResized) {
+        if (this.isResized(this.viewport)) {
           this.itemsHeights.fill(undefined);
         }
 
         this.updateRangeHeights(currentRange);
         this.setCurrentRangeOffset(currentRange);
         this.setTotalSize();
-        this.index$.next(this.lastVisible);
+
+        this.index$.next(this.lastVisibleIndex);
       })
     );
   }
 
-  onRenderedOffsetChanged(): void {
-    //throw new Error('Method not implemented.');
-  }
+  onRenderedOffsetChanged(): void {}
 
-  // TODO: index is last message or first in view?
   scrollToIndex(index: number, behavior: ScrollBehavior): void {
     if (!this.viewport) {
       return;
@@ -136,52 +112,51 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
       index < 0
         ? Math.max(0, this.viewport.getDataLength() + index)
         : Math.min(index, this.viewport.getDataLength() - 1);
-    console.log('index: ', index, '-> ', absolutIndex);
+
+    const itemOffset = this.getIndexOffset(absolutIndex);
+    const itemHeight = this.itemsHeights[absolutIndex] ?? this.DEFAULT_HEIGHT;
+
+    const offset =
+      itemOffset + 2 * itemHeight - this.viewport.getViewportSize();
+
+    this.viewport.scrollToOffset(offset, behavior);
   }
 
   /**
    * Only call this function after change detection
    */
   private updateRangeHeights(currentRange: ListRange) {
-    //console.log('updating heights...');
     const indexOffset = currentRange.start;
     const items = Array.from(
       this.viewport._contentWrapper.nativeElement.children
     );
 
-    const itemHeight$ = from(items).pipe(
-      map((m, i) => [m.getBoundingClientRect().height, i + indexOffset])
-    );
-
-    itemHeight$.subscribe(([h, i]) => (this.itemsHeights[i] = h));
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      this.itemsHeights[i + indexOffset] = item.getBoundingClientRect().height;
+    }
   }
 
   private getRangeForScrollOffset(offset: number): ListRange {
-    let acc = 0;
-    let notVisibleElementsTop = 0;
-    let onViewport = 0;
-
-    //console.log(offset, this.viewport.elementRef.nativeElement.scrollTop);
-
     const areRenderedAllItems =
       this.viewport.getDataLength() === this.itemsHeights.length;
 
-    const maxTotalHeight =
-      this.itemsHeights
-        .map((h) => (isNaN(h) ? this.DEFAULT_HEIGHT : h))
-        .reduce((sum, h) => sum + h, 0) ?? 0;
+    const maxTotalHeight = this.getIndexOffset(this.viewport.getDataLength());
     const maxViewportOffset = offset + this.viewport.getViewportSize();
 
     const visibleOffset = areRenderedAllItems
       ? Math.min(maxTotalHeight, maxViewportOffset)
       : maxViewportOffset;
 
+    let acc = 0;
+    let notVisibleElementsTop = 0;
+    let onViewport = 0;
+
     for (let i = 0; i < this.viewport.getDataLength(); i++) {
       const height = this.itemsHeights[i] ?? this.DEFAULT_HEIGHT;
       if (acc < offset) {
         notVisibleElementsTop++;
       } else if (acc + height <= visibleOffset) {
-        //console.log(acc + height, visibleOffset);
         onViewport++;
       } else {
         break;
@@ -195,8 +170,8 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
       notVisibleElementsTop + onViewport + this.BUFFER_ITEMS_COUNT
     );
 
-    this.lastVisible = Math.max(0, notVisibleElementsTop + onViewport - 1);
-    /*this.index$.next(this.lastVisible); */
+    // Side effect
+    this.lastVisibleIndex = Math.max(0, notVisibleElementsTop + onViewport - 1);
 
     return {
       start,
@@ -205,35 +180,23 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   }
 
   private setCurrentRangeOffset(currentRange: ListRange) {
-    const rangeOffsetTop$ = from(this.itemsHeights).pipe(
-      take(Math.max(currentRange.start, 0)),
-      map((height) => height ?? this.DEFAULT_HEIGHT),
-      reduce((acc, height) => acc + height, 0)
-    );
-
-    //console.log(currentRange, this.viewport.getOffsetToRenderedContentStart());
-
-    rangeOffsetTop$.subscribe((newOffset) => {
-      /* console.log(
-
-        newOffset,
-       // this.viewport.getOffsetToRenderedContentStart()
-      ); */
-      this.viewport.setRenderedContentOffset(newOffset);
-      //console.log('after ->', this.viewport.getOffsetToRenderedContentStart());
-    });
+    // TODO: think about top and bottom offset. Performance on large list?
+    let newOffset = this.getIndexOffset(currentRange.start);
+    this.viewport.setRenderedContentOffset(newOffset);
   }
 
   private setTotalSize() {
-    const totalSize$ = from(this.itemsHeights).pipe(
-      map((height) => height ?? this.DEFAULT_HEIGHT),
-      reduce((acc, height) => acc + height, 0)
-    );
-    totalSize$.subscribe((totalSize) => {
-      //console.log('total size -', totalSize, this.itemsHeights.length);
+    const totalSize = this.getIndexOffset(this.viewport.getDataLength());
+    this.viewport.setTotalContentSize(totalSize);
+  }
 
-      this.viewport.setTotalContentSize(totalSize);
-    });
+  private getIndexOffset(index: number) {
+    let offset = 0;
+    for (let i = 0; i < Math.max(index, 0); i++) {
+      const height = this.itemsHeights[i] ?? this.DEFAULT_HEIGHT;
+      offset += height;
+    }
+    return offset;
   }
 
   private updateItemListSize(viewport: CdkVirtualScrollViewport) {
@@ -250,7 +213,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
   }
 
   private isResized(viewport: CdkVirtualScrollViewport): boolean {
-    const nativeViewport = this.viewport.elementRef.nativeElement;
+    const nativeViewport = viewport.elementRef.nativeElement;
     const currentHeight = nativeViewport.clientHeight;
     const currentWidth = nativeViewport.clientWidth;
 
@@ -261,7 +224,6 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     this.lastViewportHeight = currentHeight;
     this.lastViewportWidth = currentWidth;
 
-    //console.log(isResized, currentHeight, currentWidth);
     return isResized;
   }
 }

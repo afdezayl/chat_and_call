@@ -1,22 +1,21 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   CdkVirtualScrollViewport,
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
-import { MediaMatcher } from '@angular/cdk/layout';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { MatSidenav } from '@angular/material/sidenav';
 import { BasicMessage, Channel } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import {
-  BehaviorSubject,
+  combineLatest,
   EMPTY,
   interval,
   of,
@@ -27,9 +26,11 @@ import {
   debounceTime,
   delay,
   expand,
+  filter,
   map,
   switchMap,
   take,
+  takeUntil,
   tap,
 } from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
@@ -38,7 +39,6 @@ import {
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
 import { ChatScrollStrategy } from './chat-scroll-strategy';
-import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'chat-and-call-chat-layout',
@@ -52,59 +52,56 @@ import { MatSidenav } from '@angular/material/sidenav';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatLayoutComponent implements OnInit, OnDestroy {
+export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
   // TODO: separate on components
-  // channels-container
-  focus$ = this.store.select(getFocusedChannel).pipe(
-    //tap((focus) => this.goToEnd()),
-    tap((focus) => {
-      if (this.mobileQuery?.matches) {
-        this.sidenav?.close();
-      }
-    })
+  messages$ = this.store.select(getMessagesFromFocusChannel);
+
+  focus$ = this.store.select(getFocusedChannel);
+
+  isMobileWidth$ = this.breakpointObserver.observe('(max-width: 600px)').pipe(
+    filter((state) => Boolean(state)),
+    map((state) => state.matches)
   );
 
-  mobileQuery: MediaQueryList;
-
-  // messageContainer
-  unreaded$ = new BehaviorSubject<number>(0);
-
-  newMessagesCount = 0;
-  messages$ = this.store
-    .select(getMessagesFromFocusChannel)
-    .pipe(
-      //tap((messages) => this.goToEnd())
-      );
+  private readonly destroy$ = new Subject();
 
   index$ = new Subject<number>();
   scrollSubscription: Subscription;
 
-  @ViewChild('message_container') messageContainer: ElementRef<HTMLDivElement>;
   @ViewChild(MatSidenav) sidenav: MatSidenav;
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
-  private _mobileListener: () => void;
-
   constructor(
     private store: Store,
-    private fb: FormBuilder,
-    changeDetectorRef: ChangeDetectorRef,
-    media: MediaMatcher
-  ) {
-    this.mobileQuery = media.matchMedia('(max-width: 600px)');
-    this._mobileListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addEventListener('change', this._mobileListener);
-  }
-
-  ngOnDestroy(): void {
-    this.mobileQuery.removeEventListener('change', this._mobileListener);
-  }
+    public breakpointObserver: BreakpointObserver
+  ) {}
 
   ngOnInit(): void {
     this.store.dispatch(loadChannels());
+  }
 
-    //this.index$.subscribe((index) => console.log('index change -> ', index));
-    // this.setFocus(1);
+  ngAfterViewInit(): void {
+    combineLatest([this.isMobileWidth$, this.focus$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([isMobileWidth, channel]) => {
+        const isChannelSelected = channel !== null;
+
+        if (isMobileWidth && isChannelSelected) {
+          this.sidenav.mode = 'over';
+          this.sidenav.close();
+        } else if (!isMobileWidth) {
+          this.sidenav.mode = 'side';
+
+          if (!this.sidenav.opened) {
+            this.sidenav.open();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   openMenu() {
@@ -112,38 +109,15 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
     this.sidenav.open();
   }
 
-  onViewed(isViewed: boolean) {
-    if (isViewed) {
-      this.newMessagesCount++;
-    }
-  }
-
-  goToEnd() {
+  // TODO: Logic to scroll bottom on user message or near index
+  goToEnd(index: number = -1) {
     if (this.viewport) {
-      if (this.scrollSubscription) {
-        this.scrollSubscription.unsubscribe();
-      }
-
-      const scrollBottom$ = of(EMPTY).pipe(
-        switchMap(() => of(this.viewport.measureScrollOffset())),
-        tap(() => this.viewport.scrollTo({ bottom: 0 })),
-        debounceTime(200),
-        delay(200),
-        map(
-          (initialScroll) =>
-            this.viewport.measureScrollOffset() !== initialScroll
-        )
-      );
-
-      this.scrollSubscription = scrollBottom$
+      of(EMPTY)
         .pipe(
-          expand((isScrolling) => {
-            if (isScrolling) {
-              return scrollBottom$;
-            }
-            this.viewport.scrollTo({ bottom: 0 });
-            return EMPTY;
-          }, 1)
+          tap((_) => this.viewport.scrollToIndex(index)),
+          delay(50),
+          tap((_) => this.viewport.scrollToIndex(index)),
+          takeUntil(this.destroy$)
         )
         .subscribe();
     }
@@ -159,7 +133,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           };
           return message;
         }),
-        take(100)
+        take(100),
+        takeUntil(this.destroy$)
       )
       .subscribe((m) => this.store.dispatch(sendMessage({ message: m })));
   }
