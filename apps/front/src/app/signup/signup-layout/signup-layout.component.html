@@ -1,9 +1,9 @@
-<ng-container *transloco="let t">
+<ng-container *transloco="let t; read: 'signup'">
   <mat-card class="form-card">
     <mat-card-header>
       <mat-card-title>
         <mat-icon [inline]="true">assignment</mat-icon>
-        <span>{{ t('signup.signupTitle') }}</span>
+        <span>{{ t('signupTitle') }}</span>
       </mat-card-title>
     </mat-card-header>
 
@@ -14,9 +14,12 @@
         class="form"
         autocomplete="off"
       >
-        <!-- <p>{{ getErrorsByControl(form) | json }}</p> -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{ t('signup.user') }}</mat-label>
+        <mat-form-field
+          appearance="outline"
+          [customErrors]="usernameErrorMessages"
+          [excludedErrors]="['checking']"
+        >
+          <mat-label>{{ t('user') }}</mat-label>
           <input
             autofocus
             matInput
@@ -26,57 +29,69 @@
           />
           <span matSuffix>
             <mat-spinner
-              *ngIf="form.controls['username']?.hasError('checking')"
+              *ngIf="form.controls['username']?.pending"
               [diameter]="20"
             ></mat-spinner>
             <mat-icon
               *ngIf="form.controls['username'].valid"
-              style="color: green;"
+              style="color: green"
               >check_circle_outline</mat-icon
             >
           </span>
 
-          <mat-error *ngIf="form.controls['username']?.hasError('unavailable')"
-            >Usuario ya existente</mat-error
+          <!-- <mat-error
+            *ngIf="form.controls['username']?.hasError('unavailable')"
+            >{{ t('unavailableUsername') }}</mat-error
           >
+          <mat-error
+            *ngIf="
+              form.controls['username']?.hasError('minlength') ||
+              form.controls['username']?.hasError('maxlength')
+            "
+            >{{ t('minMaxLength', { min: '4', max: '20' }) }}
+          </mat-error> -->
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ t('signup.mail') }}</mat-label>
+          <mat-label>{{ t('mail') }}</mat-label>
           <input
             matInput
-            [placeholder]="t('signup.mail')"
+            [placeholder]="t('mail')"
             formControlName="email"
             required
           />
+          <mat-error *ngIf="form.controls['email']?.hasError('email')">{{
+            t('unavailableUsername')
+          }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>{{ t('signup.password') }}</mat-label>
+          <mat-label>{{ t('password') }}</mat-label>
           <input
             matInput
-            [placeholder]="t('signup.password')"
+            [placeholder]="t('password')"
             formControlName="password"
             type="password"
             required
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>{{ t('signup.repeatPassword') }}</mat-label>
+          <mat-label>{{ t('repeatPassword') }}</mat-label>
           <input
             matInput
-            [placeholder]="t('signup.repeatPassword')"
+            [placeholder]="t('repeatPassword')"
             formControlName="password2"
             type="password"
             required
           />
         </mat-form-field>
-        <button
-          class="mat-primary mat-raised-button btn--big"
-          type="submit"
-          [disabled]="!form.valid"
-        >
-          {{ t('submit') }}
+
+        <button class="mat-primary mat-raised-button btn--big" type="submit">
+          {{ 'submit' | transloco }}
         </button>
+
+        <div>
+          {{ form | formErrorsJson | json }}
+        </div>
       </form>
     </mat-card-content>
     <mat-card-footer>

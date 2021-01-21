@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { SignupLayoutComponent } from './signup-layout/signup-layout.component';
 import { MaterialDesignModule } from '@chat-and-call/material/ui-material-design';
+import { UtilsFormsSharedModule } from '@chat-and-call/utils/forms-shared';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule, TRANSLOCO_SCOPE } from '@ngneat/transloco';
 
@@ -19,6 +20,7 @@ export const loader = ['en', 'es'].reduce((acc, lang) => {
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     TranslocoModule,
+    UtilsFormsSharedModule,
   ],
   providers: [
     {
@@ -26,6 +28,7 @@ export const loader = ['en', 'es'].reduce((acc, lang) => {
       useValue: {
         scope: 'signup',
         loader,
+        alias: 'signup'
       },
     },
   ],

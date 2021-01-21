@@ -50,6 +50,9 @@
       ],
       "@chat-and-call/contacts/feature-server-contacts": [
         "libs/contacts/feature-server-contacts/src/index.ts"
+      ],
+      "@chat-and-call/utils/forms-shared": [
+        "libs/utils/forms-shared/src/index.ts"
       ]
     }
   },

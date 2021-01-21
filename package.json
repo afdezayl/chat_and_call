@@ -68,6 +68,7 @@
     "rxjs": "^6.6.0",
     "socketcluster-client": "^16.0.1",
     "socketcluster-server": "^16.0.1",
+    "tslib": "^2.0.0",
     "zone.js": "0.11.3"
   },
   "devDependencies": {

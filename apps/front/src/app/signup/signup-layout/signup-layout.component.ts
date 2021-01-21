@@ -1,40 +1,48 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+} from '@angular/core';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormGroup,
   Validators,
-  AbstractControl,
-  AsyncValidatorFn,
-  FormControl,
-  FormArray,
-  ValidationErrors,
 } from '@angular/forms';
 import {
   AuthState,
-  sendSignupRequest,
   getUsernameAvailability,
   previousUsernameSearch,
-  setUsernameAvailability,
+  sendSignupRequest,
 } from '@chat-and-call/auth/feature-auth-web';
-import { Store, ActionsSubject } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import {
+  emailValidator,
+  MustMatchValidator,
+} from '@chat-and-call/utils/forms-shared';
+import {
+  HashMap,
+  TranslocoScope,
+  TranslocoService,
+  TRANSLOCO_SCOPE,
+} from '@ngneat/transloco';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import {
   debounceTime,
+  distinctUntilChanged,
+  filter,
   map,
   take,
   tap,
-  filter,
-  switchMap,
-  mergeMap,
-  distinctUntilChanged,
 } from 'rxjs/operators';
-import { ofType } from '@ngrx/effects';
-import { ValidationError } from 'class-validator';
 
 @Component({
   selector: 'chat-and-call-signup-layout',
   templateUrl: './signup-layout.component.html',
   styleUrls: ['./signup-layout.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupLayoutComponent {
   // TODO: Validations
@@ -42,19 +50,53 @@ export class SignupLayoutComponent {
     {
       username: this.fb.control(
         '',
-        [Validators.required],
+        [
+          Validators.required,
+          Validators.minLength(4),
+          Validators.maxLength(20),
+          Validators.pattern(/^[A-Z][0-9A-Z]{3,19}$/i),
+        ],
         this.userValidator().bind(this)
       ),
-      email: this.fb.control('', [Validators.required]),
-      password: this.fb.control('', [Validators.required]),
+      email: this.fb.control('', [Validators.required, emailValidator]),
+      password: this.fb.control('', [
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(20),
+      ]),
       password2: this.fb.control('', [Validators.required]),
     },
     {
-      validators: this.MustMatchValidator('password', 'password2'),
+      validators: MustMatchValidator('password', 'password2'),
     }
   );
 
-  constructor(private fb: FormBuilder, private store: Store<AuthState>) {}
+  usernameErrorMessages: { [key: string]: string } = {};
+
+  constructor(
+    private fb: FormBuilder,
+    private store: Store<AuthState>,
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
+    @Inject(TRANSLOCO_SCOPE) private scope: TranslocoScope
+  ) {}
+
+  ngOnInit() {
+    this.transloco
+      .selectTranslate(
+        ['unavailableUsername', 'minMaxLength'],
+        { min: '4', max: '20' },
+        this.scope
+      )
+      .subscribe(([unavailable, minmax]) => {
+        console.log(minmax);
+        this.usernameErrorMessages = {
+          unavailable,
+          minlength: minmax,
+          maxlength: minmax,
+        };
+      });
+  }
 
   onSubmit() {
     if (this.form.valid) {
@@ -64,7 +106,7 @@ export class SignupLayoutComponent {
   }
 
   userValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<any> => {
+    return (control: AbstractControl): Observable<unknown> => {
       const username = control.value;
 
       const sendRequest = (user: string) =>
@@ -74,8 +116,6 @@ export class SignupLayoutComponent {
         debounceTime(1500),
         distinctUntilChanged(),
         tap((last) => {
-          control.setErrors({ checking: true });
-          control.markAsUntouched();
           if (last.user !== username) {
             sendRequest(username);
           }
@@ -85,42 +125,11 @@ export class SignupLayoutComponent {
         map((search) => {
           control.markAsTouched();
           return search.isAvailable ? null : { unavailable: true };
+        }),
+        tap((_) => {
+          this.cdr.markForCheck();
         })
       );
     };
-  }
-
-  MustMatchValidator(controlName: string, matchingControlName: string) {
-    return (abstractControl: AbstractControl) => {
-      const control = abstractControl.get(controlName);
-      const matchingControl = abstractControl.get(matchingControlName);
-
-      if (matchingControl.errors && !matchingControl.errors.mustMatch) {
-        return;
-      }
-      const isMatch = control.value === matchingControl.value;
-
-      matchingControl.setErrors(isMatch ? null : { mustMatch: true });
-    };
-  }
-
-  getErrorsByControl(abstractControl: AbstractControl) {
-    if (abstractControl instanceof FormControl) {
-      return abstractControl.errors;
-    } else if (abstractControl instanceof FormGroup) {
-      const forChildrenErrors = {};
-      for (const [key, control] of Object.entries(abstractControl.controls)) {
-        const errors = this.getErrorsByControl(control);
-        forChildrenErrors[key] = errors;
-      }
-      return forChildrenErrors;
-    } else if (abstractControl instanceof FormArray) {
-      const forChildrenErrors = [];
-      for (const [key, control] of Object.entries(abstractControl.controls)) {
-        const errors = this.getErrorsByControl(control);
-        forChildrenErrors[key] = errors;
-      }
-      return forChildrenErrors;
-    }
   }
 }

@@ -587,6 +587,32 @@
           }
         }
       }
+    },
+    "utils-forms-shared": {
+      "projectType": "library",
+      "root": "libs/utils/forms-shared",
+      "sourceRoot": "libs/utils/forms-shared/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/utils/forms-shared/tsconfig.lib.json",
+              "libs/utils/forms-shared/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/utils/forms-shared/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/utils/forms-shared"],
+          "options": {
+            "jestConfig": "libs/utils/forms-shared/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
@@ -600,6 +626,9 @@
     },
     "@nrwl/angular:library": {
       "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
   }
 }
