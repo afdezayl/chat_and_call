@@ -1,0 +1,7 @@
+<ng-container *ngIf="_error?.literal; else fallback">
+  {{ _error.literal | transloco: _error.params }}
+</ng-container>
+
+<ng-template #fallback>
+  {{ _alternativeMessage }}
+</ng-template>

@@ -15,7 +15,9 @@ export const MustMatchValidator = (
       error += matchingControl
         ? ''
         : `Second control ("${matchingControlName}") not found.\n`;
-      throw new Error(error);
+      console.error(error);
+
+      return null;
     }
 
     if (matchingControl?.errors && !matchingControl?.errors?.mustMatch) {

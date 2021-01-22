@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Inject,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -19,14 +18,9 @@ import {
 } from '@chat-and-call/auth/feature-auth-web';
 import {
   emailValidator,
+  ErrorTranslation,
   MustMatchValidator,
 } from '@chat-and-call/utils/forms-shared';
-import {
-  HashMap,
-  TranslocoScope,
-  TranslocoService,
-  TRANSLOCO_SCOPE,
-} from '@ngneat/transloco';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import {
@@ -48,16 +42,15 @@ export class SignupLayoutComponent {
   // TODO: Validations
   form: FormGroup = this.fb.group(
     {
-      username: this.fb.control(
-        '',
-        [
+      username: this.fb.control('', {
+        validators: [
           Validators.required,
           Validators.minLength(4),
           Validators.maxLength(20),
           Validators.pattern(/^[A-Z][0-9A-Z]{3,19}$/i),
         ],
-        this.userValidator().bind(this)
-      ),
+        asyncValidators: this.userValidator().bind(this),
+      }),
       email: this.fb.control('', [Validators.required, emailValidator]),
       password: this.fb.control('', [
         Validators.required,
@@ -71,32 +64,70 @@ export class SignupLayoutComponent {
     }
   );
 
-  usernameErrorMessages: { [key: string]: string } = {};
+  usernameErrorMessages: Array<ErrorTranslation> = [
+    {
+      error: 'minlength',
+      literal: 'minMaxLength',
+      params: { min: '4', max: '20' },
+      scope: 'signup',
+    },
+    {
+      error: 'required',
+      literal: 'requiredField',
+    },
+    {
+      error: 'pattern',
+      literal: 'signup.usernamePattern',
+    },
+    {
+      error: 'unavailable',
+      literal: 'unavailableUsername',
+      scope: 'signup',
+    },
+  ];
+
+  emailErrorMessages: Array<ErrorTranslation> = [
+    {
+      error: 'required',
+      literal: 'requiredField',
+    },
+    {
+      error: 'email',
+      literal: 'invalidEmail',
+      scope: 'signup',
+    },
+  ];
+
+  passwordErrorMessages: Array<ErrorTranslation> = [
+    {
+      error: 'required',
+      literal: 'requiredField',
+    },
+    {
+      error: 'minlength',
+      literal: 'minMaxLength',
+      params: { min: '4', max: '20' },
+      scope: 'signup',
+    }
+  ];
+
+  passsword2ErrorMessages: Array<ErrorTranslation> = [
+    {
+      error: 'required',
+      literal: 'requiredField',
+    },
+    {
+      error: 'mustMatch',
+      literal: 'notMatchingPasswords',
+      scope: 'signup',
+    },
+  ];
 
   constructor(
     private fb: FormBuilder,
     private store: Store<AuthState>,
-    private cdr: ChangeDetectorRef,
-    private transloco: TranslocoService,
-    @Inject(TRANSLOCO_SCOPE) private scope: TranslocoScope
+    private cdr: ChangeDetectorRef
   ) {}
-
-  ngOnInit() {
-    this.transloco
-      .selectTranslate(
-        ['unavailableUsername', 'minMaxLength'],
-        { min: '4', max: '20' },
-        this.scope
-      )
-      .subscribe(([unavailable, minmax]) => {
-        console.log(minmax);
-        this.usernameErrorMessages = {
-          unavailable,
-          minlength: minmax,
-          maxlength: minmax,
-        };
-      });
-  }
 
   onSubmit() {
     if (this.form.valid) {
@@ -113,8 +144,8 @@ export class SignupLayoutComponent {
         this.store.dispatch(getUsernameAvailability({ user }));
 
       return this.store.select(previousUsernameSearch).pipe(
-        debounceTime(1500),
         distinctUntilChanged(),
+        debounceTime(1500),
         tap((last) => {
           if (last.user !== username) {
             sendRequest(username);

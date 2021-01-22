@@ -5,6 +5,8 @@
   "password": "Contraseña",
   "repeatPassword": "Confirma la contraseña",
   "unavailableUsername": "Usuario ya existente",
-  "requiredField": "Campo obligatorio",
-  "minMaxLength": "De {{min}} a {{max}} caracteres"
+  "minMaxLength": "De {{min}} a {{max}} caracteres",
+  "usernamePattern": "Debe comenzar por letra y ser alfanumérico",
+  "invalidEmail": "Email no válido",
+  "notMatchingPasswords": "Las contraseñas no coinciden"
 }

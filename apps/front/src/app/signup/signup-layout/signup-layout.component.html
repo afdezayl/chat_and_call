@@ -16,17 +16,10 @@
       >
         <mat-form-field
           appearance="outline"
-          [customErrors]="usernameErrorMessages"
-          [excludedErrors]="['checking']"
+          [controlErrors]="usernameErrorMessages"
         >
           <mat-label>{{ t('user') }}</mat-label>
-          <input
-            autofocus
-            matInput
-            type="text"
-            formControlName="username"
-            required
-          />
+          <input matInput type="text" formControlName="username" required />
           <span matSuffix>
             <mat-spinner
               *ngIf="form.controls['username']?.pending"
@@ -38,21 +31,13 @@
               >check_circle_outline</mat-icon
             >
           </span>
-
-          <!-- <mat-error
-            *ngIf="form.controls['username']?.hasError('unavailable')"
-            >{{ t('unavailableUsername') }}</mat-error
-          >
-          <mat-error
-            *ngIf="
-              form.controls['username']?.hasError('minlength') ||
-              form.controls['username']?.hasError('maxlength')
-            "
-            >{{ t('minMaxLength', { min: '4', max: '20' }) }}
-          </mat-error> -->
+          <mat-error autofillErrors></mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field
+          appearance="outline"
+          [controlErrors]="emailErrorMessages"
+        >
           <mat-label>{{ t('mail') }}</mat-label>
           <input
             matInput
@@ -60,11 +45,12 @@
             formControlName="email"
             required
           />
-          <mat-error *ngIf="form.controls['email']?.hasError('email')">{{
-            t('unavailableUsername')
-          }}</mat-error>
+          <mat-error autofillErrors></mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field
+          appearance="outline"
+          [controlErrors]="passwordErrorMessages"
+        >
           <mat-label>{{ t('password') }}</mat-label>
           <input
             matInput
@@ -73,8 +59,12 @@
             type="password"
             required
           />
+          <mat-error autofillErrors></mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field
+          appearance="outline"
+          [controlErrors]="passsword2ErrorMessages"
+        >
           <mat-label>{{ t('repeatPassword') }}</mat-label>
           <input
             matInput
@@ -83,15 +73,12 @@
             type="password"
             required
           />
+          <mat-error autofillErrors></mat-error>
         </mat-form-field>
 
         <button class="mat-primary mat-raised-button btn--big" type="submit">
           {{ 'submit' | transloco }}
         </button>
-
-        <div>
-          {{ form | formErrorsJson | json }}
-        </div>
       </form>
     </mat-card-content>
     <mat-card-footer>

@@ -2,28 +2,42 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Input,
 } from '@angular/core';
-import { MatError } from '@angular/material/form-field';
+import { HashMap } from '@ngneat/transloco';
+import { ErrorTranslation } from '../';
 
 @Component({
-  selector: 'chat-and-call-control-error',
-  template: `<mat-error>{{ _message }}</mat-error>`,
+  selector: 'mat-error[autofillErrors]',
+  templateUrl: './control-error.component.html',
   styleUrls: ['./control-error.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ControlErrorComponent extends MatError {
-  _message: string = null;
+export class ControlErrorComponent {
+  _error: { literal: string; params?: HashMap };
+  _alternativeMessage: string = null;
 
-  @Input()
-  set message(message: string) {
-    if (this._message !== message) {
-      this._message = message;
-      this.cdr.detectChanges();
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  setError(error: null | string | ErrorTranslation) {
+    if (error === null) {
+      this._error = null;
+      this._alternativeMessage = null;
+    } else if (typeof error === 'string') {
+      this._error = null;
+      this._alternativeMessage = error;
+    } else {
+      this._error = {
+        literal: `${error.scope ? `${error.scope}.` : ''}${error.literal}`,
+        params: error.params,
+      };
+      this._alternativeMessage = null;
     }
+    this.cdr.markForCheck();
   }
+}
 
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
+export interface TranslateObject {
+  literal: string;
+  params?: HashMap;
+  scope?: string;
 }
