@@ -11,6 +11,7 @@
     "start:api": "ng serve api",
     "start:only-db": "docker-compose -f db-docker-compose.yml up",
     "build": "ng build",
+    "build:front:prod": "ng build front --prod",
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
