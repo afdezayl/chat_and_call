@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
+import { FullscreenLoadingService } from '@chat-and-call/utils/forms-shared';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
@@ -13,16 +14,18 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.sendLoginRequest),
       mergeMap((request) =>
-        this.authService.sendLoginRequest(request).pipe(
-          tap((token) => {
-            localStorage.setItem(TOKEN_KEY, token);
-          }),
-          map((token) => AuthActions.loginSuccess({ token })),
-          catchError((error) => {
-            console.error(error);
-            return of(AuthActions.loginFailure(error));
-          })
-        )
+        this.loading
+          .showLoading(this.authService.sendLoginRequest(request))
+          .pipe(
+            tap((token) => {
+              localStorage.setItem(TOKEN_KEY, token);
+            }),
+            map((token) => AuthActions.loginSuccess({ token })),
+            catchError((error) => {
+              console.error(error);
+              return of(AuthActions.loginFailure(error));
+            })
+          )
       )
     )
   );
@@ -40,15 +43,17 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.sendSignupRequest),
       mergeMap((request) =>
-        this.authService.sendSignupRequest(request).pipe(
-          map(
-            (isCreated) =>
-              isCreated
-                ? AuthActions.signupSuccess()
-                : AuthActions.signupFailure({ error: 'ff' }) // TODO: errors...
-          ),
-          catchError((error) => of(AuthActions.signupFailure({ error })))
-        )
+        this.loading
+          .showLoading(this.authService.sendSignupRequest(request))
+          .pipe(
+            map(
+              (isCreated) =>
+                isCreated
+                  ? AuthActions.signupSuccess()
+                  : AuthActions.signupFailure({ error: 'ff' }) // TODO: errors...
+            ),
+            catchError((error) => of(AuthActions.signupFailure({ error })))
+          )
       )
     )
   );
@@ -59,7 +64,10 @@ export class AuthEffects {
       mergeMap(({ user }) =>
         this.authService.isUsernameAvailable(user).pipe(
           map((isValid) =>
-            AuthActions.setUsernameAvailability({ user, isAvailable: isValid })
+            AuthActions.setUsernameAvailability({
+              user,
+              isAvailable: isValid,
+            })
           )
         )
       )
@@ -69,6 +77,7 @@ export class AuthEffects {
   constructor(
     private actions$: Actions,
     private authService: AuthService,
+    private loading: FullscreenLoadingService,
     private router: Router
   ) {}
 }

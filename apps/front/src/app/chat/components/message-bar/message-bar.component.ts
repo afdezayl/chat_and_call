@@ -1,14 +1,7 @@
-import {
-  AfterViewChecked,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BasicMessage } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
-import { filter, tap } from 'rxjs/operators';
 import { sendMessage } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
 
@@ -17,26 +10,18 @@ import { getFocusedChannel } from '../../+state/chat.selectors';
   templateUrl: './message-bar.component.html',
   styleUrls: ['./message-bar.component.scss'],
 })
-export class MessageBarComponent implements OnInit, AfterViewChecked {
-  @ViewChild('textInput') textInput: ElementRef<HTMLInputElement>;
+export class MessageBarComponent {
+  @ViewChild('textInput') textInput!: ElementRef<HTMLInputElement>;
 
   focus$ = this.store.select(getFocusedChannel);
   //.pipe(tap(this.setAutofocus));
 
-  messageForm: FormGroup;
+  messageForm: FormGroup = this.fb.group({
+    text: this.fb.control('', Validators.required),
+    file: this.fb.control(null),
+  });
 
   constructor(private store: Store, private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.messageForm = this.fb.group({
-      text: this.fb.control('', Validators.required),
-      file: this.fb.control(null),
-    });
-  }
-
-  ngAfterViewChecked(): void {
-    //this.setAutofocus();
-  }
 
   sendMessage(idChannel: string) {
     const message: BasicMessage = {

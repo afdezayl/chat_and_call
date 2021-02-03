@@ -1,8 +1,8 @@
 import {IsNotEmpty}from 'class-validator'
 export class BasicMessage {
   @IsNotEmpty()
-  channel: string;
+  channel!: string;
 
   @IsNotEmpty()
-  text: string;
+  text!: string;
 }

@@ -22,12 +22,12 @@ import { ControlErrorsContainerDirective } from './control-errors-container.dire
 export class ControlErrorsDirective implements AfterViewInit, OnDestroy {
   // TODO: move to component and rename component
   @Input('controlErrors')
-  errors: Array<ErrorTranslation>;
+  errors!: Array<ErrorTranslation>;
   @Input()
   excludedErrors: Array<string> = [];
 
-  @ContentChild(MatFormFieldControl) formField: MatFormFieldControl<any>;
-  @ContentChild(ControlErrorComponent) wrapper: ControlErrorComponent;
+  @ContentChild(MatFormFieldControl) formField!: MatFormFieldControl<any>;
+  @ContentChild(ControlErrorComponent) wrapper!: ControlErrorComponent;
 
   submit$: Observable<Event>;
   focusLost$ = new Subject<void>();
@@ -45,7 +45,13 @@ export class ControlErrorsDirective implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    if (!this.formField?.ngControl?.control) {
+      console.error(`Form control not found.`);
+      return;
+    }
+
     const { control, name } = this.formField.ngControl;
+
     if (!this.wrapper) {
       console.error(
         `Not found-> "<mat-error autofillErrors><mat-error>" inside '${name}' control`

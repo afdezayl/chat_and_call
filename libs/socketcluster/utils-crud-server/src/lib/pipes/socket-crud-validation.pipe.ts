@@ -21,7 +21,7 @@ export class SocketCrudValidationPipe implements PipeTransform<any> {
       throw new WsException(crudErrors);
     }
 
-    const entity = plainToClass(metatype, value?.body);
+    const entity = plainToClass(metatype!, value?.body);
     const errors = await validate(entity);
 
     if (errors.length > 0) {

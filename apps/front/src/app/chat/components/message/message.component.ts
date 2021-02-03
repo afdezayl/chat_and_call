@@ -19,7 +19,7 @@ import { getUsername } from '../../+state/chat.selectors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageComponent implements AfterViewInit {
-  @Input() message: Message;
+  @Input() message!: Message;
   @Output() viewed = new EventEmitter<boolean>();
   username$ = this.store.select(getUsername);
 
@@ -30,7 +30,7 @@ export class MessageComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const wrapper = this.elementRef.nativeElement.parentElement;
-    const parent = wrapper.parentElement;
+    const parent = wrapper?.parentElement;
 
     /* const observer = new IntersectionObserver(this.emitViewed.bind(this), {
       root: parent,

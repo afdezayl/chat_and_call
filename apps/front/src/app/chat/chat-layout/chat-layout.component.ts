@@ -66,10 +66,10 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$ = new Subject();
 
   index$ = new Subject<number>();
-  scrollSubscription: Subscription;
+  scrollSubscription!: Subscription;
 
-  @ViewChild(MatSidenav) sidenav: MatSidenav;
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(MatSidenav) sidenav!: MatSidenav;
+  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
 
   constructor(
     private store: Store,

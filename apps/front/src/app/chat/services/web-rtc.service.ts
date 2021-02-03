@@ -10,7 +10,7 @@ export class WebRtcService {
 
   createConnection() {
     // TODO: stun server?
-    const connection = new RTCPeerConnection(null);
+    const connection = new RTCPeerConnection();
     const sendChannel = connection.createDataChannel('text');
 
     connection.addEventListener('icecandidate', (ev) => {

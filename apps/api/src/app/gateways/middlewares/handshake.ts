@@ -43,7 +43,9 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
     const signedCookies = this.getSignedCookiesFromRequest(action.request);
 
     // Remove falsy values, don´t use coalesce operator (??)
-    const refreshToken = signedCookies?.refresh_jwt || null;
+    const refreshToken = signedCookies?.refresh_jwt
+      ? signedCookies.refresh_jwt
+      : '';
     const authToken = signedCookies?.jwt || null;
 
     //console.log(refreshToken, authToken);
@@ -79,9 +81,10 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
     // Cookie parser middleware not applied, socketcluster intercepts handshake request
     const rawCookies = request?.headers?.cookie ?? '';
     const cookies = cookieUtility.parse(rawCookies);
-    const signedCookies = cookieParser.signedCookies(cookies, [
-      this.config.get('COOKIE_SECRET'),
-    ]);
+    const signedCookies = cookieParser.signedCookies(
+      cookies,
+      this.config.get('COOKIE_SECRET')!
+    );
 
     return signedCookies;
   }

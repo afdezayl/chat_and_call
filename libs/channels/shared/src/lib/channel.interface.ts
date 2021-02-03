@@ -3,7 +3,7 @@ import { Message } from './message.interface';
 export interface Channel {
   id: string;
   title: string;
-  admin?: string;
+  admin: string | null;
   type: ChannelType;
 }
 

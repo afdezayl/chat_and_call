@@ -8,6 +8,7 @@ import {
   AsyncValidatorFn,
   FormBuilder,
   FormGroup,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import {
@@ -108,7 +109,7 @@ export class SignupLayoutComponent {
       literal: 'minMaxLength',
       params: { min: '4', max: '20' },
       scope: 'signup',
-    }
+    },
   ];
 
   passsword2ErrorMessages: Array<ErrorTranslation> = [
@@ -137,7 +138,7 @@ export class SignupLayoutComponent {
   }
 
   userValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<unknown> => {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
       const username = control.value;
 
       const sendRequest = (user: string) =>
@@ -147,15 +148,15 @@ export class SignupLayoutComponent {
         distinctUntilChanged(),
         debounceTime(1500),
         tap((last) => {
-          if (last.user !== username) {
+          if (last?.user !== username) {
             sendRequest(username);
           }
         }),
-        filter((search) => search.user === username),
+        filter((search) => search?.user === username),
         take(1),
         map((search) => {
           control.markAsTouched();
-          return search.isAvailable ? null : { unavailable: true };
+          return search?.isAvailable ? null : { unavailable: true };
         }),
         tap((_) => {
           this.cdr.markForCheck();

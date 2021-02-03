@@ -35,7 +35,7 @@ export const SOCKETCLUSTER_OPTIONS_TOKEN = 'SOCKETCLUSTER_SERVER_OPTIONS';
 
 @Injectable()
 export class SocketClusterAdapter implements WebSocketAdapter {
-  private _server: AGServer;
+  private _server!: AGServer;
 
   constructor(
     private logger: Logger,
@@ -302,7 +302,10 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           );
         }
 
-        if (serverInstance.authState === serverInstance.UNAUTHENTICATED) {
+        if (
+          authToken &&
+          serverInstance.authState === serverInstance.UNAUTHENTICATED
+        ) {
           await serverInstance.setAuthToken(authToken);
           console.log('second auth...');
         }

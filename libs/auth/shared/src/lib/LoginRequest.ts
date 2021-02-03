@@ -10,8 +10,8 @@ export class LoginRequestDto implements LoginRequest {
   @IsAlphanumeric()
   @Matches(/[A-Z]/i)
   @Length(4, 20)
-  username: string;
+  username!: string;
 
   @Length(4, 20)
-  password: string;
+  password!: string;
 }

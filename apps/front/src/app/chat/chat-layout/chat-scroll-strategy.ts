@@ -11,7 +11,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
 export class ChatScrollStrategy implements VirtualScrollStrategy {
   private index$ = new BehaviorSubject<number>(0);
   private viewport: CdkVirtualScrollViewport | null = null;
-  private itemsHeights: Array<number> = [];
+  private itemsHeights: Array<number | undefined> = [];
   private checkedElements: number = 0;
 
   // TODO: DEFAULT_VALUE or @Input() or average
@@ -53,7 +53,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const range = viewport.getRenderedRange();
 
     // 1. calculate the new range BUFFER + VISIBLE ITEMS + BUFFER
-    const newRange = this.getRangeForScrollOffset(scrollOffset);
+    const newRange = this.getRangeForScrollOffset(scrollOffset, viewport);
 
     const delta = range.start + range.end - (newRange.start + newRange.end);
 
@@ -72,7 +72,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const totalElements = this.viewport.getDataLength();
     const scrollOffset = this.viewport.measureScrollOffset('top');
 
-    const range = this.getRangeForScrollOffset(scrollOffset);
+    const range = this.getRangeForScrollOffset(scrollOffset, this.viewport);
 
     if (totalElements > this.checkedElements) {
       this.updateItemListSize(this.viewport);
@@ -89,7 +89,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     const currentRange = this.viewport.getRenderedRange();
     this.ngZone.runOutsideAngular(() =>
       this.awaitChangeDetection(() => {
-        if (this.isResized(this.viewport)) {
+        if (this.isResized(this.viewport!)) {
           this.itemsHeights.fill(undefined);
         }
 
@@ -126,6 +126,9 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
    * Only call this function after change detection
    */
   private updateRangeHeights(currentRange: ListRange) {
+    if (!this.viewport) {
+      return;
+    }
     const indexOffset = currentRange.start;
     const items = Array.from(
       this.viewport._contentWrapper.nativeElement.children
@@ -137,12 +140,15 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     }
   }
 
-  private getRangeForScrollOffset(offset: number): ListRange {
+  private getRangeForScrollOffset(
+    offset: number,
+    viewport: CdkVirtualScrollViewport
+  ): ListRange {
     const areRenderedAllItems =
-      this.viewport.getDataLength() === this.itemsHeights.length;
+      viewport.getDataLength() === this.itemsHeights.length;
 
-    const maxTotalHeight = this.getIndexOffset(this.viewport.getDataLength());
-    const maxViewportOffset = offset + this.viewport.getViewportSize();
+    const maxTotalHeight = this.getIndexOffset(viewport.getDataLength());
+    const maxViewportOffset = offset + viewport.getViewportSize();
 
     const visibleOffset = areRenderedAllItems
       ? Math.min(maxTotalHeight, maxViewportOffset)
@@ -152,7 +158,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
     let notVisibleElementsTop = 0;
     let onViewport = 0;
 
-    for (let i = 0; i < this.viewport.getDataLength(); i++) {
+    for (let i = 0; i < viewport.getDataLength(); i++) {
       const height = this.itemsHeights[i] ?? this.DEFAULT_HEIGHT;
       if (acc < offset) {
         notVisibleElementsTop++;
@@ -166,7 +172,7 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
     const start = Math.max(0, notVisibleElementsTop - this.BUFFER_ITEMS_COUNT);
     const end = Math.min(
-      this.viewport.getDataLength(),
+      viewport.getDataLength(),
       notVisibleElementsTop + onViewport + this.BUFFER_ITEMS_COUNT
     );
 
@@ -181,11 +187,17 @@ export class ChatScrollStrategy implements VirtualScrollStrategy {
 
   private setCurrentRangeOffset(currentRange: ListRange) {
     // TODO: think about top and bottom offset. Performance on large list?
+    if (!this.viewport) {
+      return;
+    }
     let newOffset = this.getIndexOffset(currentRange.start);
     this.viewport.setRenderedContentOffset(newOffset);
   }
 
   private setTotalSize() {
+    if (!this.viewport) {
+      return;
+    }
     const totalSize = this.getIndexOffset(this.viewport.getDataLength());
     this.viewport.setTotalContentSize(totalSize);
   }

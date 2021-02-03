@@ -9,6 +9,8 @@ import {
   FormErrorsJsonPipe,
   ControlErrorsContainerDirective,
 } from './errors';
+import { FullscreenLoadingService } from './loading';
+import { LoadingSpinnerComponent } from './loading/loading-spinner/loading-spinner.component';
 
 @NgModule({
   imports: [
@@ -22,6 +24,7 @@ import {
     ControlErrorComponent,
     ControlErrorsDirective,
     ControlErrorsContainerDirective,
+    LoadingSpinnerComponent,
   ],
   exports: [
     FormErrorsJsonPipe,

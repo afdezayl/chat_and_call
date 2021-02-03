@@ -18,7 +18,7 @@ import { ChatSocketService } from '../../services/chat-socket.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VideoCallComponent implements OnInit {
-  @ViewChild('local') localVideo: ElementRef<HTMLVideoElement>;
+  @ViewChild('local') localVideo!: ElementRef<HTMLVideoElement>;
 
   mediaDevices$ = from(navigator.mediaDevices.enumerateDevices());
 

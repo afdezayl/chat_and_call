@@ -4,18 +4,19 @@ import {
   FormArray,
   FormControl,
   FormGroup,
+  ValidationErrors,
 } from '@angular/forms';
 
 @Pipe({
   name: 'formErrorsJson',
-  pure: false
+  pure: false,
 })
 export class FormErrorsJsonPipe implements PipeTransform {
-  transform(abstractControl: AbstractControl): unknown {
+  transform(abstractControl: AbstractControl): ValidationErrors | null {
     if (abstractControl instanceof FormControl) {
       return abstractControl.errors;
     } else if (abstractControl instanceof FormGroup) {
-      const forChildrenErrors = {};
+      const forChildrenErrors: Record<string, unknown> = {};
       for (const [key, control] of Object.entries(abstractControl.controls)) {
         const errors = this.transform(control);
         forChildrenErrors[key] = errors;
@@ -25,9 +26,10 @@ export class FormErrorsJsonPipe implements PipeTransform {
       const forChildrenErrors = [];
       for (const [key, control] of Object.entries(abstractControl.controls)) {
         const errors = this.transform(control);
-        forChildrenErrors[key] = errors;
+        forChildrenErrors[(key as unknown) as number] = errors;
       }
       return forChildrenErrors;
     }
+    return null;
   }
 }

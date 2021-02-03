@@ -13,7 +13,7 @@ export class SocketValidationPipe implements PipeTransform<any> {
       return request;
     }
 
-    const entity = plainToClass(metatype, value);
+    const entity = plainToClass(metatype!, value);
     const errors = await validate(entity);
 
     if (errors.length > 0) {

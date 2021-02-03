@@ -8,10 +8,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule, TRANSLOCO_SCOPE } from '@ngneat/transloco';
 
 export const routes: Routes = [{ path: '', component: SignupLayoutComponent }];
-export const loader = ['en', 'es'].reduce((acc, lang) => {
-  acc[lang] = () => import(`./i18n/${lang}.json`);
-  return acc;
-}, {});
+export const loader = ['en', 'es'].reduce<Record<string, Function>>(
+  (acc, lang) => {
+    acc[lang] = () => import(`./i18n/${lang}.json`);
+    return acc;
+  },
+  {}
+);
 @NgModule({
   declarations: [SignupLayoutComponent],
   imports: [
@@ -28,7 +31,7 @@ export const loader = ['en', 'es'].reduce((acc, lang) => {
       useValue: {
         scope: 'signup',
         loader,
-        alias: 'signup'
+        alias: 'signup',
       },
     },
   ],

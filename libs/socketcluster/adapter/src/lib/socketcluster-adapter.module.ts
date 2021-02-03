@@ -1,19 +1,12 @@
 import {
   DynamicModule,
   Module,
-  Type,
   ModuleMetadata,
   Provider,
+  Type,
 } from '@nestjs/common';
 import { AGServerOptions } from 'socketcluster-server/server';
-import {
-  MiddlewareInboundStrategy,
-  MIDDLEWARE_INBOUND_TOKEN,
-} from './middlewares/middleware-inbound-strategy';
-import {
-  SocketClusterAdapter,
-  SOCKETCLUSTER_OPTIONS_TOKEN,
-} from './socketcluster-adapter';
+import { MiddlewareOutboundStrategy } from './middlewares';
 import {
   MiddlewareHandshakeStrategy,
   MIDDLEWARE_HANDSHAKE_TOKEN,
@@ -22,8 +15,15 @@ import {
   MiddlewareInboundRawStrategy,
   MIDDLEWARE_INBOUND_RAW_TOKEN,
 } from './middlewares/middleware-inbound-raw-strategy';
-import { MiddlewareOutboundStrategy } from './middlewares';
+import {
+  MiddlewareInboundStrategy,
+  MIDDLEWARE_INBOUND_TOKEN,
+} from './middlewares/middleware-inbound-strategy';
 import { MIDDLEWARE_OUTBOUND_TOKEN } from './middlewares/middleware-outbound-strategy';
+import {
+  SocketClusterAdapter,
+  SOCKETCLUSTER_OPTIONS_TOKEN,
+} from './socketcluster-adapter';
 
 @Module({})
 export class SocketClusterAdapterModule {
@@ -75,7 +75,7 @@ export class SocketClusterAdapterModule {
   }
 
   private static createMiddlewaresProviders(
-    middlewares: SocketClusterMiddlewares
+    middlewares?: SocketClusterMiddlewares
   ): Array<Provider> {
     return [
       {
@@ -85,7 +85,7 @@ export class SocketClusterAdapterModule {
       },
       {
         provide: MIDDLEWARE_INBOUND_RAW_TOKEN,
-        useClass: middlewares?.inboundRaw,
+        useExisting: middlewares?.inboundRaw,
       },
       {
         provide: MIDDLEWARE_INBOUND_TOKEN,
@@ -93,7 +93,7 @@ export class SocketClusterAdapterModule {
       },
       {
         provide: MIDDLEWARE_OUTBOUND_TOKEN,
-        useClass: middlewares?.outbound,
+        useExisting: middlewares?.outbound,
       },
     ];
   }

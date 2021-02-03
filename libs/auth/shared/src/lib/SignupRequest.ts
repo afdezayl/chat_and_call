@@ -17,14 +17,15 @@ export class SignupRequestDto implements SignupRequest {
   @IsNotEmpty()
   @IsEmail()
   @MaxLength(45)
-  email: string;
+  email!: string;
 
   @IsNotEmpty()
   @IsAlphanumeric()
   @Matches(/[A-Z]/i)
   @Length(4, 20)
-  username: string;
+  username!: string;
 
+  @IsNotEmpty()
   @Length(4, 20)
-  password: string;
+  password!: string;
 }

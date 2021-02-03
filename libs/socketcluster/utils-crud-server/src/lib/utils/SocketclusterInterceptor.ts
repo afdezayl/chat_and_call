@@ -1,13 +1,13 @@
 import { NestGateway } from '@nestjs/websockets/interfaces/nest-gateway.interface';
 
-export function SocketProcedureInterceptor() {
+export function SocketProcedureInterceptor<T>(): MethodDecorator {
   return (
-    target: NestGateway,
-    propertyKey: string,
+    _target: NestGateway,
+    _propertyKey: string | symbol,
     descriptor: PropertyDescriptor
   ) => {
     const fn: Function = descriptor.value;
-    descriptor.value = function (...args) {
+    descriptor.value = function (...args: any) {
       const mappedValues: Array<any> = [];
 
       for (const arg of args) {
@@ -23,6 +23,6 @@ export function SocketProcedureInterceptor() {
       return fn.apply(this, mappedValues);
     };
 
-    return descriptor;
+    //return descriptor;
   };
 }

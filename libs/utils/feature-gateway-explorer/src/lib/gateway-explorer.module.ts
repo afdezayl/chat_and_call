@@ -1,4 +1,4 @@
-import { Module, INestApplication } from '@nestjs/common';
+import { Module, INestApplication, Type } from '@nestjs/common';
 import { NestContainer } from '@nestjs/core';
 import { Module as ContainerModule } from '@nestjs/core/injector/module';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
@@ -32,9 +32,7 @@ export class GatewayExplorerModule {
 
       const methods = this.getGatewayMethods(gateway);
       methods.forEach((m) =>
-        console.log(
-          '--> ' + Reflect.getMetadata(MESSAGE_METADATA, m)
-        )
+        console.log('--> ' + Reflect.getMetadata(MESSAGE_METADATA, m))
       );
     });
   }
@@ -53,8 +51,10 @@ export class GatewayExplorerModule {
           Reflect.getMetadata(MODULE_METADATA.PROVIDERS, module.metatype) || []
       )
       .reduce((acc, providers) => acc.concat(...providers.values()), [])
-      .filter((prov) => Reflect.getMetadata(GATEWAY_METADATA, prov) === true)
-      .map((prov) => {
+      .filter(
+        (prov: object) => Reflect.getMetadata(GATEWAY_METADATA, prov) === true
+      )
+      .map((prov: Type<NestGateway>) => {
         const gateway = this._app.get(prov) as NestGateway;
         Reflect.getOwnMetadataKeys(prov).forEach((key) => {
           Reflect.defineMetadata(
@@ -71,11 +71,11 @@ export class GatewayExplorerModule {
 
   getGatewayMethods(gateway: NestGateway): Array<InstanceWrapper> {
     const proto = Object.getPrototypeOf(gateway);
-    const methodsNames = Object.getOwnPropertyNames(proto);
+    const methodsNames: Array<string> = Object.getOwnPropertyNames(proto);
     return methodsNames
-      .map((name) => gateway[name])
+      .map((name) => Reflect.get(gateway, name))
       .filter(
-        (method) =>
+        (method: object) =>
           Reflect.getMetadata(MESSAGE_MAPPING_METADATA, method) &&
           Reflect.getMetadata(MESSAGE_METADATA, method)
       );

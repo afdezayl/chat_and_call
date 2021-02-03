@@ -14,11 +14,11 @@ export interface Contact {
 }
 
 export interface ChatState {
-  user: User;
+  user: User | null;
   contacts: Array<Contact>;
   channels: Array<Channel>;
   messages: Array<Message>;
-  focus: string;
+  focus: string | number | null;
 }
 
 export const initialState: ChatState = {

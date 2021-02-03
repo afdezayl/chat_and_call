@@ -52,5 +52,5 @@ export const incomingMessage = createAction(
 
 export const setFocus = createAction(
   '[Chat] Set focus',
-  props<{ id: number | string }>()
+  props<{ id: number | string | null }>()
 );

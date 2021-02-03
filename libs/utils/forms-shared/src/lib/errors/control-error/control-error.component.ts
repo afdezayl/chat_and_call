@@ -13,8 +13,8 @@ import { ErrorTranslation } from '../';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlErrorComponent {
-  _error: { literal: string; params?: HashMap };
-  _alternativeMessage: string = null;
+  _error: { literal: string; params?: HashMap } | null = null;
+  _alternativeMessage: string | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
 

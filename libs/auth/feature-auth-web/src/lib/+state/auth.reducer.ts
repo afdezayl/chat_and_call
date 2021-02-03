@@ -6,8 +6,8 @@ export const AUTH_FEATURE_KEY = 'auth';
 export interface AuthState {
   authorized: boolean;
   isValidLoginAttempt: boolean;
-  error: string;
-  usernameSearch: UserSearch;
+  error: string | null;
+  usernameSearch: UserSearch | null;
   createdUser: boolean;
 }
 
@@ -20,10 +20,7 @@ export const initialState: AuthState = {
   authorized: false,
   isValidLoginAttempt: true,
   error: null,
-  usernameSearch: {
-    user: null,
-    isAvailable: false,
-  },
+  usernameSearch: null,
   createdUser: false,
 };
 

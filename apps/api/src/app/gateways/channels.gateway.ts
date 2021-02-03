@@ -56,7 +56,7 @@ export class ChannelsGateway {
   @SocketPost('call')
   call(@ConnectedSocket() socket: AGServerSocket, @MessageBody() data: any) {
     console.log(data);
-    const username = socket.authToken.username;
+    const username = socket?.authToken?.username;
 
     // TODO: check if target user is current user contact
 

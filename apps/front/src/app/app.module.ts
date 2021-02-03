@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +23,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     ReactiveFormsModule,
     HttpClientModule,
     TranslocoRootModule,
+    OverlayModule,
     StoreModule.forRoot(
       {},
       {

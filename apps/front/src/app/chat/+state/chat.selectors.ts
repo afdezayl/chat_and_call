@@ -7,7 +7,7 @@ export const selectChatState = createFeatureSelector<fromChat.ChatState>(
 
 export const getUsername = createSelector(
   selectChatState,
-  (state) => state.user.username
+  (state) => state.user?.username
 );
 
 export const getChannels = createSelector(

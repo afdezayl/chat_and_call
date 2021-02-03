@@ -5,10 +5,10 @@ export class SocketCrudModel {
   headers?: Map<string, string>;
 
   @IsNotEmpty()
-  method: string;
+  method!: string;
 
   @IsNotEmpty()
-  path: string;
+  path!: string;
 
   @IsOptional()
   @IsNotEmptyObject()

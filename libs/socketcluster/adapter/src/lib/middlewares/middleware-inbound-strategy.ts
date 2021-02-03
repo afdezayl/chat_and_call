@@ -44,7 +44,7 @@ export abstract class MiddlewareInboundStrategy {
    * Default action when not specific implementation is provided
    * @param action
    */
-  default?(action: AGAction): void | Promise<void> {
+  default(action: AGAction): void | Promise<void> {
     action.allow();
   }
 }

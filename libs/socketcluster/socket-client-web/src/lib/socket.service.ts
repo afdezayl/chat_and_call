@@ -8,9 +8,9 @@ import { AGClientSocket, create } from 'socketcluster-client';
   providedIn: 'root',
 })
 export class SocketService {
-  private _authenticated$ = new BehaviorSubject<string>(null);
-  private _deauthenticated$ = new BehaviorSubject<void>(null);
-  private _socket: AGClientSocket = null;
+  private _authenticated$ = new BehaviorSubject<string>('');
+  private _deauthenticated$ = new BehaviorSubject<void>(undefined);
+  private _socket!: AGClientSocket;
 
   constructor() {
     this._socket = create({
@@ -29,9 +29,7 @@ export class SocketService {
     })();
 
     (async () => {
-      for await (const x of this._socket.listener(
-        'authStateChange'
-      )) {
+      for await (const x of this._socket.listener('authStateChange')) {
         console.log('auth change', x);
       }
     })();

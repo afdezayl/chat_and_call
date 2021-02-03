@@ -14,7 +14,7 @@ export abstract class MiddlewareHandshakeStrategy {
 
   onSCHandshake?(action: HandshakeSCAction): void | Promise<void>;
 
-  default?(action: AGAction): void | Promise<void> {
+  default(action: AGAction): void | Promise<void> {
     action.allow();
   }
 }
