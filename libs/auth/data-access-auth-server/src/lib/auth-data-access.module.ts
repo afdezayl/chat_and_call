@@ -3,8 +3,9 @@ import { DatabasePoolModule } from '@chat-and-call/utils/database-pool';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthRepositoryService } from './auth-repository/auth-repository.service';
-import { AuthService } from './auth/auth.service';
+import { AuthService } from './service';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { User } from './entities';
 
 @Module({
   controllers: [],
@@ -21,8 +22,9 @@ import { AuthService } from './auth/auth.service';
         },
       }),
     }),
+    MikroOrmModule.forFeature([User]),
   ],
-  providers: [AuthService, AuthRepositoryService],
+  providers: [AuthService],
   exports: [AuthService],
 })
 export class AuthDataAccessModule {}

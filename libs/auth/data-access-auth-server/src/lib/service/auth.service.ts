@@ -1,27 +1,34 @@
 import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
-import { Injectable } from '@nestjs/common';
+import { EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { from } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AuthRepositoryService } from '../auth-repository/auth-repository.service';
+import { User } from '../entities';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private authRepository: AuthRepositoryService,
+    @InjectRepository(User)
+    private readonly userRepository: EntityRepository<User>,
     private channelService: ChannelsDataAccessService,
-    private jwtService: JwtService
-  ) {}
+    private jwtService: JwtService,
+    private logger: Logger
+  ) {
+    this.logger.setContext(this.constructor.name);
+  }
 
   async validateUserCredentials(
     username: string,
     password: string
   ): Promise<boolean> {
-    const hashedPassword = await this.authRepository.getHashedPassword(
-      username
-    );
-    return await this._checkPassword(password, hashedPassword);
+    const user = await this.userRepository.findOne({ login: username });
+    if (!user) {
+      return false;
+    }
+    return await this._checkPassword(password, user.password);
   }
 
   getTokenContent(username: string) {
@@ -52,34 +59,50 @@ export class AuthService {
     return this.jwtService.verifyAsync(token);
   }
 
+  // TODO: Success, Already registered , Internal Error
   async createNewUser(
     username: string,
     password: string,
     email: string
   ): Promise<boolean> {
-    const hashedPassword = await this._hashPassword(password);
-    const isCreated = await this.authRepository.createUser(
-      username,
-      hashedPassword,
-      email
-    );
-    return isCreated;
+    try {
+      const hashedPassword = await this._hashPassword(password);
+      const user = this.userRepository.create({
+        login: username,
+        mail: email,
+        password: hashedPassword,
+      });
+
+      await this.userRepository.persistAndFlush(user);
+      return true;
+    } catch (error) {
+      const isEmailTaken =
+        (await this.userRepository.count({ mail: email })) > 0;
+      const isUsernameTaken =
+        (await this.userRepository.count({ login: username })) > 0;
+
+      console.log({ isEmailTaken, isUsernameTaken });
+
+      if (isEmailTaken || isUsernameTaken) {
+        return false;
+      } else {
+        this.logger.error(error);
+      }
+      return false;
+    }
   }
 
   async isUser(username: string) {
-    return await this.authRepository.isUser(username);
+    const isUser = (await this.userRepository.count({ login: username })) > 0;
+
+    return isUser;
   }
 
   private async _checkPassword(
     password: string,
     hashedPassword: string
   ): Promise<boolean> {
-    try {
-      const isValid = await compare(password, hashedPassword);
-      return isValid;
-    } catch (error) {
-      return false;
-    }
+    return await compare(password, hashedPassword);
   }
 
   private async _hashPassword(password: string): Promise<string> {
