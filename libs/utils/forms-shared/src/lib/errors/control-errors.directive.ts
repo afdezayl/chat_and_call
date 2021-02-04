@@ -22,7 +22,7 @@ import { ControlErrorsContainerDirective } from './control-errors-container.dire
 export class ControlErrorsDirective implements AfterViewInit, OnDestroy {
   // TODO: move to component and rename component
   @Input('controlErrors')
-  errors!: Array<ErrorTranslation>;
+  errors?: Array<ErrorTranslation>;
   @Input()
   excludedErrors: Array<string> = [];
 
@@ -45,6 +45,14 @@ export class ControlErrorsDirective implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    const errors = this.errors;
+    if (!errors) {
+      console.error(
+        `Errors not asigned in control "${this.formField?.ngControl?.name}"`
+      );
+      return;
+    }
+
     if (!this.formField?.ngControl?.control) {
       console.error(`Form control not found.`);
       return;
@@ -72,8 +80,7 @@ export class ControlErrorsDirective implements AfterViewInit, OnDestroy {
 
         if (firstError) {
           const error =
-            this.errors.find((err) => err.error === firstError) ??
-            `__${firstError}`;
+            errors.find((err) => err.error === firstError) ?? `__${firstError}`;
 
           this.wrapper.setError(error);
         } else {

@@ -19,7 +19,6 @@ import {
 } from '@chat-and-call/auth/feature-auth-web';
 import {
   emailValidator,
-  ErrorTranslation,
   MustMatchValidator,
 } from '@chat-and-call/utils/forms-shared';
 import { Store } from '@ngrx/store';
@@ -32,6 +31,7 @@ import {
   take,
   tap,
 } from 'rxjs/operators';
+import { signupErrors } from './signup-i18n-errors';
 
 @Component({
   selector: 'chat-and-call-signup-layout',
@@ -65,64 +65,7 @@ export class SignupLayoutComponent {
     }
   );
 
-  usernameErrorMessages: Array<ErrorTranslation> = [
-    {
-      error: 'minlength',
-      literal: 'minMaxLength',
-      params: { min: '4', max: '20' },
-      scope: 'signup',
-    },
-    {
-      error: 'required',
-      literal: 'requiredField',
-    },
-    {
-      error: 'pattern',
-      literal: 'signup.usernamePattern',
-    },
-    {
-      error: 'unavailable',
-      literal: 'unavailableUsername',
-      scope: 'signup',
-    },
-  ];
-
-  emailErrorMessages: Array<ErrorTranslation> = [
-    {
-      error: 'required',
-      literal: 'requiredField',
-    },
-    {
-      error: 'email',
-      literal: 'invalidEmail',
-      scope: 'signup',
-    },
-  ];
-
-  passwordErrorMessages: Array<ErrorTranslation> = [
-    {
-      error: 'required',
-      literal: 'requiredField',
-    },
-    {
-      error: 'minlength',
-      literal: 'minMaxLength',
-      params: { min: '4', max: '20' },
-      scope: 'signup',
-    },
-  ];
-
-  passsword2ErrorMessages: Array<ErrorTranslation> = [
-    {
-      error: 'required',
-      literal: 'requiredField',
-    },
-    {
-      error: 'mustMatch',
-      literal: 'notMatchingPasswords',
-      scope: 'signup',
-    },
-  ];
+  errors = signupErrors;
 
   constructor(
     private fb: FormBuilder,

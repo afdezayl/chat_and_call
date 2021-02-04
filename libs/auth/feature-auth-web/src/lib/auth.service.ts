@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
-import { Observable, config } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
+import { HttpStatus } from '@chat-and-call/utils/forms-shared';
 
 @Injectable({
   providedIn: 'root',
@@ -18,12 +19,26 @@ export class AuthService {
       .pipe(map((x) => x.token));
   }
 
-  sendSignupRequest(request: SignupRequestDto): Observable<boolean> {
-    return this.http.post<boolean>('api/auth/signup', request);
+  sendSignupRequest(request: SignupRequestDto): Observable<void> {
+    return this.http.post<void>('api/auth/signup', request).pipe(
+      catchError((err: HttpErrorResponse) => {
+        let error: string;
+        // TODO: Custom objects to handle errors? Something like Rust/Elm approach
+        switch (err.status) {
+          case HttpStatus.CONFLICT:
+            error = `conflict`;
+          case HttpStatus.INTERNAL_SERVER_ERROR:
+            error = 'server error';
+          default:
+            error = err.message;
+        }
+
+        return throwError(new Error(error));
+      })
+    );
   }
 
   isUsernameAvailable(username: string) {
-    console.log('service', username);
     return this.http.get<boolean>('api/auth/username', {
       params: {
         user: username,

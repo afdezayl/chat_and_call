@@ -1,19 +1,19 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Logger,
-  Get,
-  Res,
-  Req,
-  NotImplementedException,
-  Query,
-} from '@nestjs/common';
-import { Response, Request } from 'express';
-import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
 import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
+import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  Logger,
+  NotImplementedException,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
 
 @Controller('auth')
 export class AuthController {
@@ -43,7 +43,7 @@ export class AuthController {
       response.cookie('refresh_jwt', tokens.refresh, {
         httpOnly: true,
         sameSite: 'strict',
-        signed: true
+        signed: true,
       });
 
       return response.status(200).send({ token: tokens.jwt });
@@ -61,9 +61,10 @@ export class AuthController {
     );
 
     if (isCreated) {
-      return true;
+      return;
     }
-    return false;
+
+    throw new ConflictException();
   }
 
   @Get('username')

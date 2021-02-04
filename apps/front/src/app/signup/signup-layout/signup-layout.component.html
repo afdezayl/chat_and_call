@@ -14,10 +14,7 @@
         class="form"
         autocomplete="off"
       >
-        <mat-form-field
-          appearance="outline"
-          [controlErrors]="usernameErrorMessages"
-        >
+        <mat-form-field appearance="outline" [controlErrors]="errors.username">
           <mat-label>{{ t('user') }}</mat-label>
           <input matInput type="text" formControlName="username" required />
           <span matSuffix>
@@ -34,10 +31,7 @@
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
 
-        <mat-form-field
-          appearance="outline"
-          [controlErrors]="emailErrorMessages"
-        >
+        <mat-form-field appearance="outline" [controlErrors]="errors.email">
           <mat-label>{{ t('mail') }}</mat-label>
           <input
             matInput
@@ -47,10 +41,8 @@
           />
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
-        <mat-form-field
-          appearance="outline"
-          [controlErrors]="passwordErrorMessages"
-        >
+
+        <mat-form-field appearance="outline" [controlErrors]="errors.password">
           <mat-label>{{ t('password') }}</mat-label>
           <input
             matInput
@@ -61,10 +53,8 @@
           />
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
-        <mat-form-field
-          appearance="outline"
-          [controlErrors]="passsword2ErrorMessages"
-        >
+
+        <mat-form-field appearance="outline" [controlErrors]="errors.password2">
           <mat-label>{{ t('repeatPassword') }}</mat-label>
           <input
             matInput
@@ -81,6 +71,7 @@
         </button>
       </form>
     </mat-card-content>
+
     <mat-card-footer>
       <h3>¿Ya estás registrado?</h3>
       <a [routerLink]="['/home', 'login']" routerLinkActive="router-link-active"

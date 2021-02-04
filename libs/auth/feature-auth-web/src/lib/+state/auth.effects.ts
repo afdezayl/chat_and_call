@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { FullscreenLoadingService } from '@chat-and-call/utils/forms-shared';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import * as AuthActions from './auth.actions';
@@ -46,13 +46,13 @@ export class AuthEffects {
         this.loading
           .showLoading(this.authService.sendSignupRequest(request))
           .pipe(
-            map(
-              (isCreated) =>
-                isCreated
-                  ? AuthActions.signupSuccess()
-                  : AuthActions.signupFailure({ error: 'ff' }) // TODO: errors...
-            ),
-            catchError((error) => of(AuthActions.signupFailure({ error })))
+            map(() => AuthActions.signupSuccess()),
+            // TODO: errors...
+            catchError((error: Error) => {
+              console.log(error);
+              const message = error.message;
+              return of(AuthActions.signupFailure({ error: message }));
+            })
           )
       )
     )

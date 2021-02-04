@@ -1,10 +1,10 @@
+import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRepositoryService } from '../auth-repository/auth-repository.service';
-import { Observable, from, of, fromEventPattern } from 'rxjs';
 import { compare, hash } from 'bcrypt';
-import { catchError, switchMap, map } from 'rxjs/operators';
-import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AuthRepositoryService } from '../auth-repository/auth-repository.service';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +70,6 @@ export class AuthService {
     return await this.authRepository.isUser(username);
   }
 
-  //Private
   private async _checkPassword(
     password: string,
     hashedPassword: string
