@@ -29,3 +29,8 @@ export class SignupRequestDto implements SignupRequest {
   @Length(4, 20)
   password!: string;
 }
+
+export class SignupConflictResponseDto {
+  notAvailableEmail!: boolean;
+  notAvailableUsername!: boolean;
+}

@@ -43,17 +43,12 @@ export class AuthRepositoryService {
   }
 
   async isUser(username: string) {
-    try {
-      const [rows] = await this.db.pool.execute(
-        `SELECT COUNT(login) as cnt
+    const [rows] = await this.db.pool.execute(
+      `SELECT COUNT(login) as cnt
           FROM users
           WHERE login=?`,
-        [username]
-      );
-      return rows[0].cnt > 0;
-    } catch (error) {
-      this.logger.error(error);
-    }
-    return false;
+      [username]
+    );
+    return rows[0].cnt > 0;
   }
 }

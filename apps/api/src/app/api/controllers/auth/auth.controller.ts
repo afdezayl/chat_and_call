@@ -1,5 +1,9 @@
 import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
-import { LoginRequestDto, SignupRequestDto } from '@chat-and-call/auth/shared';
+import {
+  LoginRequestDto,
+  SignupConflictResponseDto,
+  SignupRequestDto,
+} from '@chat-and-call/auth/shared';
 import {
   Body,
   ConflictException,
@@ -64,7 +68,11 @@ export class AuthController {
       return;
     }
 
-    throw new ConflictException();
+    const error: SignupConflictResponseDto = {
+      notAvailableEmail: true,
+      notAvailableUsername: false,
+    };
+    throw new ConflictException(error);
   }
 
   @Get('username')

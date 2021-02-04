@@ -3,9 +3,14 @@ import { Router } from '@angular/router';
 import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { FullscreenLoadingService } from '@chat-and-call/utils/forms-shared';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
-import { AuthService } from '../auth.service';
+import {
+  AuthService,
+  NotAvailableEmail,
+  NotAvailableUser,
+  Success,
+} from '../auth.service';
 import * as AuthActions from './auth.actions';
 
 @Injectable()
@@ -46,7 +51,22 @@ export class AuthEffects {
         this.loading
           .showLoading(this.authService.sendSignupRequest(request))
           .pipe(
-            map(() => AuthActions.signupSuccess()),
+            map((res) => {
+              switch (res.constructor) {
+                case Success:
+                  return AuthActions.signupSuccess();
+                case NotAvailableEmail:
+                  return AuthActions.signupFailure({
+                    error: 'Email already registered',
+                  });
+                case NotAvailableUser:
+                  return AuthActions.signupFailure({
+                    error: 'Username already registered',
+                  });
+                default:
+                  throw new Error('Flow not implemented');
+              }
+            }),
             // TODO: errors...
             catchError((error: Error) => {
               console.log(error);
