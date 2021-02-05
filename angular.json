@@ -613,6 +613,27 @@
           }
         }
       }
+    },
+    "database-entities": {
+      "root": "libs/database/entities",
+      "sourceRoot": "libs/database/entities/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/database/entities/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/database/entities"],
+          "options": {
+            "jestConfig": "libs/database/entities/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

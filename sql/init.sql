@@ -22,22 +22,21 @@ CREATE TABLE `channels` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(35) NOT NULL,
   `public` tinyint(1) NOT NULL DEFAULT '0',
-  `admin` varchar(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `admin_fk_idx` (`admin`),
-  CONSTRAINT `admin_fk` FOREIGN KEY (`admin`) REFERENCES `users` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 );
-INSERT INTO `channels` VALUES (1,'General',1,'admin');
+INSERT INTO `channels` VALUES (1,'General',1);
 
 DROP TABLE IF EXISTS `access`;
 CREATE TABLE `access` (
   `login` varchar(20) NOT NULL,
   `id_channel` bigint(20) unsigned NOT NULL,
+  `admin` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`login`,`id_channel`),
   KEY `id_channel_fk_idx` (`id_channel`),
   CONSTRAINT `id_channel_fk` FOREIGN KEY (`id_channel`) REFERENCES `channels` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `login_fk` FOREIGN KEY (`login`) REFERENCES `users` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
 );
+INSERT INTO `access` VALUES ('admin',1,1);
 
 DROP TABLE IF EXISTS `friends`;
 CREATE TABLE `friends` (

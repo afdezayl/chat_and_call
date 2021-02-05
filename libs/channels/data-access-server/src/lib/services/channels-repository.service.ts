@@ -1,6 +1,6 @@
 import { DatabasePoolService } from '@chat-and-call/utils/database-pool';
 import { Injectable, Logger } from '@nestjs/common';
-import { IChannelEntity } from '../models/channel.entity';
+import { IChannelEntity } from '@chat-and-call/database/entities';
 
 @Injectable()
 export class ChannelsRepositoryService {
@@ -11,12 +11,12 @@ export class ChannelsRepositoryService {
     try {
       const [rows] = await this.db.pool.execute<Array<IChannelEntity>>(
         `
-        SELECT ch.id, ch.title, ch.public, ch.admin
+        SELECT ch.id, ch.title, ch.public
         FROM channels ch
         INNER JOIN access a ON ch.id = a.id_channel
         WHERE a.login = ?
       UNION
-        SELECT ch.id, ch.title, ch.public, ch.admin
+        SELECT ch.id, ch.title, ch.public
         FROM channels ch
         WHERE ch.public = 1
       ORDER BY id`,

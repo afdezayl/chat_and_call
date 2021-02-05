@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { from } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { User } from '../entities';
+import { User } from '@chat-and-call/database/entities';
 
 @Injectable()
 export class AuthService {

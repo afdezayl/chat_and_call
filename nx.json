@@ -30,7 +30,8 @@
     "auth-shared": { "tags": [] },
     "socketcluster-shared": { "tags": [] },
     "contacts-feature-server-contacts": { "tags": [] },
-    "utils-forms-shared": { "tags": [] }
+    "utils-forms-shared": { "tags": [] },
+    "database-entities": { "tags": [] }
   },
   "affected": { "defaultBase": "master" }
 }

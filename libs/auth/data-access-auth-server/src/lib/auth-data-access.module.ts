@@ -1,11 +1,11 @@
 import { ChannelsDataAccessModule } from '@chat-and-call/channels/data-access-server';
 import { DatabasePoolModule } from '@chat-and-call/utils/database-pool';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { User } from '@chat-and-call/database/entities';
 import { AuthService } from './service';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { User } from './entities';
 
 @Module({
   controllers: [],

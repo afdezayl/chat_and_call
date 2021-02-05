@@ -54,6 +54,9 @@
       ],
       "@chat-and-call/utils/forms-shared": [
         "libs/utils/forms-shared/src/index.ts"
+      ],
+      "@chat-and-call/database/entities": [
+        "libs/database/entities/src/index.ts"
       ]
     }
   },
