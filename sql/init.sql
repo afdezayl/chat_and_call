@@ -22,9 +22,11 @@ CREATE TABLE `channels` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(35) NOT NULL,
   `public` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `uuid` binary(16) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `channel_uuid_idx` (`uuid`)
 );
-INSERT INTO `channels` VALUES (1,'General',1);
+INSERT INTO `channels` VALUES (1,'General',1,UUID_TO_BIN(UUID(), 1));
 
 DROP TABLE IF EXISTS `access`;
 CREATE TABLE `access` (
@@ -55,7 +57,7 @@ CREATE TABLE `friendship_requests` (
   `status` enum('pending','rejected') NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`from_login`,`to_login`),
   KEY `to_login_fk_idx` (`to_login`),
-  CONSTRAINT `from_login_fk` FOREIGN KEY (`from_login`) REFERENCES `users` (`login`) ON UPDATE CASCADE,
-  CONSTRAINT `to_login_fk` FOREIGN KEY (`to_login`) REFERENCES `users` (`login`) ON DELETE CASCADE
+  CONSTRAINT `from_login_fk` FOREIGN KEY (`from_login`) REFERENCES `users` (`login`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `to_login_fk` FOREIGN KEY (`to_login`) REFERENCES `users` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 SELECT 'INITIAL SCRIPT -> OK';

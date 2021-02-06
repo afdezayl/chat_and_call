@@ -1,4 +1,5 @@
 import {
+  BigIntType,
   Entity,
   IdentifiedReference,
   ManyToOne,
@@ -10,10 +11,15 @@ import { User } from './user.entity';
 
 @Entity()
 export class Access {
-  @ManyToOne(() => User, { primary: true, fieldName: 'login' })
+  @ManyToOne(() => User, { primary: true, joinColumn: 'login' })
   login!: string;
 
-  @ManyToOne(() => Channel, { primary: true, fieldName: 'id_channel' })
+  @ManyToOne(() => Channel, {
+    primary: true,
+    fieldName: 'id_channel',
+    joinColumn: 'id',
+    type: BigIntType,
+  })
   channel!: IdentifiedReference<Channel>;
 
   @Property()

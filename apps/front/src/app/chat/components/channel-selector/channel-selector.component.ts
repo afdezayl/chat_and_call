@@ -19,3 +19,4 @@ export class ChannelSelectorComponent implements OnInit {
     this.store.dispatch(setFocus({ id: id.toString() }));
   }
 }
+

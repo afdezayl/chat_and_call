@@ -6,12 +6,15 @@ import {
   SubscribeAction,
   TransmitAction,
 } from '@chat-and-call/socketcluster/adapter';
+import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import { Injectable, Logger } from '@nestjs/common';
-import { timeEnd } from 'console';
 
 @Injectable()
 export class InboundStrategy extends MiddlewareInboundStrategy {
-  constructor(private logger: Logger) {
+  constructor(
+    private logger: Logger,
+    private channelsService: ChannelsDataAccessService
+  ) {
     super();
     this.logger.setContext(this.constructor.name);
   }
@@ -22,12 +25,17 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
 
   onPublishIn?(action: PublishInAction): void | Promise<void> {
     this.logger.log('publishIn middleware' + JSON.stringify(action.data));
-    action.allow();
+    action.block(new Error('Unauthorized'));
   }
 
-  onSubscribe?(action: SubscribeAction): void | Promise<void> {
-    this.logger.log('subscribe -> ' + action.channel);
-    action.allow();
+  async onSubscribe?(action: SubscribeAction): Promise<void> {
+    const user = action.socket?.authToken?.username ?? null;
+    if (await this.channelsService.checkChannelAccess(user, action.channel)) {
+      //this.logger.log(user + ' subscribe -> ' + action.channel);
+      action.allow();
+    } else {
+      action.block(new Error('Unauthorized'));
+    }
   }
 
   default(action: AGAction): void | Promise<void> {

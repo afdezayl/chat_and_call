@@ -1,5 +1,9 @@
 import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
-import { BasicMessage } from '@chat-and-call/channels/shared';
+import {
+  BasicMessage,
+  ChannelType,
+  CreateChannelRequest,
+} from '@chat-and-call/channels/shared';
 import {
   AuthorizeGuard,
   SocketCrudGateway,
@@ -7,10 +11,10 @@ import {
   SocketPost,
   SocketProcedure,
 } from '@chat-and-call/socketcluster/utils-crud-server';
-import { UseGuards, Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
-import { from, of, EMPTY, throwError } from 'rxjs';
-import { catchError, map, tap, switchMap, retry } from 'rxjs/operators';
+import { EMPTY, from, of, throwError } from 'rxjs';
+import { catchError, retry, switchMap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 
 @UseGuards(AuthorizeGuard)
@@ -26,7 +30,38 @@ export class ChannelsGateway {
   @SocketGet('')
   async getChannels(@ConnectedSocket() socket: AGServerSocket) {
     const user = socket?.authToken?.username;
-    return await this.channelService.getChannels(user);
+    const channels = await this.channelService.getChannels(user);
+    channels.forEach((ch) => socket.exchange.subscribe(ch.id));
+
+    return channels;
+  }
+
+  @SocketPost('public')
+  createPublicChannel(
+    @ConnectedSocket() socket: AGServerSocket,
+    @MessageBody() data: CreateChannelRequest
+  ) {
+    const user = socket?.authToken?.username;
+
+    throw Error('Unauthorized');
+    return this.channelService.createChannel({
+      title: data.title,
+      type: ChannelType.Public,
+      user,
+    });
+  }
+
+  @SocketPost('private')
+  createPrivateChannel(
+    @ConnectedSocket() socket: AGServerSocket,
+    @MessageBody() data: CreateChannelRequest
+  ) {
+    const user = socket?.authToken?.username;
+    return this.channelService.createChannel({
+      title: data.title,
+      type: ChannelType.Private,
+      user,
+    });
   }
 
   @SocketProcedure('publish')
@@ -37,9 +72,9 @@ export class ChannelsGateway {
     const channels: Array<string> = socket?.authToken?.channels ?? [];
     const user = socket?.authToken?.username;
 
-    if (channels.includes(data.channel) === false) {
+    /* if (channels.includes(data.channel) === false) {
       throw new WsException('Unauthorized');
-    }
+    } */
 
     const newMessage = {
       ...data,
@@ -50,7 +85,6 @@ export class ChannelsGateway {
     return from(
       socket.server.exchange.transmitPublish(data.channel, newMessage)
     );
-    //return newMessage;
   }
 
   @SocketPost('call')
@@ -70,7 +104,7 @@ export class ChannelsGateway {
       retry(3),
       catchError((err) => {
         this.logger.error(err);
-        return throwError('Unavailable')
+        return throwError('Unavailable');
       })
     );
 

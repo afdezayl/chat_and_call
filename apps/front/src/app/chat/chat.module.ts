@@ -15,10 +15,11 @@ import { VideoCallComponent } from './components/video-call/video-call.component
 import { ChannelSelectorComponent } from './components/channel-selector/channel-selector.component';
 import { MessageBarComponent } from './components/message-bar/message-bar.component';
 import { ChannelInfoComponent } from './components/channel-info/channel-info.component';
+import { ChannelIconPipe } from './components/channel-selector/channel-icon.pipe';
 
 
 @NgModule({
-  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent, VideoCallComponent, ChannelSelectorComponent, MessageBarComponent, ChannelInfoComponent],
+  declarations: [ChatLayoutComponent, ChatHeaderComponent, MessageComponent, VideoCallComponent, ChannelSelectorComponent, MessageBarComponent, ChannelInfoComponent, ChannelIconPipe],
   imports: [
     CommonModule,
     ChatRoutingModule,
