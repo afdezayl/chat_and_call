@@ -21,7 +21,6 @@
     "socketcluster-adapter": { "tags": [] },
     "socketcluster-utils-crud-server": { "tags": [] },
     "auth-data-access-auth-server": { "tags": [] },
-    "utils-database-pool": { "tags": [] },
     "auth-feature-auth-web": { "tags": [] },
     "socketcluster-socket-client-web": { "tags": [] },
     "material-ui-material-design": { "tags": [] },

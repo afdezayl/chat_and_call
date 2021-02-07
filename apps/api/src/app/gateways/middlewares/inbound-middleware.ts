@@ -23,8 +23,7 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
     action.allow();
   }
 
-  onPublishIn?(action: PublishInAction): void | Promise<void> {
-    this.logger.log('publishIn middleware' + JSON.stringify(action.data));
+  onPublishIn?(action: PublishInAction): void {
     action.block(new Error('Unauthorized'));
   }
 

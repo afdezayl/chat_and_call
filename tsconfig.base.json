@@ -29,9 +29,6 @@
       "@chat-and-call/auth/data-access-auth-server": [
         "libs/auth/data-access-auth-server/src/index.ts"
       ],
-      "@chat-and-call/utils/database-pool": [
-        "libs/utils/database-pool/src/index.ts"
-      ],
       "@chat-and-call/auth/feature-auth-web": [
         "libs/auth/feature-auth-web/src/index.ts"
       ],

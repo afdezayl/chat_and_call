@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BasicMessage } from '@chat-and-call/channels/shared';
+import { BasicMessage, ChannelType } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import { sendMessage } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
@@ -14,8 +14,8 @@ export class MessageBarComponent {
   @ViewChild('textInput') textInput!: ElementRef<HTMLInputElement>;
 
   focus$ = this.store.select(getFocusedChannel);
-  //.pipe(tap(this.setAutofocus));
 
+  channelTypes = ChannelType;
   messageForm: FormGroup = this.fb.group({
     text: this.fb.control('', Validators.required),
     file: this.fb.control(null),

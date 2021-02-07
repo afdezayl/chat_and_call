@@ -6,12 +6,7 @@ export class UuidBinaryType extends Type<string, Buffer> {
     return validate(value) ? Buffer.from(parse(value)) : value;
   }
 
-  convertToJSValue(value: any): string {
-    console.log('toJS value: ', value);
-    if (Reflect.has(value, 'uuid')) {
-      return Buffer.isBuffer(value.uuid) ? stringify(value.uuid) : value.uuid;
-    }
-
+  convertToJSValue(value: Buffer): string {
     return stringify(value);
   }
 

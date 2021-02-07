@@ -7,7 +7,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import * as cookieUtility from 'cookie';
 import * as cookieParser from 'cookie-parser';
 import { from, of, throwError, EMPTY } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AGServer } from 'socketcluster-server';
 import { IncomingMessage } from 'http';
 import { ConfigService } from '@nestjs/config';
@@ -48,14 +48,18 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
       : '';
     const authToken = signedCookies?.jwt || null;
 
-    //console.log(refreshToken, authToken);
-
     const tryRefresh$ = of(EMPTY).pipe(
       switchMap(() => this.authService.validateToken(refreshToken)),
-      switchMap((decoded) =>
-        this.authService.getTokenContent(decoded.username)
+      tap((content) =>
+        console.warn(
+          '*********************************refreshing*****************************\n',
+          refreshToken,
+          content
+        )
       ),
-      switchMap((content) => socket.setAuthToken(content)),
+      switchMap((content) =>
+        socket.setAuthToken({ username: content.username })
+      ),
       catchError((err) => throwError(new Error('Unauthorized')))
     );
 

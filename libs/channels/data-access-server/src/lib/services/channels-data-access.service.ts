@@ -1,13 +1,12 @@
 import { Channel, ChannelType } from '@chat-and-call/channels/shared';
-import { ContactsRepository } from '@chat-and-call/contacts/feature-server-contacts';
 import {
   Access,
   Channel as ChannelEntity,
 } from '@chat-and-call/database/entities';
-import { EntityManager, EntityRepository, LoadStrategy } from '@mikro-orm/core';
+import { EntityRepository, LoadStrategy } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { ChannelsRepositoryService } from './channels-repository.service';
 
 @Injectable()
 export class ChannelsDataAccessService {
@@ -16,9 +15,7 @@ export class ChannelsDataAccessService {
     private readonly accessRepository: EntityRepository<Access>,
     @InjectRepository(ChannelEntity)
     private readonly channelRepository: EntityRepository<ChannelEntity>,
-    private em: EntityManager,
-    private channelsRepo: ChannelsRepositoryService,
-    private contactsRepo: ContactsRepository
+    private em: EntityManager
   ) {}
 
   async getChannels(user: string): Promise<Array<Channel>> {
@@ -38,10 +35,11 @@ export class ChannelsDataAccessService {
         type: ch.public ? ChannelType.Public : ChannelType.Private,
       }));
 
-    const contacts = await this.contactsRepo.getContactsFromUser(user);
-    const contactsChannels: Array<Channel> = contacts.map((x) => ({
-      id: `${x.login1}-${x.login2}`,
-      title: x.login1 === user ? x.login2 : x.login1,
+    const contactsChannels: Array<Channel> = (
+      await this.getFriendsChannels(user)
+    ).map((f) => ({
+      id: `${f.login1}+${f.login2}`,
+      title: f.login1 === user ? f.login2 : f.login1,
       type: ChannelType.Personal,
       admin: null,
     }));
@@ -87,8 +85,26 @@ export class ChannelsDataAccessService {
   async checkChannelAccess(user: string, channel: string): Promise<boolean> {
     /* this.em.find(ChannelEntity, { uuid: channel }, {}); */
     const ch = await this.channelRepository.findOne({ uuid: channel });
-    const hasAccess =
+    const isValidGroupAccess = async () =>
       (await this.accessRepository.count({ login: user, channel: ch?.id })) > 0;
+    const isValidPersonalChannel = async () =>
+      (await this.getFriendsChannels(user))
+        .map((f) => `${f.login1}+${f.login2}`)
+        .filter((str) => str === channel).length > 0;
+
+    const hasAccess = (await isValidGroupAccess()) || isValidPersonalChannel();
+
     return hasAccess;
+  }
+
+  private async getFriendsChannels(user: string) {
+    const qb = this.em.getKnex();
+    const friends = await qb
+      .select<Array<{ login1: string; login2: string }>>([`login1`, `login2`])
+      .from('friends')
+      .where({ login1: user })
+      .orWhere({ login2: user });
+
+    return friends;
   }
 }

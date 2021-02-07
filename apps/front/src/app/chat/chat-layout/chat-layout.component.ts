@@ -22,17 +22,7 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
-import {
-  debounceTime,
-  delay,
-  expand,
-  filter,
-  map,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
+import { delay, filter, map, take, takeUntil, tap } from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
   getFocusedChannel,

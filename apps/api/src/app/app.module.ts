@@ -1,4 +1,3 @@
-import { DatabasePoolModule } from '@chat-and-call/utils/database-pool';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -13,7 +12,6 @@ import { environment } from '../environments/environment';
   imports: [
     ConfigModule.forRoot(),
     ControllersModule,
-    DatabasePoolModule,
     GatewaysModule,
     LoggerModule,
     MikroOrmModule.forRootAsync({

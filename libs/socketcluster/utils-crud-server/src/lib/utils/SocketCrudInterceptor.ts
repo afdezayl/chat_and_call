@@ -1,10 +1,7 @@
 import { NestGateway } from '@nestjs/websockets/interfaces/nest-gateway.interface';
 
 // TODO: Change to filter, throw exception?
-export function SocketCrudInterceptor(
-  method: string,
-  path: string
-): MethodDecorator {
+export function SocketCrudInterceptor(): MethodDecorator {
   return (
     target: NestGateway,
     propertyKey: string | symbol,

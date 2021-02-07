@@ -1,6 +1,7 @@
 import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import {
   BasicMessage,
+  Message,
   ChannelType,
   CreateChannelRequest,
 } from '@chat-and-call/channels/shared';
@@ -27,7 +28,7 @@ export class ChannelsGateway {
     this.logger.setContext(this.constructor.name);
   }
 
-  @SocketGet('')
+  @SocketGet()
   async getChannels(@ConnectedSocket() socket: AGServerSocket) {
     const user = socket?.authToken?.username;
     const channels = await this.channelService.getChannels(user);
@@ -69,14 +70,13 @@ export class ChannelsGateway {
     @ConnectedSocket() socket: AGServerSocket,
     @MessageBody() data: BasicMessage
   ) {
-    const channels: Array<string> = socket?.authToken?.channels ?? [];
     const user = socket?.authToken?.username;
 
-    /* if (channels.includes(data.channel) === false) {
+    if (!socket.isSubscribed(data.channel)) {
       throw new WsException('Unauthorized');
-    } */
+    }
 
-    const newMessage = {
+    const newMessage: Message = {
       ...data,
       from: user,
       date: new Date(),

@@ -14,9 +14,9 @@ function executeGatewayFunctions(path: string) {
   };
 }
 
-export const SocketGet = (path: string) => {
+export const SocketGet = (path: string = '') => {
   return applyDecorators(
-    SocketCrudInterceptor('GET', path),
+    SocketCrudInterceptor(),
     SubscribeMessage(`#get:${path}`),
     JoinPathInterceptor(path, 'get'),
     UsePipes(SocketCrudValidationPipe),
@@ -24,9 +24,9 @@ export const SocketGet = (path: string) => {
   );
 };
 
-export const SocketPost = (path: string) => {
+export const SocketPost = (path: string = '') => {
   return applyDecorators(
-    SocketCrudInterceptor('POST', path),
+    SocketCrudInterceptor(),
     SubscribeMessage(`#post:${path}`),
     JoinPathInterceptor(path, 'post'),
     UsePipes(SocketCrudValidationPipe),
@@ -34,9 +34,9 @@ export const SocketPost = (path: string) => {
   );
 };
 
-export const SocketPut = (path: string) => {
+export const SocketPut = (path: string = '') => {
   return applyDecorators(
-    SocketCrudInterceptor('PUT', path),
+    SocketCrudInterceptor(),
     SubscribeMessage(`#put:${path}`),
     JoinPathInterceptor(path, 'put'),
     UsePipes(SocketCrudValidationPipe),
@@ -44,9 +44,9 @@ export const SocketPut = (path: string) => {
   );
 };
 
-export const SocketDelete = (path: string) => {
+export const SocketDelete = (path: string = '') => {
   return applyDecorators(
-    SocketCrudInterceptor('DELETE', path),
+    SocketCrudInterceptor(),
     SubscribeMessage(`#delete:${path}`),
     JoinPathInterceptor(path, 'delete'),
     UsePipes(SocketCrudValidationPipe),

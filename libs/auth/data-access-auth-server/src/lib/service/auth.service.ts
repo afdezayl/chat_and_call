@@ -1,19 +1,15 @@
-import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
+import { User } from '@chat-and-call/database/entities';
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { from } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { User } from '@chat-and-call/database/entities';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: EntityRepository<User>,
-    private channelService: ChannelsDataAccessService,
     private jwtService: JwtService,
     private logger: Logger
   ) {
@@ -31,19 +27,8 @@ export class AuthService {
     return await this._checkPassword(password, user.password);
   }
 
-  getTokenContent(username: string) {
-    return from(this.channelService.getChannels(username)).pipe(
-      map((channels) => channels.map((ch) => ch.id)),
-      map((channels) => ({ username, channels }))
-    );
-  }
-
   async getTokens(username: string): Promise<{ jwt: string; refresh: string }> {
-    const channels = (await this.channelService.getChannels(username)).map(
-      (ch) => ch.id
-    );
-
-    const jwt = await this.jwtService.signAsync({ username, channels });
+    const jwt = await this.jwtService.signAsync({ username });
     const refresh = await this.jwtService.signAsync(
       { username },
       { expiresIn: '24h' }

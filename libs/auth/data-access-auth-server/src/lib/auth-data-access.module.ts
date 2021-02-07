@@ -1,5 +1,3 @@
-import { ChannelsDataAccessModule } from '@chat-and-call/channels/data-access-server';
-import { DatabasePoolModule } from '@chat-and-call/utils/database-pool';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,8 +8,6 @@ import { AuthService } from './service';
 @Module({
   controllers: [],
   imports: [
-    ChannelsDataAccessModule,
-    DatabasePoolModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

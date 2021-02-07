@@ -468,32 +468,6 @@
         }
       }
     },
-    "utils-database-pool": {
-      "root": "libs/utils/database-pool",
-      "sourceRoot": "libs/utils/database-pool/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/utils/database-pool/tsconfig.lib.json",
-              "libs/utils/database-pool/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/utils/database-pool/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/utils/database-pool/jest.config.js",
-            "tsConfig": "libs/utils/database-pool/tsconfig.spec.json",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
     "utils-feature-gateway-explorer": {
       "root": "libs/utils/feature-gateway-explorer",
       "sourceRoot": "libs/utils/feature-gateway-explorer/src",
