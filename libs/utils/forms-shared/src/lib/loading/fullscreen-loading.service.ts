@@ -2,7 +2,7 @@ import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { EMPTY, ObservableInput, of, throwError } from 'rxjs';
-import { catchError, delay, switchMap, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 
 @Injectable({
@@ -17,7 +17,6 @@ export class FullscreenLoadingService {
     return of(EMPTY).pipe(
       tap((_) => this.show()),
       switchMap((_) => stream$),
-      delay(20000),
       tap((_) => this.hide()),
       catchError((err) => {
         this.hide();
