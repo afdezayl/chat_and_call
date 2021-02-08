@@ -17,6 +17,7 @@ export class FullscreenLoadingService {
     return of(EMPTY).pipe(
       tap((_) => this.show()),
       switchMap((_) => stream$),
+      delay(20000),
       tap((_) => this.hide()),
       catchError((err) => {
         this.hide();
