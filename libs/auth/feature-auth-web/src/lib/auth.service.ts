@@ -44,6 +44,16 @@ class Cache<T> {
     return this.values.find(this.keyFilter(key))?.value ?? null;
   }
 
+  getOrStore(key: string, value: T) {
+    const storedValue = this.getValue(key);
+    if (storedValue !== null) {
+      return storedValue;
+    }
+    this.store(key, value);
+
+    return value;
+  }
+
   store(key: string, value: T) {
     if (this.values.length >= this.length) {
       this.values.shift();
@@ -108,37 +118,27 @@ export class AuthService {
 
   private readonly usernameCache = new Cache<Observable<boolean>>(10);
   isUsernameAvailable(username: string): Observable<boolean> {
-    const value = this.usernameCache.getValue(username);
-    if (value) {
-      return value;
-    }
-    const obs$ = this.http
+    const apiCall$ = this.http
       .get<boolean>('api/auth/username', {
         params: {
           user: username,
         },
       })
       .pipe(shareReplay(1));
-    this.usernameCache.store(username, obs$);
 
-    return obs$;
+    return this.usernameCache.getOrStore(username, apiCall$);
   }
 
   private readonly emailCache = new Cache<Observable<boolean>>(10);
   isEmailAvailable(email: string) {
-    const value = this.emailCache.getValue(email);
-    if (value) {
-      return value;
-    }
-    const obs$ = this.http
+    const apiCall$ = this.http
       .get<boolean>('api/auth/email', {
         params: {
           email,
         },
       })
       .pipe(shareReplay(1));
-    this.emailCache.store(email, obs$);
 
-    return obs$;
+    return this.emailCache.getOrStore(email, apiCall$);
   }
 }
