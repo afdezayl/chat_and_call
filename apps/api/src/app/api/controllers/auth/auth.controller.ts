@@ -1,4 +1,8 @@
-import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
+import {
+  AuthService,
+  Fail,
+  Success,
+} from '@chat-and-call/auth/data-access-auth-server';
 import {
   LoginRequestDto,
   SignupConflictResponseDto,
@@ -16,8 +20,8 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 import { Request, Response } from 'express';
-import { of } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
@@ -58,26 +62,34 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() data: SignupRequestDto) {
-    const isCreated = await this.authService.createNewUser(
+    const result = await this.authService.createNewUser(
       data.username,
       data.password,
       data.email
     );
 
-    if (isCreated) {
+    if (result instanceof Success) {
       return;
+    } else if (result instanceof Fail) {
+      throw new WsException('internal error');
+    } else {
+      const error: SignupConflictResponseDto = {
+        notAvailableEmail: result.isEmailTaken,
+        notAvailableUsername: result.isUsernameTaken,
+      };
+      throw new ConflictException(error);
     }
-
-    const error: SignupConflictResponseDto = {
-      notAvailableEmail: true,
-      notAvailableUsername: false,
-    };
-    throw new ConflictException(error);
   }
 
   @Get('username')
-  async chechUsername(@Query('user') username: string) {
-    const isUser = await this.authService.isUser(username);
-    return of(!isUser);
+  async checkUsername(@Query('user') username: string) {
+    const isUser = await this.authService.isUsernameTaken(username);
+    return !isUser;
+  }
+
+  @Get('email')
+  async checkEmail(@Query('email') email: string) {
+    const isEmail = await this.authService.isEmailTaken(email);
+    return !isEmail;
   }
 }

@@ -23,13 +23,5 @@ export const sendSignupRequest = createAction(
 export const signupSuccess = createAction('[Auth] Signup success');
 export const signupFailure = createAction(
   '[Auth] Signup Failure',
-  props<{ error: string }>()
-);
-export const getUsernameAvailability = createAction(
-  '[Auth] Check username',
-  props<{ user: string }>()
-);
-export const setUsernameAvailability = createAction(
-  '[Auth] Available username',
-  props<{ user: string; isAvailable: boolean }>()
+  props<{ usernameFail: boolean; emailFail: boolean }>()
 );

@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -13,24 +15,17 @@ import {
 } from '@angular/forms';
 import {
   AuthState,
-  getUsernameAvailability,
-  previousUsernameSearch,
   sendSignupRequest,
+  signupError,
 } from '@chat-and-call/auth/feature-auth-web';
 import {
   emailValidator,
   MustMatchValidator,
 } from '@chat-and-call/utils/forms-shared';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  take,
-  tap,
-} from 'rxjs/operators';
+import { AuthService } from 'libs/auth/feature-auth-web/src/lib/auth.service';
+import { Observable, Subject, timer } from 'rxjs';
+import { filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { signupErrors } from './signup-i18n-errors';
 
 @Component({
@@ -39,39 +34,77 @@ import { signupErrors } from './signup-i18n-errors';
   styleUrls: ['./signup-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SignupLayoutComponent {
-  // TODO: Validations
+export class SignupLayoutComponent implements OnInit, OnDestroy {
+  //#region Form
+  usernameControl = this.fb.control('', {
+    validators: [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(20),
+      Validators.pattern(/^[A-Z][0-9A-Z]{3,19}$/i),
+    ],
+    asyncValidators: this.isUsernameAvailable().bind(this),
+  });
+
+  emailControl = this.fb.control(
+    '',
+    [Validators.required, emailValidator],
+    [this.isEmailAvailable().bind(this)]
+  );
+
+  passwordControl = this.fb.control('', [
+    Validators.required,
+    Validators.minLength(4),
+    Validators.maxLength(20),
+  ]);
+
+  password2Control = this.fb.control('', [Validators.required]);
+
   form: FormGroup = this.fb.group(
     {
-      username: this.fb.control('', {
-        validators: [
-          Validators.required,
-          Validators.minLength(4),
-          Validators.maxLength(20),
-          Validators.pattern(/^[A-Z][0-9A-Z]{3,19}$/i),
-        ],
-        asyncValidators: this.userValidator().bind(this),
-      }),
-      email: this.fb.control('', [Validators.required, emailValidator]),
-      password: this.fb.control('', [
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(20),
-      ]),
-      password2: this.fb.control('', [Validators.required]),
+      username: this.usernameControl,
+      email: this.emailControl,
+      password: this.passwordControl,
+      password2: this.password2Control,
     },
     {
       validators: MustMatchValidator('password', 'password2'),
     }
   );
+  //#endregion
 
   errors = signupErrors;
+
+  showPassword = false;
+  showPassword2 = false;
+
+  destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private store: Store<AuthState>,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    this.store
+      .select(signupError)
+      .pipe(
+        tap((x) => console.log('form error', x)),
+        filter((x) => x !== null),
+        tap((x) => {
+          this.usernameControl.updateValueAndValidity();
+          this.emailControl.updateValueAndValidity();
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   onSubmit() {
     if (this.form.valid) {
@@ -80,28 +113,28 @@ export class SignupLayoutComponent {
     }
   }
 
-  userValidator(): AsyncValidatorFn {
+  isUsernameAvailable(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      const username = control.value;
-
-      const sendRequest = (user: string) =>
-        this.store.dispatch(getUsernameAvailability({ user }));
-
-      return this.store.select(previousUsernameSearch).pipe(
-        distinctUntilChanged(),
-        debounceTime(1500),
-        tap((last) => {
-          if (last?.user !== username) {
-            sendRequest(username);
-          }
-        }),
-        filter((search) => search?.user === username),
-        take(1),
-        map((search) => {
-          control.markAsTouched();
-          return search?.isAvailable ? null : { unavailable: true };
-        }),
+      return timer(1000).pipe(
+        map((_) => <string>control.value ?? ''),
+        switchMap((username) => this.authService.isUsernameAvailable(username)),
+        map((isAvailable) => (isAvailable ? null : { unavailable: true })),
         tap((_) => {
+          control.markAsTouched();
+          this.cdr.markForCheck();
+        })
+      );
+    };
+  }
+
+  isEmailAvailable(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return timer(1000).pipe(
+        map((_) => <string>control.value ?? ''),
+        switchMap((email) => this.authService.isEmailAvailable(email)),
+        map((isAvailable) => (isAvailable ? null : { unavailable: true })),
+        tap((_) => {
+          control.markAsTouched();
           this.cdr.markForCheck();
         })
       );

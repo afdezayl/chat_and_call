@@ -5,6 +5,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 
+export class Success {}
+export class Fail {}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -49,7 +52,9 @@ export class AuthService {
     username: string,
     password: string,
     email: string
-  ): Promise<boolean> {
+  ): Promise<
+    Success | { isEmailTaken: boolean; isUsernameTaken: boolean } | Fail
+  > {
     try {
       const hashedPassword = await this._hashPassword(password);
       const user = this.userRepository.create({
@@ -59,28 +64,27 @@ export class AuthService {
       });
 
       await this.userRepository.persistAndFlush(user);
-      return true;
+      return new Success();
     } catch (error) {
-      const isEmailTaken =
-        (await this.userRepository.count({ mail: email })) > 0;
-      const isUsernameTaken =
-        (await this.userRepository.count({ login: username })) > 0;
-
-      console.log({ isEmailTaken, isUsernameTaken });
+      const isEmailTaken = await this.isEmailTaken(email);
+      const isUsernameTaken = await this.isUsernameTaken(username);
 
       if (isEmailTaken || isUsernameTaken) {
-        return false;
-      } else {
-        this.logger.error(error);
+        return { isEmailTaken, isUsernameTaken };
       }
-      return false;
+
+      //TODO: return internal error
+      this.logger.error(error);
+      return new Fail();
     }
   }
 
-  async isUser(username: string) {
-    const isUser = (await this.userRepository.count({ login: username })) > 0;
+  async isUsernameTaken(username: string) {
+    return (await this.userRepository.count({ login: username })) > 0;
+  }
 
-    return isUser;
+  async isEmailTaken(email: string) {
+    return (await this.userRepository.count({ mail: email })) > 0;
   }
 
   private async _checkPassword(

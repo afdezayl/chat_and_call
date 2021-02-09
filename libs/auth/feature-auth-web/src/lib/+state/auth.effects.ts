@@ -5,12 +5,7 @@ import { FullscreenLoadingService } from '@chat-and-call/utils/forms-shared';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
-import {
-  AuthService,
-  NotAvailableEmail,
-  NotAvailableUser,
-  Success,
-} from '../auth.service';
+import { AuthService, NotAvailableUserOrEmail, Success } from '../auth.service';
 import * as AuthActions from './auth.actions';
 
 @Injectable()
@@ -52,44 +47,23 @@ export class AuthEffects {
           .showLoading(this.authService.sendSignupRequest(request))
           .pipe(
             map((res) => {
-              switch (res.constructor) {
-                case Success:
-                  return AuthActions.signupSuccess();
-                case NotAvailableEmail:
-                  return AuthActions.signupFailure({
-                    error: 'Email already registered',
-                  });
-                case NotAvailableUser:
-                  return AuthActions.signupFailure({
-                    error: 'Username already registered',
-                  });
-                default:
-                  throw new Error('Flow not implemented');
+              if (res instanceof Success) {
+                return AuthActions.signupSuccess();
+              } else if (res instanceof NotAvailableUserOrEmail) {
+                return AuthActions.signupFailure({
+                  emailFail: res.emailTaken,
+                  usernameFail: res.usernameTaken,
+                });
               }
-            }),
+              throw new Error('Flow not implemented');
+            })
             // TODO: errors...
-            catchError((error: Error) => {
+            /* catchError((error: Error) => {
               console.log(error);
               const message = error.message;
               return of(AuthActions.signupFailure({ error: message }));
-            })
+            }) */
           )
-      )
-    )
-  );
-
-  usernameCheck$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.getUsernameAvailability),
-      mergeMap(({ user }) =>
-        this.authService.isUsernameAvailable(user).pipe(
-          map((isValid) =>
-            AuthActions.setUsernameAvailability({
-              user,
-              isAvailable: isValid,
-            })
-          )
-        )
       )
     )
   );

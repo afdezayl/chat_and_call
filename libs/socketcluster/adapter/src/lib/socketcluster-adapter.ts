@@ -7,7 +7,6 @@ import {
   WsMessageHandler,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import * as cookieUtility from 'cookie';
 import { of } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { switchMap } from 'rxjs/operators';
@@ -270,59 +269,5 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         this.logger.warn(`Not implemented type "${action.type}"!`);
         action.allow();
     }
-  }
-
-  private _setConnectionLogs() {
-    (async () => {
-      for await (const { socket, id } of this._server.listener('connection')) {
-        console.log(
-          'Clients: ' + this._server.clientsCount + ' -> connected - ' + id
-        );
-      }
-    })();
-    (async () => {
-      for await (const { socket } of this._server.listener('disconnection')) {
-        console.log('disconnected - ' + socket.id);
-      }
-    })();
-    (async () => {
-      for await (const { socket, authToken } of this._server.listener(
-        'authentication'
-      )) {
-        const serverInstance = this._server.clients[socket.id];
-
-        if (serverInstance.authState === serverInstance.AUTHENTICATED) {
-          console.log(
-            'authorized - ' +
-              socket.id +
-              ' - ' +
-              socket.authState +
-              ' - server: ' +
-              this._server.clients[socket.id]['authState']
-          );
-        }
-
-        if (
-          authToken &&
-          serverInstance.authState === serverInstance.UNAUTHENTICATED
-        ) {
-          await serverInstance.setAuthToken(authToken);
-          console.log('second auth...');
-        }
-      }
-    })();
-
-    (async () => {
-      for await (const {
-        authError,
-        signedAuthToken,
-        socket,
-      } of this._server.listener('badSocketAuthToken')) {
-        const cookies = socket?.request?.headers?.cookie ?? '';
-        const parsedCookies = cookieUtility.parse(cookies);
-
-        console.log(authError, signedAuthToken, parsedCookies);
-      }
-    })();
   }
 }

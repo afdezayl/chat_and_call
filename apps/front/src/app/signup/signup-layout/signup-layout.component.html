@@ -17,16 +17,15 @@
         <mat-form-field appearance="outline" [controlErrors]="errors.username">
           <mat-label>{{ t('user') }}</mat-label>
           <input matInput type="text" formControlName="username" required />
-          <span matSuffix>
+          <span matSuffix [ngSwitch]="usernameControl.status">
             <mat-spinner
-              *ngIf="form.controls['username']?.pending"
+              *ngSwitchCase="'PENDING'"
               [diameter]="20"
             ></mat-spinner>
-            <mat-icon
-              *ngIf="form.controls['username'].valid"
-              style="color: green"
-              >check_circle_outline</mat-icon
-            >
+            <mat-icon *ngSwitchCase="'VALID'" style="color: green">
+              check_circle_outline
+            </mat-icon>
+            <mat-icon *ngSwitchDefault></mat-icon>
           </span>
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
@@ -39,6 +38,16 @@
             formControlName="email"
             required
           />
+          <span matSuffix [ngSwitch]="emailControl.status">
+            <mat-spinner
+              *ngSwitchCase="'PENDING'"
+              [diameter]="20"
+            ></mat-spinner>
+            <mat-icon *ngSwitchCase="'VALID'" style="color: green">
+              check_circle_outline
+            </mat-icon>
+            <mat-icon *ngSwitchDefault></mat-icon>
+          </span>
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
 
@@ -48,9 +57,12 @@
             matInput
             [placeholder]="t('password')"
             formControlName="password"
-            type="password"
+            [type]="showPassword ? 'text' : 'password'"
             required
           />
+          <mat-icon matSuffix (click)="showPassword = !showPassword">{{
+            showPassword ? 'visibility_off' : 'visibility'
+          }}</mat-icon>
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
 
@@ -60,9 +72,12 @@
             matInput
             [placeholder]="t('repeatPassword')"
             formControlName="password2"
-            type="password"
+            [type]="showPassword2 ? 'text' : 'password'"
             required
           />
+          <mat-icon matSuffix (click)="showPassword2 = !showPassword2">{{
+            showPassword2 ? 'visibility_off' : 'visibility'
+          }}</mat-icon>
           <mat-error autofillErrors></mat-error>
         </mat-form-field>
 

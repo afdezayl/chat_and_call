@@ -32,6 +32,11 @@ export const signupErrors: Record<string, Array<ErrorTranslation>> = {
       literal: 'invalidEmail',
       scope: 'signup',
     },
+    {
+      error: 'unavailable',
+      literal: 'unavailableEmail',
+      scope: 'signup',
+    },
   ],
   password: [
     {

@@ -20,6 +20,10 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./signup/signup.module').then((m) => m.SignupModule),
       },
+      {
+        path: '**',
+        redirectTo: 'home/login',
+      },
     ],
   },
   {

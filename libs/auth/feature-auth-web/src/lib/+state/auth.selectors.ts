@@ -13,7 +13,7 @@ export const isValidAttempt = createSelector(
   (state: AuthState) => state.isValidLoginAttempt
 );
 
-export const previousUsernameSearch = createSelector(
+export const signupError = createSelector(
   getAuthState,
-  (state: AuthState) => state.usernameSearch
+  (state: AuthState) => state.signupError
 );

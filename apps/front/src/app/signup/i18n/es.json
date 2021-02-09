@@ -8,5 +8,6 @@
   "minMaxLength": "De {{min}} a {{max}} caracteres",
   "usernamePattern": "Debe comenzar por letra y ser alfanumérico",
   "invalidEmail": "Email no válido",
+  "unavailableEmail": "Correo ya existente",
   "notMatchingPasswords": "Las contraseñas no coinciden"
 }

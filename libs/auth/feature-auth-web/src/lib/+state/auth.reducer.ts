@@ -1,4 +1,4 @@
-import { createReducer, on, Action } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
 
 export const AUTH_FEATURE_KEY = 'auth';
@@ -6,21 +6,19 @@ export const AUTH_FEATURE_KEY = 'auth';
 export interface AuthState {
   authorized: boolean;
   isValidLoginAttempt: boolean;
-  error: string | null;
-  usernameSearch: UserSearch | null;
+  signupError: SignupError | null;
   createdUser: boolean;
 }
 
-export interface UserSearch {
-  user: string;
-  isAvailable: boolean;
+export interface SignupError {
+  email: boolean;
+  username: boolean;
 }
 
 export const initialState: AuthState = {
   authorized: false,
   isValidLoginAttempt: true,
-  error: null,
-  usernameSearch: null,
+  signupError: null,
   createdUser: false,
 };
 
@@ -38,20 +36,15 @@ const authReducer = createReducer(
     isValidLoginAttempt: false,
     error,
   })),
-  on(AuthActions.setUsernameAvailability, (state, { user, isAvailable }) => ({
-    ...state,
-    usernameSearch: {
-      user,
-      isAvailable,
-    },
-  })),
   on(AuthActions.signupSuccess, (state) => ({
     ...state,
     createdUser: true,
+    signupError: null,
   })),
-  on(AuthActions.signupFailure, (state, { error }) => ({
+  on(AuthActions.signupFailure, (state, { usernameFail, emailFail }) => ({
     ...state,
     createdUser: false,
+    signupError: { email: emailFail, username: usernameFail },
   }))
 );
 
