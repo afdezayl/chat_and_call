@@ -33,6 +33,8 @@ export class LoginLayoutComponent {
   errors = loginErrors;
   //#endregion
 
+  showPassword: boolean = false;
+
   authorizeState$ = this.store.pipe(select(isLogged));
   isValidLoginAttempt$ = this.store.pipe(select(isValidAttempt));
 

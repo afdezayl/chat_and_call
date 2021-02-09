@@ -30,7 +30,8 @@
     "socketcluster-shared": { "tags": [] },
     "contacts-feature-server-contacts": { "tags": [] },
     "utils-forms-shared": { "tags": [] },
-    "database-entities": { "tags": [] }
+    "database-entities": { "tags": [] },
+    "material-ui-theme-picker": { "tags": [] }
   },
   "affected": { "defaultBase": "master" }
 }

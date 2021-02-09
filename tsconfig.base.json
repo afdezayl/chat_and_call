@@ -10,8 +10,13 @@
     "importHelpers": true,
     "target": "ES2015",
     "module": "ESNext",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": true,
@@ -41,8 +46,12 @@
       "@chat-and-call/channels/data-access-server": [
         "libs/channels/data-access-server/src/index.ts"
       ],
-      "@chat-and-call/channels/shared": ["libs/channels/shared/src/index.ts"],
-      "@chat-and-call/auth/shared": ["libs/auth/shared/src/index.ts"],
+      "@chat-and-call/channels/shared": [
+        "libs/channels/shared/src/index.ts"
+      ],
+      "@chat-and-call/auth/shared": [
+        "libs/auth/shared/src/index.ts"
+      ],
       "@chat-and-call/socketcluster/shared": [
         "libs/socketcluster/shared/src/index.ts"
       ],
@@ -54,8 +63,17 @@
       ],
       "@chat-and-call/database/entities": [
         "libs/database/entities/src/index.ts"
+      ],
+      "@chat-and-call/material/ui-theme-picker": [
+        "libs/material/ui-theme-picker/src/index.ts"
       ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

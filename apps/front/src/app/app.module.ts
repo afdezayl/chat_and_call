@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FeatureAuthWebModule } from '@chat-and-call/auth/feature-auth-web';
+import { ThemePickerModule } from '@chat-and-call/material/ui-theme-picker';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
@@ -23,6 +24,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     ReactiveFormsModule,
     HttpClientModule,
     TranslocoRootModule,
+    ThemePickerModule,
     OverlayModule,
     StoreModule.forRoot(
       {},

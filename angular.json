@@ -608,6 +608,31 @@
           }
         }
       }
+    },
+    "material-ui-theme-picker": {
+      "projectType": "library",
+      "root": "libs/material/ui-theme-picker",
+      "sourceRoot": "libs/material/ui-theme-picker/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/material/ui-theme-picker/src/**/*.ts",
+              "libs/material/ui-theme-picker/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/material/ui-theme-picker"],
+          "options": {
+            "jestConfig": "libs/material/ui-theme-picker/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
@@ -616,10 +641,14 @@
   "defaultProject": "api",
   "schematics": {
     "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest"
     },
     "@nrwl/angular:component": {

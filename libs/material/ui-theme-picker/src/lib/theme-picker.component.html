@@ -1,0 +1,18 @@
+<p>previous: {{ previous }}</p>
+<mat-radio-group [value]="previous" (change)="changeSelected($event.value)">
+  <mat-list>
+    <mat-list-item *ngFor="let theme of themes">
+      <mat-radio-button [value]="theme" color="primary">{{
+        theme
+      }}</mat-radio-button></mat-list-item
+    >
+  </mat-list>
+</mat-radio-group>
+<div class="btn-container">
+  <button mat-raised-button color="accent" (click)="cancel()">
+    <mat-icon>cancel</mat-icon>Cancelar
+  </button>
+  <button mat-raised-button color="primary" (click)="confirm()">
+    <mat-icon>check</mat-icon>Confirmar
+  </button>
+</div>

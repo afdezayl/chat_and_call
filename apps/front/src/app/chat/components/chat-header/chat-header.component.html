@@ -1,3 +1,32 @@
-<header>
-  <h1>Chat&Call</h1>
-</header>
+<ng-container *transloco="let t">
+  <mat-toolbar color="primary">
+    <h1>Chat&Call</h1>
+    <div class="spacer"></div>
+    <div>
+      <button mat-button [matMenuTriggerFor]="settings">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-button [matMenuTriggerFor]="user">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <mat-menu #settings="matMenu">
+    <button mat-menu-item>
+      <mat-icon>language</mat-icon>
+      Idioma
+    </button>
+    <button mat-menu-item (click)="changeTheme()">
+      <mat-icon>format_color_fill</mat-icon>
+      Tema
+    </button>
+  </mat-menu>
+
+  <mat-menu #user="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      Salir
+    </button>
+  </mat-menu>
+</ng-container>

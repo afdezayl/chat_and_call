@@ -2,6 +2,39 @@
 @import '~normalize.css';
 /* Material prebuilt theme */
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+/* Custom themes */
+@import '~@angular/material/theming';
+@include mat-core();
+
+@mixin body-background($theme) {
+  //$foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  background-color: mat-color($background, background);
+}
+
+@import './themes/default-theme.scss';
+@import './themes/dark-theme.scss';
+@import './themes/candy-theme.scss';
+
+.default-theme {
+  @include angular-material-theme($default-theme);
+  @include body-background($default-theme);
+}
+
+.dark-theme {
+  @include angular-material-theme($dark-theme);
+  @include body-background($dark-theme);
+}
+
+.purple-green-theme {
+  @import '@angular/material/prebuilt-themes/purple-green';
+  background-color: #303030;
+}
+
+.candy-theme {
+  @include angular-material-theme($candy-theme);
+  @include body-background($candy-theme);
+}
 
 * {
   box-sizing: border-box;

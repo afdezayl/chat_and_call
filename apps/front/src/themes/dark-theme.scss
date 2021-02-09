@@ -1,0 +1,9 @@
+$dark-theme-primary: mat-palette($mat-teal);
+$dark-theme-accent: mat-palette($mat-purple);  //($mat-grey, 600, 300, 900);
+$dark-theme-warn: mat-palette($mat-red, 700, 400, 900);
+
+$dark-theme: mat-dark-theme(
+  $dark-theme-primary,
+  $dark-theme-accent,
+  $dark-theme-warn
+);

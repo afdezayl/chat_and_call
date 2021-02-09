@@ -1,0 +1,9 @@
+$default-primary: mat-palette($mat-blue);
+$default-accent: mat-palette($mat-teal);
+$default-warn: mat-palette($mat-red);
+
+$default-theme: mat-light-theme(
+  $default-primary,
+  $default-accent,
+  $default-warn
+);

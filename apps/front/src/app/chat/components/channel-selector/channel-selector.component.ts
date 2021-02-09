@@ -15,8 +15,7 @@ export class ChannelSelectorComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  setFocus(id: number) {
-    this.store.dispatch(setFocus({ id: id.toString() }));
+  setFocus(id: string) {
+    this.store.dispatch(setFocus({ id }));
   }
 }
-

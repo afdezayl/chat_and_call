@@ -71,7 +71,7 @@ export class ChannelsDataAccessService {
 
           await em.persistAndFlush(acc);
 
-          console.log(ch, acc);
+          //console.log(ch, acc);
         });
 
         break;

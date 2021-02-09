@@ -75,6 +75,9 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(([isMobileWidth, channel]) => {
         const isChannelSelected = channel !== null;
+        if (!this.sidenav) {
+          return;
+        }
 
         if (isMobileWidth && isChannelSelected) {
           this.sidenav.mode = 'over';

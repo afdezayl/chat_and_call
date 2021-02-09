@@ -2,8 +2,12 @@
   display: block;
 }
 
+.spacer {
+  flex: 1 1 auto;
+}
+
 h1 {
-  color: #eee;
+  //color: #eee;
 }
 
 @media (max-height: 599px), (max-width: 599px) {
