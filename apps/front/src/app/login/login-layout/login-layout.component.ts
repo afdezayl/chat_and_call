@@ -8,6 +8,7 @@ import {
 } from '@chat-and-call/auth/feature-auth-web';
 import { LoginRequestDto } from '@chat-and-call/auth/shared';
 import { select, Store } from '@ngrx/store';
+import { loginErrors } from './login-i18n-errors';
 
 @Component({
   selector: 'chat-and-call-login-layout',
@@ -16,13 +17,22 @@ import { select, Store } from '@ngrx/store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginLayoutComponent {
+  //#region Form
   form: FormGroup = this.fb.group({
     username: this.fb.control('', [
       Validators.required,
-      Validators.minLength(3),
+      Validators.minLength(4),
+      Validators.maxLength(20),
     ]),
-    password: this.fb.control('', [Validators.required]),
+    password: this.fb.control('', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(20),
+    ]),
   });
+  errors = loginErrors;
+  //#endregion
+
   authorizeState$ = this.store.pipe(select(isLogged));
   isValidLoginAttempt$ = this.store.pipe(select(isValidAttempt));
 

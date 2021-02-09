@@ -6,7 +6,6 @@ export const signupErrors: Record<string, Array<ErrorTranslation>> = {
       error: 'minlength',
       literal: 'minMaxLength',
       params: { min: '4', max: '20' },
-      scope: 'signup',
     },
     {
       error: 'required',
@@ -47,7 +46,6 @@ export const signupErrors: Record<string, Array<ErrorTranslation>> = {
       error: 'minlength',
       literal: 'minMaxLength',
       params: { min: '4', max: '20' },
-      scope: 'signup',
     },
   ],
   password2: [

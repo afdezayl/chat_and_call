@@ -23,6 +23,10 @@ mat-card-title {
   padding: 1em 3em;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 /* @supports (height: -webkit-fill-available) {
   chat-and-call-root {
     height: 100vh;

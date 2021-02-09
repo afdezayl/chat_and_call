@@ -24,7 +24,7 @@ class CacheObject<T = any> {
   value!: T;
 }
 class Cache<T> {
-  private values: Array<CacheObject<T>> = [];
+  private values: Array<CacheObject<NonNullable<T>>> = [];
   private length: number;
   private keyFilter = (key: string) => (c: CacheObject) => c.key === key;
 
@@ -44,7 +44,7 @@ class Cache<T> {
     return this.values.find(this.keyFilter(key))?.value ?? null;
   }
 
-  getOrStore(key: string, value: T) {
+  getOrStore(key: string, value: NonNullable<T>): NonNullable<T> {
     const storedValue = this.getValue(key);
     if (storedValue !== null) {
       return storedValue;
@@ -54,7 +54,7 @@ class Cache<T> {
     return value;
   }
 
-  store(key: string, value: T) {
+  store(key: string, value: NonNullable<T>) {
     if (this.values.length >= this.length) {
       this.values.shift();
     }
@@ -87,7 +87,7 @@ export class AuthService {
     request: SignupRequestDto
   ): Observable<Success | NotAvailableUserOrEmail> {
     return this.http.post<void>('api/auth/signup', request).pipe(
-      map(() => of(new Success())),
+      map(() => new Success()),
       catchError((err: HttpErrorResponse) => {
         let error: string;
         switch (err.status) {

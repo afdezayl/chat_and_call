@@ -91,7 +91,6 @@ export class SignupLayoutComponent implements OnInit, OnDestroy {
     this.store
       .select(signupError)
       .pipe(
-        tap((x) => console.log('form error', x)),
         filter((x) => x !== null),
         tap((x) => {
           this.usernameControl.updateValueAndValidity();

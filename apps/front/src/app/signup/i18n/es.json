@@ -1,11 +1,8 @@
 {
-  "signupTitle": "Regístrate",
-  "user": "Nombre de usuario",
+  "alreadyRegistered": "¿Ya estás registrado?",
   "mail": "Email",
-  "password": "Contraseña",
   "repeatPassword": "Confirma la contraseña",
   "unavailableUsername": "Usuario ya existente",
-  "minMaxLength": "De {{min}} a {{max}} caracteres",
   "usernamePattern": "Debe comenzar por letra y ser alfanumérico",
   "invalidEmail": "Email no válido",
   "unavailableEmail": "Correo ya existente",

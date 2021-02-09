@@ -68,6 +68,17 @@ export class AuthEffects {
     )
   );
 
+  validSignup$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.signupSuccess),
+        // TODO: Replace with confirm modal
+        tap(() => alert('Registrado correctamente')),
+        tap(() => this.router.navigate(['home', 'login']))
+      ),
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private authService: AuthService,

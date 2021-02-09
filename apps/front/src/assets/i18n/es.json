@@ -1,4 +1,11 @@
 {
   "submit": "Enviar",
-  "requiredField": "Campo obligatorio"
+  "requiredField": "Campo obligatorio",
+  "doLogin": "Inicia sesión",
+  "doSignup": "Regístrate",
+  "user": "Nombre de usuario",
+  "password": "Contraseña",
+  "invalidLoginAttempt": "Combinación de usuario y contraseña incorrecta",
+  "notRegisteredYet": "¿No estás registrado?",
+  "minMaxLength": "De {{min}} a {{max}} caracteres"
 }

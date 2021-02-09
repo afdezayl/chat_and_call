@@ -1,52 +1,64 @@
-<mat-card class="central-card">
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon [inline]="true">chat</mat-icon>
-      Inicia sesión
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <form (submit)="onSubmit()" [formGroup]="form" class="form">
-      <mat-form-field appearance="outline">
-        <mat-label>Nombre de usuario</mat-label>
-        <input
-          matInput
-          autofocus
-          formControlName="username"
-          required
-          type="text"
-          placeholder="Nombre de usuario"
-        />
-        <mat-error *ngIf=""></mat-error>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input
-          matInput
-          formControlName="password"
-          required
-          type="password"
-          placeholder="Contraseña"
-        />
-      </mat-form-field>
-      <mat-error *ngIf="(isValidLoginAttempt$ | async) === false"
-        >Combinación de usuario y contraseña incorrecta</mat-error
-      >
-      <button
-        class="mat-primary mat-raised-button btn--big"
-        type="submit"
-        [disabled]="form.invalid"
-      >
-        Enviar
-      </button>
+<ng-container *transloco="let t">
+  <mat-card class="central-card">
+    <mat-card-header style="justify-content: center">
+      <mat-card-title>
+        <mat-icon [inline]="true">chat</mat-icon>
+        <span>{{ t('doLogin') }}</span>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form (submit)="onSubmit()" [formGroup]="form" class="form" cdkTrapFocus>
+        <mat-form-field appearance="outline" [controlErrors]="errors.username">
+          <mat-label>{{ t('user') }}</mat-label>
+          <input
+            matInput
+            autofocus
+            formControlName="username"
+            required
+            type="text"
+            [placeholder]="t('user')"
+          />
+          <mat-icon matSuffix></mat-icon>
+          <mat-error autofillErrors></mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" [controlErrors]="errors.password">
+          <mat-label>{{ t('password') }}</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            required
+            [type]="showPassword ? 'text' : 'password'"
+            [placeholder]="t('password')"
+          />
+          <mat-icon
+            class="clickable"
+            matSuffix
+            (click)="showPassword = !showPassword"
+            >{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon
+          >
+          <mat-error autofillErrors></mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="(isValidLoginAttempt$ | async) === false"
+          >{{ t('invalidLoginAttempt') }}</mat-error
+        >
+        <button
+          class="mat-primary mat-raised-button btn--big"
+          type="submit"
+          [disabled]="form.invalid"
+        >
+          {{ t('submit') }}
+        </button>
 
-      <!--  <p>{{ getErrorsByControl(form) | json }}</p> -->
-    </form>
-  </mat-card-content>
-  <mat-card-footer>
-    <h3>¿No estás registrado?</h3>
-    <a [routerLink]="['/home', 'signup']" routerLinkActive="router-link-active"
-      >Regístrate</a
-    >
-  </mat-card-footer>
-</mat-card>
+        <!--  <p>{{ getErrorsByControl(form) | json }}</p> -->
+      </form>
+    </mat-card-content>
+    <mat-card-footer>
+      <h3>{{ t('notRegisteredYet') }}</h3>
+      <a
+        [routerLink]="['/home', 'signup']"
+        routerLinkActive="router-link-active"
+        >{{ t('doSignup') }}</a
+      >
+    </mat-card-footer>
+  </mat-card>
+</ng-container>
