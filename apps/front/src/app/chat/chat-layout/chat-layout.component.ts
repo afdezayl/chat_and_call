@@ -4,8 +4,10 @@ import {
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import {
+  AfterViewChecked,
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -22,7 +24,16 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
-import { delay, filter, map, take, takeUntil, tap } from 'rxjs/operators';
+import {
+  debounceTime,
+  delay,
+  distinctUntilChanged,
+  filter,
+  map,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
 import { loadChannels, sendMessage, setFocus } from '../+state/chat.actions';
 import {
   getFocusedChannel,
@@ -50,7 +61,8 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isMobileWidth$ = this.breakpointObserver.observe('(max-width: 800px)').pipe(
     filter((state) => Boolean(state)),
-    map((state) => state.matches)
+    map((state) => state.matches),
+    distinctUntilChanged()
   );
 
   private readonly destroy$ = new Subject();
@@ -71,20 +83,18 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    combineLatest([this.isMobileWidth$, this.focus$])
+    combineLatest([
+      this.isMobileWidth$,
+      this.focus$.pipe(
+        filter((f) => Boolean(f)),
+        distinctUntilChanged()
+      ),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([isMobileWidth, channel]) => {
-        const isChannelSelected = channel !== null;
-        if (!this.sidenav) {
-          return;
-        }
-
+      .subscribe(([isMobileWidth, isChannelSelected]) => {
         if (isMobileWidth && isChannelSelected) {
-          this.sidenav.mode = 'over';
           this.sidenav.close();
         } else if (!isMobileWidth) {
-          this.sidenav.mode = 'side';
-
           if (!this.sidenav.opened) {
             this.sidenav.open();
           }

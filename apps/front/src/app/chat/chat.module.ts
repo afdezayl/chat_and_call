@@ -16,6 +16,7 @@ import { ChatHeaderComponent } from './components/chat-header/chat-header.compon
 import { MessageBarComponent } from './components/message-bar/message-bar.component';
 import { MessageComponent } from './components/message/message.component';
 import { VideoCallComponent } from './components/video-call/video-call.component';
+import { ChatSocketService } from './services/chat-socket.service';
 
 @NgModule({
   declarations: [
@@ -37,5 +38,6 @@ import { VideoCallComponent } from './components/video-call/video-call.component
     TranslocoModule,
     EffectsModule.forFeature([ChatEffects]),
   ],
+  providers: [ChatSocketService],
 })
 export class ChatModule {}

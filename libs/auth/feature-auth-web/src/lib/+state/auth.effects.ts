@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { FullscreenLoadingService } from '@chat-and-call/utils/forms-shared';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { iif, of } from 'rxjs';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { AuthService, NotAvailableUserOrEmail, Success } from '../auth.service';
 import * as AuthActions from './auth.actions';
 
@@ -37,6 +37,25 @@ export class AuthEffects {
         tap((x) => this.router.navigate(['chat']))
       ),
     { dispatch: false }
+  );
+
+  logoutAttempt$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.logoutClick),
+      mergeMap(() =>
+        of(confirm('¿Desea abandonar la página?')).pipe(
+          mergeMap((confirmed) =>
+            iif(
+              () => confirmed,
+              this.authService
+                .sendLogoutRequest()
+                .pipe(map(() => AuthActions.logoutConfirmed())),
+              of(AuthActions.logoutAborted())
+            )
+          )
+        )
+      )
+    )
   );
 
   signupAttempt$ = createEffect(() =>

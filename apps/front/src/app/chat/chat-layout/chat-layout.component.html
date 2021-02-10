@@ -1,7 +1,12 @@
 <chat-and-call-chat-header></chat-and-call-chat-header>
 <!-- <chat-and-call-video-call></chat-and-call-video-call> -->
 <mat-sidenav-container>
-  <mat-sidenav #sidenav [mode]="'side'" opened disableClose>
+  <mat-sidenav
+    #sidenav
+    [mode]="(isMobileWidth$ | async) ? 'over' : 'side'"
+    opened
+    disableClose
+  >
     <h2>Channels</h2>
     <chat-and-call-channel-selector></chat-and-call-channel-selector>
   </mat-sidenav>

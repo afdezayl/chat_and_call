@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
 import { userAuthenticated } from '../+state/chat.actions';
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
 export class ChatSocketService {
   constructor(private socket: SocketService, store: Store) {
@@ -38,23 +38,7 @@ export class ChatSocketService {
     return this.socket.post('channels/call', description);
   }
 
-  // Creates backpressure...
-  private createSubjectFromIterator<T>(asyncIterable: any): ReplaySubject<T> {
-    const subject$ = new ReplaySubject<T>();
-    const iterator = asyncIterable[Symbol.asyncIterator]();
-
-    const push = async () => {
-      const { done, value } = await iterator.next();
-
-      if (done && value === undefined) {
-        subject$.complete();
-      } else {
-        subject$.next(value);
-        push();
-      }
-    };
-
-    push();
-    return subject$;
+  close() {
+    return this.socket.close();
   }
 }

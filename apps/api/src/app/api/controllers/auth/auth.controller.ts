@@ -60,6 +60,14 @@ export class AuthController {
     return response.sendStatus(401);
   }
 
+  @Post('logout')
+  logout(@Res() response: Response) {
+    response.clearCookie('jwt');
+    response.clearCookie('refresh_jwt');
+
+    return response.status(201).send(null);
+  }
+
   @Post('signup')
   async signup(@Body() data: SignupRequestDto) {
     const result = await this.authService.createNewUser(

@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { logoutConfirmed } from '@chat-and-call/auth/feature-auth-web';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, throwError } from 'rxjs';
 import {
@@ -9,10 +11,7 @@ import {
   mergeMap,
   retryWhen,
   switchMap,
-  take,
   tap,
-  last,
-  retry,
 } from 'rxjs/operators';
 import { ChatSocketService } from '../services/chat-socket.service';
 import * as ChatActions from './chat.actions';
@@ -77,8 +76,19 @@ export class ChatEffects {
     );
   });
 
+  close$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(logoutConfirmed),
+        mergeMap(() => this.chatSocket.close()),
+        tap(() => this.router.navigate(['home', 'login']))
+      ),
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
-    private chatSocket: ChatSocketService
+    private chatSocket: ChatSocketService,
+    private router: Router
   ) {}
 }

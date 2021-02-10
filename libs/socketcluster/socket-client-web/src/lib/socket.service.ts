@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SOCKET_PATH, TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server';
 import { from, Observable, BehaviorSubject, EMPTY, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { AGClientSocket, create } from 'socketcluster-client';
 @Injectable({
   providedIn: 'root',
@@ -27,16 +27,30 @@ export class SocketService {
         this._authenticated$.next(authToken.username);
       }
     })();
-
-    (async () => {
-      for await (const x of this._socket.listener('authStateChange')) {
-        console.log('auth change', x);
+    async () => {
+      for await (const {} of this._socket.listener('deauthenticate')) {
+        this._deauthenticated$.next();
       }
-    })();
+    };
   }
 
   get authenticated$() {
     return this._authenticated$.asObservable();
+  }
+  get deauthenticated$() {
+    return this._deauthenticated$.asObservable();
+  }
+
+  close() {
+    return from(this._socket.deauthenticate()).pipe(
+      tap(() => {
+        this._socket.killAllChannels();
+        this._socket.killAllListeners();
+        this._socket.killAllProcedures();
+        this._socket.killAllReceivers();
+        this._socket.disconnect(undefined);
+      })
+    );
   }
 
   publishToChannel<T = any>(data: any, channel: string) {

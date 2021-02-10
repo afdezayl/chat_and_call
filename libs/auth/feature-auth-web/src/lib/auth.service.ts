@@ -83,6 +83,12 @@ export class AuthService {
       .pipe(map((x) => x.token));
   }
 
+  sendLogoutRequest() {
+    return this.http.post<void>('api/auth/logout', null, {
+      withCredentials: true,
+    });
+  }
+
   sendSignupRequest(
     request: SignupRequestDto
   ): Observable<Success | NotAvailableUserOrEmail> {

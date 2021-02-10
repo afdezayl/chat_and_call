@@ -7,6 +7,8 @@ export const userAuthenticated = createAction(
   props<{ username: string }>()
 );
 
+export const closeSocket = createAction('[Chat] Close socket');
+
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');
 
