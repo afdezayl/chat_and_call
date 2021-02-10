@@ -3,7 +3,7 @@ import {
   BasicMessage,
   Message,
   ChannelType,
-  CreateChannelRequest,
+  CreateGroupChannelRequest,
 } from '@chat-and-call/channels/shared';
 import {
   AuthorizeGuard,
@@ -40,11 +40,11 @@ export class ChannelsGateway {
   @SocketPost('public')
   createPublicChannel(
     @ConnectedSocket() socket: AGServerSocket,
-    @MessageBody() data: CreateChannelRequest
+    @MessageBody() data: CreateGroupChannelRequest
   ) {
     const user = socket?.authToken?.username;
 
-    throw Error('Unauthorized');
+    throw new WsException('Unauthorized');
     return this.channelService.createChannel({
       title: data.title,
       type: ChannelType.Public,
@@ -55,7 +55,7 @@ export class ChannelsGateway {
   @SocketPost('private')
   createPrivateChannel(
     @ConnectedSocket() socket: AGServerSocket,
-    @MessageBody() data: CreateChannelRequest
+    @MessageBody() data: CreateGroupChannelRequest
   ) {
     const user = socket?.authToken?.username;
     return this.channelService.createChannel({

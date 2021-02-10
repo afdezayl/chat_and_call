@@ -4,6 +4,7 @@ import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server'
 import { EMPTY, from, Observable, of, Subject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { AGClientSocket, create } from 'socketcluster-client';
+//import { ProtobufCodecEngine } from './protobuf-codec-engine';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,6 +19,7 @@ export class SocketService {
       authTokenName: TOKEN_KEY,
       autoReconnect: true,
       autoConnect: true,
+      //codecEngine: new ProtobufCodecEngine()
     });
 
     (async () => {

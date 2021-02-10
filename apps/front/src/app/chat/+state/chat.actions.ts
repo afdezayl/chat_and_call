@@ -1,5 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { Channel, Message, BasicMessage } from '@chat-and-call/channels/shared';
+import {
+  Channel,
+  Message,
+  BasicMessage,
+  ChannelType,
+} from '@chat-and-call/channels/shared';
 
 // Authentication
 export const userAuthenticated = createAction(
@@ -12,7 +17,6 @@ export const cleanChatStore = createAction('[Chat] Clean store');
 
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');
-
 export const loadChannelsFailure = createAction(
   '[Chat] Load Channels Failure',
   props<{ error: any }>()
@@ -22,32 +26,33 @@ export const addChannels = createAction(
   '[Chat] Add channels',
   props<{ channels: Array<Channel> }>()
 );
-
 export const removeChannels = createAction(
   '[Chat] Remove channels',
   props<{ channels: Array<Channel> }>()
 );
-
 export const subscribeChannel = createAction(
   '[Chat] Subscribe channel',
   props<{ channel: string | number }>()
+);
+
+export const createChannel = createAction(
+  '[Chat] Create channel',
+  props<{ channel: { title: string; type: ChannelType } }>()
+);
+export const channelCreated = createAction(
+  '[Chat] Channel created',
+  props<{ channel: Channel }>()
+);
+export const channelCreationFailure = createAction(
+  '[Chat] Failed channel creation'
 );
 
 export const sendMessage = createAction(
   '[Chat] Send message',
   props<{ message: BasicMessage }>()
 );
-
-export const serverReceivedMessage = createAction(
-  '[Chat] Received message',
-  props<{ message: BasicMessage }>()
-);
-
-export const serverFailMessage = createAction(
-  '[Chat] Denied message',
-  props<{ message: BasicMessage }>()
-);
-
+export const serverReceivedMessage = createAction('[Chat] Received message');
+export const serverFailMessage = createAction('[Chat] Denied message');
 export const incomingMessage = createAction(
   '[Chat] Incoming message',
   props<{ message: Message }>()

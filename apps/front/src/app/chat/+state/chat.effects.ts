@@ -10,7 +10,6 @@ import {
   map,
   mergeMap,
   retryWhen,
-  switchMap,
   tap,
 } from 'rxjs/operators';
 import { ChatSocketService } from '../services/chat-socket.service';
@@ -21,7 +20,7 @@ export class ChatEffects {
   loadChannels$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.loadChannels),
-      switchMap(() =>
+      mergeMap(() =>
         this.chatSocket.getChannels().pipe(
           retryWhen((errors) =>
             errors.pipe(
@@ -32,47 +31,70 @@ export class ChatEffects {
                 return of(e).pipe(delay(1000));
               })
             )
-          ),
-          switchMap((channels) => [
-            ChatActions.addChannels({ channels }),
-            ...channels.map((ch) =>
-              ChatActions.subscribeChannel({ channel: ch.id })
-            ),
-          ]),
-          catchError((error) => {
-            // TODO: Handle error
-            console.error(error);
-            return of(ChatActions.loadChannelsFailure({ error }));
-          })
+          )
         )
-      )
+      ),
+      map((channels) => ChatActions.addChannels({ channels })),
+      catchError((error) => {
+        // TODO: Handle error
+        console.error(error);
+        return of(ChatActions.loadChannelsFailure({ error }));
+      })
     );
   });
+
+  addChannels$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.addChannels),
+      mergeMap(({ channels }) => {
+        return [
+          ...channels.map((ch) =>
+            ChatActions.subscribeChannel({ channel: ch.id })
+          ),
+        ];
+      })
+    )
+  );
+
+  createChannel$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.createChannel),
+      mergeMap(({ channel }) => this.chatSocket.createChannel(channel)),
+      map((channel) => ChatActions.channelCreated({ channel })),
+      catchError((err) => {
+        console.error(err);
+        return of(ChatActions.channelCreationFailure());
+      })
+    )
+  );
+
+  channelCreated$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.channelCreated),
+      map(({ channel }) => ChatActions.addChannels({ channels: [channel] }))
+    )
+  );
 
   publishMessage$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.sendMessage),
       mergeMap((x) =>
-        this.chatSocket.publishMessage(x.message).pipe(
-          map((_) => ChatActions.serverReceivedMessage({ message: x.message })),
-          catchError((err) => {
-            // TODO: Handle error
-            console.error(err);
-            return of(ChatActions.serverFailMessage({ message: x.message }));
-          })
-        )
-      )
+        this.chatSocket.publishMessage(x.message).pipe(map(() => x))
+      ),
+      map((_) => ChatActions.serverReceivedMessage()),
+      catchError((err) => {
+        // TODO: Handle error
+        console.error(err);
+        return of(ChatActions.serverFailMessage());
+      })
     );
   });
 
   subscribeChannel$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.subscribeChannel),
-      mergeMap(({ channel }) =>
-        this.chatSocket
-          .subscribeToChannel(channel)
-          .pipe(map((message) => ChatActions.incomingMessage({ message })))
-      )
+      mergeMap(({ channel }) => this.chatSocket.subscribeToChannel(channel)),
+      map((message) => ChatActions.incomingMessage({ message }))
     );
   });
 

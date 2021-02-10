@@ -17,6 +17,7 @@ import { MessageBarComponent } from './components/message-bar/message-bar.compon
 import { MessageComponent } from './components/message/message.component';
 import { VideoCallComponent } from './components/video-call/video-call.component';
 import { ChatSocketService } from './services/chat-socket.service';
+import { ChannelCreatorComponent } from './components/channel-creator/channel-creator.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ChatSocketService } from './services/chat-socket.service';
     MessageBarComponent,
     ChannelInfoComponent,
     ChannelIconPipe,
+    ChannelCreatorComponent,
   ],
   imports: [
     CommonModule,

@@ -8,6 +8,13 @@ import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 
+const mapToGroupChannel = (ch: ChannelEntity): Channel => ({
+  id: ch.uuid,
+  title: ch.title,
+  admin: null,
+  type: ch.public ? ChannelType.Public : ChannelType.Private,
+});
+
 @Injectable()
 export class ChannelsDataAccessService {
   constructor(
@@ -28,12 +35,7 @@ export class ChannelsDataAccessService {
     );
     const groupChannels: Array<Channel> = access
       .map((acc) => (acc.channel as unknown) as ChannelEntity)
-      .map((ch) => ({
-        id: ch.uuid,
-        title: ch.title,
-        admin: null,
-        type: ch.public ? ChannelType.Public : ChannelType.Private,
-      }));
+      .map(mapToGroupChannel);
 
     const contactsChannels: Array<Channel> = (
       await this.getFriendsChannels(user)
@@ -56,7 +58,7 @@ export class ChannelsDataAccessService {
       case ChannelType.Public:
         break;
       case ChannelType.Private:
-        await this.em.transactional(async (em) => {
+        const channel = await this.em.transactional(async (em) => {
           const ch = em.create(ChannelEntity, {
             public: false,
             title: newChannel.title,
@@ -71,8 +73,10 @@ export class ChannelsDataAccessService {
 
           await em.persistAndFlush(acc);
 
-          //console.log(ch, acc);
+          return ch;
         });
+
+        return mapToGroupChannel(channel);
 
         break;
       case ChannelType.Personal:

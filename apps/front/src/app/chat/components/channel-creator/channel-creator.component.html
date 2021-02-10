@@ -1,0 +1,21 @@
+<ng-container *transloco="let t">
+  <mat-card>
+    <mat-card-header>Crea un canal</mat-card-header>
+    <mat-card-content>
+      <form (submit)="onSubmit()" [formGroup]="form">
+        <mat-form-field>
+          <mat-label>Título</mat-label>
+          <input matInput type="text" formControlName="title" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option [value]="channelTypes.Public">Público</mat-option>
+            <mat-option [value]="channelTypes.Private">Privado</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">{{ t('submit') }}</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</ng-container>
