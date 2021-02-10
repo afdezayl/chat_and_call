@@ -13,6 +13,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { chatMetaReducer } from './chat/+state/chat.reducer';
 import { TranslocoRootModule } from './transloco-root.module';
 
 @NgModule({
@@ -29,7 +30,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     StoreModule.forRoot(
       {},
       {
-        metaReducers: !environment.production ? [] : [],
+        metaReducers: [chatMetaReducer],
         runtimeChecks: {
           strictActionImmutability: true,
           strictStateImmutability: true,

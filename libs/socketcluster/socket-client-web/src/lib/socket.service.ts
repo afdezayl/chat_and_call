@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { SOCKET_PATH, TOKEN_KEY } from '@chat-and-call/socketcluster/shared';
 import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server';
-import { from, Observable, BehaviorSubject, EMPTY, of } from 'rxjs';
+import { EMPTY, from, Observable, of, Subject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { AGClientSocket, create } from 'socketcluster-client';
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
-  private _authenticated$ = new BehaviorSubject<string>('');
-  private _deauthenticated$ = new BehaviorSubject<void>(undefined);
+  private _authenticated$ = new Subject<string>();
+  private _deauthenticated$ = new Subject<void>();
   private _socket!: AGClientSocket;
 
   constructor() {
@@ -45,7 +45,7 @@ export class SocketService {
     return from(this._socket.deauthenticate()).pipe(
       tap(() => {
         this._socket.killAllChannels();
-        this._socket.killAllListeners();
+        //this._socket.killAllListeners();
         this._socket.killAllProcedures();
         this._socket.killAllReceivers();
         this._socket.disconnect(undefined);

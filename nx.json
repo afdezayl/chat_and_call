@@ -31,7 +31,8 @@
     "contacts-feature-server-contacts": { "tags": [] },
     "utils-forms-shared": { "tags": [] },
     "database-entities": { "tags": [] },
-    "material-ui-theme-picker": { "tags": [] }
+    "material-ui-theme-picker": { "tags": [] },
+    "material-ui-language-picker": { "tags": [] }
   },
   "affected": { "defaultBase": "master" }
 }

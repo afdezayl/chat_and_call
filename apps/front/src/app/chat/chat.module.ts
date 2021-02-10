@@ -38,6 +38,5 @@ import { ChatSocketService } from './services/chat-socket.service';
     TranslocoModule,
     EffectsModule.forFeature([ChatEffects]),
   ],
-  providers: [ChatSocketService],
 })
 export class ChatModule {}

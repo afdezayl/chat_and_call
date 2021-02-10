@@ -1,0 +1,13 @@
+{
+  "submit": "Submit",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "requiredField": "Required field",
+  "doLogin": "Login",
+  "doSignup": "Register now",
+  "user": "Username",
+  "password": "Password",
+  "invalidLoginAttempt": "Invalid user and password combination",
+  "notRegisteredYet": "Not registered?",
+  "minMaxLength": "From {{min}} to {{max}} characters"
+}

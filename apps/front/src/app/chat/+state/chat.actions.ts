@@ -8,6 +8,7 @@ export const userAuthenticated = createAction(
 );
 
 export const closeSocket = createAction('[Chat] Close socket');
+export const cleanChatStore = createAction('[Chat] Clean store');
 
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');

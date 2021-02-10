@@ -1,5 +1,7 @@
 {
   "submit": "Enviar",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
   "requiredField": "Campo obligatorio",
   "doLogin": "Inicia sesión",
   "doSignup": "Regístrate",

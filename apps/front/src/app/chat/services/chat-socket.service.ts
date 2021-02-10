@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
 import { userAuthenticated } from '../+state/chat.actions';
 @Injectable({
-  providedIn: 'any',
+  providedIn: 'root',
 })
 export class ChatSocketService {
   constructor(private socket: SocketService, store: Store) {

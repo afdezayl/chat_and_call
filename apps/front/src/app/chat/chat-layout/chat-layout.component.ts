@@ -39,6 +39,7 @@ import {
   getFocusedChannel,
   getMessagesFromFocusChannel,
 } from '../+state/chat.selectors';
+import { ChatSocketService } from '../services/chat-socket.service';
 import { ChatScrollStrategy } from './chat-scroll-strategy';
 
 @Component({
@@ -50,6 +51,7 @@ import { ChatScrollStrategy } from './chat-scroll-strategy';
       provide: VIRTUAL_SCROLL_STRATEGY,
       useClass: ChatScrollStrategy,
     },
+    ChatSocketService
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,0 +1,29 @@
+<ng-container *transloco="let t">
+  <mat-card cdkTrapFocus cdkTrapFocusAutoCapture>
+    <mat-card-content>
+      <mat-radio-group
+        [value]="previousLang"
+        (change)="changeSelectedLang($event.value)"
+      >
+        <mat-list>
+          <mat-list-item *ngFor="let lang of langs">
+            <mat-radio-button
+              [value]="lang.id"
+              [checked]="lang.id === selectedLang"
+              tabindex="0"
+              >{{ lang.label }}</mat-radio-button
+            >
+          </mat-list-item>
+        </mat-list>
+      </mat-radio-group>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="accent" (click)="cancel()">
+        <mat-icon>cancel</mat-icon>{{ t('cancel') }}
+      </button>
+      <button mat-raised-button color="primary" (click)="confirm()">
+        <mat-icon>check</mat-icon>{{ t('confirm') }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>

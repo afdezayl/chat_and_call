@@ -633,6 +633,31 @@
           }
         }
       }
+    },
+    "material-ui-language-picker": {
+      "projectType": "library",
+      "root": "libs/material/ui-language-picker",
+      "sourceRoot": "libs/material/ui-language-picker/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/material/ui-language-picker/src/**/*.ts",
+              "libs/material/ui-language-picker/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/material/ui-language-picker"],
+          "options": {
+            "jestConfig": "libs/material/ui-language-picker/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

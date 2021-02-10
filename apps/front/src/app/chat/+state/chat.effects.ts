@@ -76,14 +76,13 @@ export class ChatEffects {
     );
   });
 
-  close$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(logoutConfirmed),
-        mergeMap(() => this.chatSocket.close()),
-        tap(() => this.router.navigate(['home', 'login']))
-      ),
-    { dispatch: false }
+  close$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(logoutConfirmed),
+      mergeMap(() => this.chatSocket.close()),
+      map(() => ChatActions.cleanChatStore()),
+      tap(() => this.router.navigate(['home', 'login']))
+    )
   );
 
   constructor(

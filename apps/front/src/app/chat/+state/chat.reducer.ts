@@ -1,4 +1,11 @@
-import { Action, createReducer, on } from '@ngrx/store';
+import {
+  Action,
+  ActionReducer,
+  createReducer,
+  INIT,
+  on,
+  State,
+} from '@ngrx/store';
 import { Channel, Message } from '@chat-and-call/channels/shared';
 import * as ChatActions from './chat.actions';
 
@@ -61,3 +68,14 @@ export const reducer = createReducer(
     messages: [...state.messages, message],
   }))
 );
+
+export function chatMetaReducer(
+  reducer: ActionReducer<any>
+): ActionReducer<any> {
+  return (state: State<any>, action: Action) => {
+    if (action.type === ChatActions.cleanChatStore.type) {
+      return reducer(undefined, { type: INIT });
+    }
+    return reducer(state, action);
+  };
+}

@@ -1,16 +1,21 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  TRANSLOCO_LOADER,
-  Translation,
-  TranslocoLoader,
-  TRANSLOCO_CONFIG,
-  translocoConfig,
-  TranslocoModule,
-} from '@ngneat/transloco';
 import { Injectable, NgModule } from '@angular/core';
+import { UiLanguagePickerModule } from '@chat-and-call/material/ui-language-picker';
+import {
+  AvailableLangs,
+  Translation,
+  translocoConfig,
+  TranslocoLoader,
+  TranslocoModule,
+  TRANSLOCO_CONFIG,
+  TRANSLOCO_LOADER,
+} from '@ngneat/transloco';
 import { environment } from '../environments/environment';
-import { tap } from 'rxjs/operators';
 
+export const availableLangs: AvailableLangs = [
+  { id: 'es', label: 'Español' },
+  { id: 'en', label: 'English' },
+];
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
   constructor(private http: HttpClient) {}
@@ -21,15 +26,13 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 }
 
 @NgModule({
-  exports: [TranslocoModule],
+  exports: [TranslocoModule, UiLanguagePickerModule],
   providers: [
     {
       provide: TRANSLOCO_CONFIG,
       useValue: translocoConfig({
-        availableLangs: ['en', 'es'],
+        availableLangs,
         defaultLang: 'es',
-        // Remove this option if your application
-        // doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: environment.production,
       }),
