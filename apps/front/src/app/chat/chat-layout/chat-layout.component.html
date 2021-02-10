@@ -12,17 +12,18 @@
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
     <div class="content">
-      <button
-        *ngIf="isMobileWidth$ | async"
-        mat-mini-fab
-        color="primary"
-        (click)="openMenu()"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
+      <mat-card style="display: flex;">
+        <button
+          *ngIf="isMobileWidth$ | async"
+          mat-mini-fab
+          color="primary"
+          (click)="openMenu()"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
 
-      <chat-and-call-channel-info></chat-and-call-channel-info>
-      <div></div>
+        <chat-and-call-channel-info></chat-and-call-channel-info>
+      </mat-card>
 
       <ng-container *ngIf="messages$ | async as messages">
         <div>

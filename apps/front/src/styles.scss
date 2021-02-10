@@ -12,6 +12,12 @@
   background-color: mat-color($background, background);
 }
 
+@import 'app/chat/components/message/message.component.theme.scss';
+/* Custom components theming. */
+@mixin custom-components-theme($theme) {
+  @include self-message-theme($theme);
+}
+
 @import './themes/default-theme.scss';
 @import './themes/dark-theme.scss';
 @import './themes/candy-theme.scss';
@@ -19,21 +25,19 @@
 .default-theme {
   @include angular-material-theme($default-theme);
   @include body-background($default-theme);
+  @include custom-components-theme($default-theme);
 }
 
 .dark-theme {
   @include angular-material-theme($dark-theme);
   @include body-background($dark-theme);
-}
-
-.purple-green-theme {
-  @import '@angular/material/prebuilt-themes/purple-green';
-  background-color: #303030;
+  @include custom-components-theme($dark-theme);
 }
 
 .candy-theme {
   @include angular-material-theme($candy-theme);
   @include body-background($candy-theme);
+  @include custom-components-theme($candy-theme);
 }
 
 * {

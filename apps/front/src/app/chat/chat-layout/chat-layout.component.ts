@@ -83,13 +83,7 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    combineLatest([
-      this.isMobileWidth$,
-      this.focus$.pipe(
-        filter((f) => Boolean(f)),
-        distinctUntilChanged()
-      ),
-    ])
+    combineLatest([this.isMobileWidth$, this.focus$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([isMobileWidth, isChannelSelected]) => {
         if (isMobileWidth && isChannelSelected) {

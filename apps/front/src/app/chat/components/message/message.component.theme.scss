@@ -1,0 +1,9 @@
+@import '~@angular/material/theming';
+
+@mixin self-message-theme($theme) {
+  $accent: map-get($theme, accent);
+
+  .message.self {
+    background-color: mat-color($accent, 0.2);
+  }
+}

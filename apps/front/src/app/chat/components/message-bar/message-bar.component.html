@@ -1,28 +1,34 @@
 <ng-container *ngIf="focus$ | async as focus">
-  <form
-    [formGroup]="messageForm"
-    (submit)="sendMessage(focus.id)"
-    autocomplete="off"
-  >
-    <mat-form-field>
-      <input matInput type="text" formControlName="text" #textInput />
-    </mat-form-field>
-    <button type="submit" [disabled]="!messageForm.valid" mat-mini-fab color="">
-      <mat-icon>send</mat-icon>
-    </button>
-    <button
-      type="button"
-      mat-mini-fab
-      color=""
-      *ngIf="focus.type === channelTypes.Personal"
-      (click)="file_input.click()"
+  <mat-card>
+    <form
+      [formGroup]="messageForm"
+      (submit)="sendMessage(focus.id)"
+      autocomplete="off"
     >
-      <mat-icon>attach_file</mat-icon>
-    </button>
-
-    <input [hidden]="true" #file_input type="file" formControlName="file" />
-    <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
-      <mat-icon>videocam</mat-icon>
-    </button>
-  </form>
+      <mat-form-field>
+        <input matInput type="text" formControlName="text" #textInput />
+      </mat-form-field>
+      <button
+        type="submit"
+        [disabled]="!messageForm.valid"
+        mat-mini-fab
+        color=""
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-mini-fab
+        color=""
+        *ngIf="focus.type === channelTypes.Personal"
+        (click)="file_input.click()"
+      >
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <input [hidden]="true" #file_input type="file" formControlName="file" />
+      <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
+        <mat-icon>videocam</mat-icon>
+      </button>
+    </form>
+  </mat-card>
 </ng-container>
