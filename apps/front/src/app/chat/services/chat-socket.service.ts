@@ -5,12 +5,11 @@ import {
   ChannelType,
   Message,
 } from '@chat-and-call/channels/shared';
-import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { CHUNK_SIZE_BYTES } from '@chat-and-call/socketcluster/shared';
+import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
 import { userAuthenticated } from '../+state/chat.actions';
-import { start } from 'repl';
 @Injectable({
   providedIn: 'root',
 })
@@ -44,19 +43,10 @@ export class ChatSocketService {
   }
 
   async sendFile(file: Blob) {
-    let pointer = 0;
-    const end = file.size;
-
-    for (let i = 0; pointer < end; i++) {
-      const data = await this.blobToUint8(
-        file.slice(pointer, pointer + CHUNK_SIZE_BYTES)
-      );
-
-      const chunk = { order: i, data: data };
-
-      await this.socket.sendFileChunk(chunk);
-
-      pointer += CHUNK_SIZE_BYTES;
+    for await (const chunk of this.blobSlicer(file)) {
+      if (chunk) {
+        await this.socket.sendFileChunk(chunk);
+      }
     }
   }
 
@@ -84,16 +74,42 @@ export class ChatSocketService {
     return this.socket.close();
   }
 
-  private blobToUint8(blob: Blob): Promise<Uint8Array> {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
+  private blobSlicer(file: Blob) {
+    return {
+      [Symbol.asyncIterator]() {
+        let i = 0;
+        let offset = 0;
+        const end = file.size;
 
-      reader.onloadend = () => {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        resolve(new Uint8Array(arrayBuffer));
-      };
+        return {
+          async next() {
+            if (offset < end) {
+              const data = await blobToUint8(
+                file.slice(offset, offset + CHUNK_SIZE_BYTES)
+              );
 
-      reader.readAsArrayBuffer(blob);
-    });
+              const chunk = { order: i++, data: data };
+              offset += CHUNK_SIZE_BYTES;
+              return { value: chunk, done: false };
+            }
+
+            return { done: true, value: null };
+          },
+        };
+      },
+    };
   }
 }
+
+const blobToUint8 = (blob: Blob): Promise<Uint8Array> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const arrayBuffer = reader.result as ArrayBuffer;
+      resolve(new Uint8Array(arrayBuffer));
+    };
+
+    reader.readAsArrayBuffer(blob);
+  });
+};
