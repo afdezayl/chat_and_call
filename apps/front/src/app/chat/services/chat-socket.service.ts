@@ -6,9 +6,11 @@ import {
   Message,
 } from '@chat-and-call/channels/shared';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
+import { CHUNK_SIZE_BYTES } from '@chat-and-call/socketcluster/shared';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
 import { userAuthenticated } from '../+state/chat.actions';
+import { start } from 'repl';
 @Injectable({
   providedIn: 'root',
 })
@@ -41,6 +43,23 @@ export class ChatSocketService {
     return this.socket.get<Array<Channel>>('channels/', null);
   }
 
+  async sendFile(file: Blob) {
+    let pointer = 0;
+    const end = file.size;
+
+    for (let i = 0; pointer < end; i++) {
+      const data = await this.blobToUint8(
+        file.slice(pointer, pointer + CHUNK_SIZE_BYTES)
+      );
+
+      const chunk = { order: i, data: data };
+
+      await this.socket.sendFileChunk(chunk);
+
+      pointer += CHUNK_SIZE_BYTES;
+    }
+  }
+
   subscribeToChannel(id: number | string) {
     const subject$ = new ReplaySubject<Message>();
 
@@ -63,5 +82,18 @@ export class ChatSocketService {
 
   close() {
     return this.socket.close();
+  }
+
+  private blobToUint8(blob: Blob): Promise<Uint8Array> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        resolve(new Uint8Array(arrayBuffer));
+      };
+
+      reader.readAsArrayBuffer(blob);
+    });
   }
 }

@@ -25,7 +25,13 @@
       >
         <mat-icon>attach_file</mat-icon>
       </button>
-      <input [hidden]="true" #file_input type="file" formControlName="file" />
+      <input
+        [hidden]="true"
+        #file_input
+        type="file"
+        formControlName="file"
+        (change)="sendFile($event)"
+      />
       <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
         <mat-icon>videocam</mat-icon>
       </button>

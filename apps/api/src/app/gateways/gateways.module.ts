@@ -1,14 +1,18 @@
 import { AuthDataAccessModule } from '@chat-and-call/auth/data-access-auth-server';
 import { ChannelsDataAccessModule } from '@chat-and-call/channels/data-access-server';
 import { ServerContactsModule } from '@chat-and-call/contacts/feature-server-contacts';
+import { SocketClusterAdapterModule } from '@chat-and-call/socketcluster/adapter';
+import {
+  ProtobufCodecEngine,
+  SOCKET_PATH,
+} from '@chat-and-call/socketcluster/shared';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SocketClusterAdapterModule } from 'libs/socketcluster/adapter/src/lib';
-import { SOCKET_PATH } from 'libs/socketcluster/shared/src/lib';
 import { AuthGateway } from './auth.gateway';
 import { ChannelsGateway } from './channels.gateway';
 import { HandshakeStrategy } from './middlewares/handshake';
 import { InboundStrategy } from './middlewares/inbound-middleware';
+import { RawStrategy } from './middlewares/raw-middleware';
 
 @Module({
   imports: [
@@ -19,7 +23,12 @@ import { InboundStrategy } from './middlewares/inbound-middleware';
     SocketClusterAdapterModule.forRootAsync(
       {
         imports: [ConfigModule, GatewaysModule],
-        inject: [ConfigService, HandshakeStrategy, InboundStrategy],
+        inject: [
+          ConfigService,
+          HandshakeStrategy,
+          InboundStrategy,
+          RawStrategy,
+        ],
         useFactory: async (config: ConfigService) => ({
           path: SOCKET_PATH,
           authKey: config.get('JSON_WEBTOKEN_KEY'),
@@ -27,15 +36,23 @@ import { InboundStrategy } from './middlewares/inbound-middleware';
           origins: '*:*',
           authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60,
           allowClientPublish: false,
+          codecEngine: new ProtobufCodecEngine(),
         }),
       },
       {
         handshake: HandshakeStrategy,
         inbound: InboundStrategy,
+        inboundRaw: RawStrategy,
       }
     ),
   ],
-  providers: [AuthGateway, ChannelsGateway, HandshakeStrategy, InboundStrategy],
-  exports: [HandshakeStrategy, InboundStrategy],
+  providers: [
+    AuthGateway,
+    ChannelsGateway,
+    HandshakeStrategy,
+    InboundStrategy,
+    RawStrategy,
+  ],
+  exports: [HandshakeStrategy, InboundStrategy, RawStrategy],
 })
 export class GatewaysModule {}

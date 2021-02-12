@@ -4,6 +4,7 @@ import { BasicMessage, ChannelType } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import { sendMessage } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
+import { ChatSocketService } from '../../services/chat-socket.service';
 
 @Component({
   selector: 'chat-and-call-message-bar',
@@ -21,7 +22,11 @@ export class MessageBarComponent {
     file: this.fb.control(null),
   });
 
-  constructor(private store: Store, private fb: FormBuilder) {}
+  constructor(
+    private store: Store,
+    private fb: FormBuilder,
+    private socket: ChatSocketService
+  ) {}
 
   sendMessage(idChannel: string) {
     const message: BasicMessage = {
@@ -31,6 +36,16 @@ export class MessageBarComponent {
     this.messageForm.reset();
 
     this.store.dispatch(sendMessage({ message }));
+  }
+
+  async sendFile(event: Event) {
+    const files = (event.target as HTMLInputElement).files;
+    const file = files ? files[0] : null;
+    if (file) {
+      const chunked = await this.socket.sendFile(file);
+
+      console.log(chunked);
+    }
   }
 
   setAutofocus() {
