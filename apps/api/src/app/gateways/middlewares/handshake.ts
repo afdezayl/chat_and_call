@@ -6,13 +6,15 @@ import {
 } from '@chat-and-call/socketcluster/adapter';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AGServer } from 'socketcluster-server';
+import { AGServer, AGServerSocket } from 'socketcluster-server';
+import { setInterval } from 'timers';
 import { CookieUtil } from './cookie-util';
 
 type ConnectEvent = {
   id: string;
   pingTimeout: number;
   isAuthenticated: boolean;
+  authError?: any;
 };
 
 @Injectable()
@@ -48,29 +50,45 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
 
     if (validRefreshToken?.username) {
       action.allow();
+      this._setRefreshTokenLogic(socket, validRefreshToken.username);
     } else {
       action.block(new Error('Unauthorized'));
       socket.disconnect();
       return;
     }
+  }
 
-    const connectStatus: {
-      id: string;
-      pingTimeout: number;
-      isAuthenticated: boolean;
-      authError?: any;
-    } = await socket.listener('connect').once();
+  private async _setRefreshTokenLogic(
+    socket: AGServerSocket,
+    username: string
+  ) {
+    const connectStatus: ConnectEvent = await socket.listener('connect').once();
 
-    if (connectStatus.isAuthenticated) {
-      return;
-    }
+    await this._setToken(socket, { username });
 
-    // Attach a new token if expired.
-    socket.setAuthToken(
-      { username: validRefreshToken.username, id: socket.id },
-      { expiresIn: `${this.config.get('JWT_EXPIRES_MIN')}min` }
+    const tokenMinutes = this.config.get('JWT_EXPIRES_MIN');
+    const secondsToRefresh = (tokenMinutes * 60) / 3;
+
+    const interval = setInterval(
+      async () => await this._setToken(socket, { username }),
+      secondsToRefresh * 1000
     );
 
-    // TODO: Refresh token
+    for await (const x of socket.listener('close')) {
+      clearInterval(interval);
+      break;
+    }
+  }
+
+  private async _setToken(
+    socket: AGServerSocket,
+    content: { username: string }
+  ) {
+    return await socket.setAuthToken(
+      { ...content, id: socket.id },
+      {
+        expiresIn: `${this.config.get('JWT_EXPIRES_MIN')}min`,
+      }
+    );
   }
 }

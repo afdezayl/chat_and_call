@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BasicMessage, ChannelType } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
-import { sendMessage } from '../../+state/chat.actions';
+import { sendMessage, sendMessageToserver } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
 import { ChatSocketService } from '../../services/chat-socket.service';
 
@@ -29,7 +29,7 @@ export class MessageBarComponent {
   ) {}
 
   sendMessage(idChannel: string) {
-    const message: BasicMessage = {
+    const message = {
       text: this.messageForm.value.text,
       channel: idChannel,
     };

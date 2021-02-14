@@ -4,17 +4,15 @@ import {
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import {
-  AfterViewChecked,
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
-import { BasicMessage, Channel } from '@chat-and-call/channels/shared';
+import { Channel, SendMessageDTO } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
 import {
   combineLatest,
@@ -25,7 +23,6 @@ import {
   Subscription,
 } from 'rxjs';
 import {
-  debounceTime,
   delay,
   distinctUntilChanged,
   filter,
@@ -51,7 +48,7 @@ import { ChatScrollStrategy } from './chat-scroll-strategy';
       provide: VIRTUAL_SCROLL_STRATEGY,
       useClass: ChatScrollStrategy,
     },
-    ChatSocketService
+    ChatSocketService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -126,10 +123,15 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     interval(10)
       .pipe(
         map((x, i) => {
-          const message: BasicMessage = {
+          const message = {
             channel: channel.id,
             text: '' + (i + 1),
           };
+          const m = new SendMessageDTO({
+            channel: channel.id,
+            text: '' + (i + 1),
+          });
+
           return message;
         }),
         take(100),

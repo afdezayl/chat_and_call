@@ -63,7 +63,11 @@ export class ChatSocketService {
   }
 
   publishMessage(message: BasicMessage) {
-    return this.socket.publishToChannel<void>(message, message.channel);
+    const protoMessage = message; //new MessageDTO(message);
+    return this.socket.publishToChannel<{ id: string }>(
+      protoMessage,
+      message.channel
+    );
   }
 
   videoCall(description: RTCSessionDescriptionInit) {

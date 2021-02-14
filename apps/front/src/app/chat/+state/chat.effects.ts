@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { logoutConfirmed } from '@chat-and-call/auth/feature-auth-web';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -10,8 +10,10 @@ import {
   map,
   mergeMap,
   retryWhen,
+  switchMap,
   tap,
 } from 'rxjs/operators';
+import { v4 } from 'uuid';
 import { ChatSocketService } from '../services/chat-socket.service';
 import * as ChatActions from './chat.actions';
 
@@ -31,15 +33,15 @@ export class ChatEffects {
                 return of(e).pipe(delay(1000));
               })
             )
-          )
+          ),
+          map((channels) => ChatActions.addChannels({ channels })),
+          catchError((error) => {
+            // TODO: Handle error
+            console.error(error);
+            return of(ChatActions.loadChannelsFailure({ error }));
+          })
         )
-      ),
-      map((channels) => ChatActions.addChannels({ channels })),
-      catchError((error) => {
-        // TODO: Handle error
-        console.error(error);
-        return of(ChatActions.loadChannelsFailure({ error }));
-      })
+      )
     );
   });
 
@@ -59,12 +61,15 @@ export class ChatEffects {
   createChannel$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ChatActions.createChannel),
-      mergeMap(({ channel }) => this.chatSocket.createChannel(channel)),
-      map((channel) => ChatActions.channelCreated({ channel })),
-      catchError((err) => {
-        console.error(err);
-        return of(ChatActions.channelCreationFailure());
-      })
+      mergeMap(({ channel }) =>
+        this.chatSocket.createChannel(channel).pipe(
+          map((channel) => ChatActions.channelCreated({ channel })),
+          catchError((err) => {
+            console.error(err);
+            return of(ChatActions.channelCreationFailure());
+          })
+        )
+      )
     )
   );
 
@@ -75,26 +80,42 @@ export class ChatEffects {
     )
   );
 
+  createLocalMessage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.sendMessage),
+      map(({ message }) =>
+        ChatActions.sendMessageToserver({ message, pendingId: v4() })
+      )
+    )
+  );
+
   publishMessage$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ChatActions.sendMessage),
-      mergeMap((x) =>
-        this.chatSocket.publishMessage(x.message).pipe(map(() => x))
-      ),
-      map((_) => ChatActions.serverReceivedMessage()),
-      catchError((err) => {
-        // TODO: Handle error
-        console.error(err);
-        return of(ChatActions.serverFailMessage());
-      })
+      ofType(ChatActions.sendMessageToserver),
+      mergeMap((m) =>
+        this.chatSocket.publishMessage(m.message).pipe(
+          map(({ id }) =>
+            ChatActions.serverReceivedMessage({ pendingId: m.pendingId, id })
+          ),
+          catchError((err) => {
+            // TODO: Handle error
+            console.error('not sended', err);
+            return of(ChatActions.serverFailMessage());
+          })
+        )
+      )
     );
   });
 
   subscribeChannel$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.subscribeChannel),
-      mergeMap(({ channel }) => this.chatSocket.subscribeToChannel(channel)),
-      map((message) => ChatActions.incomingMessage({ message }))
+      mergeMap(({ channel }) =>
+        this.chatSocket.subscribeToChannel(channel).pipe(
+          map((message) => ChatActions.incomingMessage({ message })),
+          catchError((err) => of(ChatActions.serverFailMessage()))
+        )
+      )
     );
   });
 

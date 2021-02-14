@@ -1,10 +1,10 @@
-import { createAction, props } from '@ngrx/store';
 import {
-  Channel,
-  Message,
   BasicMessage,
+  Channel,
   ChannelType,
+  Message,
 } from '@chat-and-call/channels/shared';
+import { createAction, props } from '@ngrx/store';
 
 // Authentication
 export const userAuthenticated = createAction(
@@ -51,13 +51,34 @@ export const sendMessage = createAction(
   '[Chat] Send message',
   props<{ message: BasicMessage }>()
 );
-export const serverReceivedMessage = createAction('[Chat] Received message');
-export const serverFailMessage = createAction('[Chat] Denied message');
+export const sendMessageToserver = createAction(
+  '[Chat] Send message to server',
+  props<{ message: BasicMessage; pendingId: string }>()
+);
+export const serverReceivedMessage = createAction(
+  '[Chat] Received message',
+  props<{ id: string; pendingId: string }>()
+);
+export const serverRejectedMessage = createAction(
+  '[Chat] Denied message',
+  props<{ pendingId: string }>()
+);
 export const incomingMessage = createAction(
   '[Chat] Incoming message',
   props<{ message: Message }>()
 );
+export const ackMessageArrival = createAction(
+  '[Chat] Message arrives to destiny',
+  props<{ id: string }>()
+);
+export const ackMessageReaded = createAction(
+  '[Chat] Message readed',
+  props<{ id: string }>()
+);
 
+export const serverFailMessage = createAction(
+  '[Chat] Denied request'
+);
 export const setFocus = createAction(
   '[Chat] Set focus',
   props<{ id: number | string | null }>()

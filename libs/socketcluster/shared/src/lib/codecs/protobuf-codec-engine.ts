@@ -13,6 +13,7 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
     process.versions.node != null;
 
   encode(object: any) {
+    let output;
     if (object?.data instanceof Message) {
       const message = object.data as Message;
       const encoded = message.$type.encode(message).finish();
@@ -21,19 +22,26 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
         value: encoded,
       });
       object.data = newData;
-
-      const verifyErrors = SCEvent.verify(object);
-
-      if (verifyErrors === null) {
-        const scEvent = SCEvent.create(object);
-        return SCEvent.encode(scEvent).finish();
-      }
     }
 
-    return this.defaultCodec.encode(object);
+    const verifyErrors = SCEvent.verify(object);
+    if (verifyErrors === null) {
+      const scEvent = SCEvent.create(object);
+      output = SCEvent.encode(scEvent).finish();
+    }
+
+    const responseErrors = SCEventResponse.verify(object);
+    if (responseErrors === null) {
+      const scResponse = SCEventResponse.create(object);
+      output = SCEventResponse.encode(scResponse).finish();
+    }
+
+    return output ? output : this.defaultCodec.encode(object);
   }
+
   decode(input: any) {
     let buffer: null | Uint8Array = null;
+    let output;
     if (this.isBrowser && input instanceof ArrayBuffer) {
       buffer = new Uint8Array(input);
     } else if (this.isNode && input instanceof Buffer) {
@@ -41,17 +49,23 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
     }
     if (buffer) {
       const event = this._decodeScEvent(buffer);
+      if (event) {
+        output = event;
+      }
       if (event?.data) {
-        return this._decodeInnerData(event.data);
+        output = { ...event, data: this._decodeInnerData(event.data) };
       }
 
       const response = this._decodeScResponse(buffer);
+      if (response) {
+        output = response;
+      }
       if (response?.data) {
-        return this._decodeInnerData(response.data);
+        output = { ...response, data: this._decodeInnerData(response.data) };
       }
     }
 
-    return this.defaultCodec.decode(input);
+    return output ? output : this.defaultCodec.decode(input);
   }
 
   private _decodeScEvent(buffer: Uint8Array) {
@@ -71,10 +85,10 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
   }
 
   private _decodeInnerData(innerData: StrictAny) {
-    const type = (roots['decorated']?.lookup(
+    const type = (roots['decorated'].lookup(
       innerData.type_url
-    ) as unknown) as Type;
-    const decodedData = type.decode(innerData.value);
+    ) as unknown) as Type | null;
+    const decodedData = type?.decode(innerData.value);
 
     return decodedData;
   }

@@ -7,6 +7,7 @@ import { EntityRepository, LoadStrategy } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
+import { validate } from 'uuid';
 
 const mapToGroupChannel = (ch: ChannelEntity): Channel => ({
   id: ch.uuid,
@@ -87,18 +88,11 @@ export class ChannelsDataAccessService {
   }
 
   async checkChannelAccess(user: string, channel: string): Promise<boolean> {
-    /* this.em.find(ChannelEntity, { uuid: channel }, {}); */
-    const ch = await this.channelRepository.findOne({ uuid: channel });
-    const isValidGroupAccess = async () =>
-      (await this.accessRepository.count({ login: user, channel: ch?.id })) > 0;
-    const isValidPersonalChannel = async () =>
-      (await this.getFriendsChannels(user))
-        .map((f) => `${f.login1}+${f.login2}`)
-        .filter((str) => str === channel).length > 0;
+    const isGroup = validate(channel);
 
-    const hasAccess = (await isValidGroupAccess()) || isValidPersonalChannel();
-
-    return hasAccess;
+    return isGroup
+      ? this.isValidGroupAccess(user, channel)
+      : this.isFriendChannel(user, channel);
   }
 
   private async getFriendsChannels(user: string) {
@@ -107,8 +101,29 @@ export class ChannelsDataAccessService {
       .select<Array<{ login1: string; login2: string }>>([`login1`, `login2`])
       .from('friends')
       .where({ login1: user })
-      .orWhere({ login2: user });
+      .orWhere({ login2: user })
+      .debug(true);
 
     return friends;
+  }
+
+  private async isValidGroupAccess(user: string, uuid: string) {
+    const ch = await this.channelRepository.findOne({ uuid });
+    return ch
+      ? (await this.accessRepository.count({ login: user, channel: ch.id })) > 0
+      : false;
+  }
+
+  private async isFriendChannel(user: string, channel: string) {
+    const users = channel.split('+');
+    if (users.length !== 2 || !users.includes(user)) {
+      return false;
+    }
+    const [result] = await this.em
+      .getKnex()
+      .count({ count: '*' })
+      .from('friends')
+      .where({ login1: users[0], login2: users[1] });
+    return (result.count ?? 0) > 0;
   }
 }

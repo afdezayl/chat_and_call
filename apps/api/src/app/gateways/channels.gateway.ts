@@ -17,6 +17,7 @@ import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
 import { EMPTY, from, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
+import { v4 } from 'uuid';
 
 @UseGuards(AuthorizeGuard)
 @SocketCrudGateway('channels')
@@ -77,14 +78,14 @@ export class ChannelsGateway {
     }
 
     const newMessage: Message = {
+      id: v4(),
       ...data,
       from: user,
       date: new Date(),
     };
 
-    return from(
-      socket.server.exchange.transmitPublish(data.channel, newMessage)
-    );
+    socket.server.exchange.transmitPublish(data.channel, newMessage);
+    return { id: newMessage.id };
   }
 
   @SocketPost('call')
