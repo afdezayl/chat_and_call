@@ -12,7 +12,10 @@ export class AuthorizeGuard implements CanActivate {
     const wsContext = context.switchToWs();
     const socket = wsContext.getClient() as AGServerSocket;
 
-    if (socket.authState === socket.AUTHENTICATED) {
+    if (
+      socket.authState === socket.AUTHENTICATED &&
+      socket?.authToken?.id === socket.id
+    ) {
       return true;
     }
     throw new WsException('Unauthorized');
