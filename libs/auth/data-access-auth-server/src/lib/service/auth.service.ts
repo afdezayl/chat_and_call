@@ -43,8 +43,11 @@ export class AuthService {
     };
   }
 
-  validateToken(token: string) {
-    return this.jwtService.verifyAsync(token);
+  async validateToken(token: string) {
+    try {
+      return await this.jwtService.verifyAsync<{ username: string }>(token);
+    } catch (error) {}
+    return null;
   }
 
   // TODO: Success, Already registered , Internal Error

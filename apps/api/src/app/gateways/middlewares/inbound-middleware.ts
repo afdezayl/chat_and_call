@@ -1,26 +1,25 @@
+import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
+import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import {
   AGAction,
-  InvokeAction,
+  AuthenticateAction,
   MiddlewareInboundStrategy,
   PublishInAction,
   SubscribeAction,
-  TransmitAction,
 } from '@chat-and-call/socketcluster/adapter';
-import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import { Injectable, Logger } from '@nestjs/common';
+import { CookieUtil } from './cookie-util';
 
 @Injectable()
 export class InboundStrategy extends MiddlewareInboundStrategy {
   constructor(
     private logger: Logger,
-    private channelsService: ChannelsDataAccessService
+    private channelsService: ChannelsDataAccessService,
+    private cookie: CookieUtil,
+    private authService: AuthService
   ) {
     super();
     this.logger.setContext(this.constructor.name);
-  }
-
-  onInvoke?(action: InvokeAction) {
-    action.allow();
   }
 
   onPublishIn?(action: PublishInAction): void {
@@ -38,12 +37,27 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
   }
 
   default(action: AGAction): void | Promise<void> {
-    this.logger.debug('default middleware action - ' + action.type);
+    //this.logger.debug('default middleware action - ' + action.type);
     action.allow();
   }
 
-  onTransmit?(action: TransmitAction): void | Promise<void> {
-    this.logger.log('transmit middleware', action.data);
+  async onAuthenticate?(action: AuthenticateAction): Promise<void> {
+    const { socket, authToken } = action;
+    const username = authToken?.username;
+
+    const refreshToken =
+      this.cookie.getRefreshTokenFromRequest(socket.request) ?? '';
+    const refreshContent = await this.authService.validateToken(refreshToken);
+    const refreshUser = refreshContent?.username;
+
+    // Avoid use of tokens from other users
+    if (!username || !refreshUser || username !== refreshUser) {
+      this.logger.error(`Invalid access ${username} - ${refreshUser}`);
+      action.block(new Error('Invalid tokens'));
+      socket.disconnect();
+      return;
+    }
+
     action.allow();
   }
 }

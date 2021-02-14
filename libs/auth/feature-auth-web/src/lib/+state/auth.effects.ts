@@ -17,9 +17,6 @@ export class AuthEffects {
         this.loading
           .showLoading(this.authService.sendLoginRequest(request))
           .pipe(
-            tap((token) => {
-              localStorage.setItem(TOKEN_KEY, token);
-            }),
             map((token) => AuthActions.loginSuccess({ token })),
             catchError((error) => {
               console.error(error);

@@ -7,7 +7,7 @@ import {
 } from '@chat-and-call/auth/shared';
 import { HttpStatus } from '@chat-and-call/utils/forms-shared';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, shareReplay } from 'rxjs/operators';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 
 export class Success {}
 export class NotAvailableUserOrEmail {
@@ -19,6 +19,8 @@ export class NotAvailableUserOrEmail {
     this.usernameTaken = value.usernameTaken;
   }
 }
+
+// TODO: Extract
 class CacheObject<T = any> {
   key!: string;
   value!: T;
@@ -120,6 +122,11 @@ export class AuthService {
         return throwError(new Error(error));
       })
     );
+  }
+  isAuthorized() {
+    return this.http
+      .get<boolean>('api/auth/authorized', { withCredentials: true })
+      .pipe(catchError((err) => of(false)));
   }
 
   private readonly usernameCache = new Cache<Observable<boolean>>(10);

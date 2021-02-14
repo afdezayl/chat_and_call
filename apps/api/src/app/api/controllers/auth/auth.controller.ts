@@ -13,27 +13,19 @@ import {
   ConflictException,
   Controller,
   Get,
+  InternalServerErrorException,
   Logger,
-  NotImplementedException,
   Post,
   Query,
   Req,
   Res,
 } from '@nestjs/common';
-import { WsException } from '@nestjs/websockets';
-import { Request, Response } from 'express';
+import { Response, Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService, private logger: Logger) {
     this.logger.setContext(this.constructor.name);
-  }
-
-  @Get('refresh')
-  refresh(@Req() request: Request, @Res() response: Response) {
-    console.log(request.cookies, request.signedCookies);
-    throw new NotImplementedException();
-    //return response.send(request.signedCookies);
   }
 
   @Post('login')
@@ -53,6 +45,8 @@ export class AuthController {
         sameSite: 'strict',
         signed: true,
       });
+
+      // TODO: Token is not needed
 
       return response.status(200).send({ token: tokens.jwt });
     }
@@ -79,7 +73,7 @@ export class AuthController {
     if (result instanceof Success) {
       return;
     } else if (result instanceof Fail) {
-      throw new WsException('internal error');
+      throw new InternalServerErrorException();
     } else {
       const error: SignupConflictResponseDto = {
         notAvailableEmail: result.isEmailTaken,
@@ -87,6 +81,14 @@ export class AuthController {
       };
       throw new ConflictException(error);
     }
+  }
+
+  @Get('authorized')
+  async isAuthorized(@Req() request: Request) {
+    const refreshCookie = request.signedCookies.refresh_jwt;
+    const content = await this.authService.validateToken(refreshCookie);
+
+    return !!content;
   }
 
   @Get('username')

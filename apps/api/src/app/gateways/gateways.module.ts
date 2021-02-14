@@ -10,6 +10,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGateway } from './auth.gateway';
 import { ChannelsGateway } from './channels.gateway';
+import { CookieUtil } from './middlewares/cookie-util';
 import { HandshakeStrategy } from './middlewares/handshake';
 import { InboundStrategy } from './middlewares/inbound-middleware';
 import { RawStrategy } from './middlewares/raw-middleware';
@@ -52,6 +53,7 @@ import { RawStrategy } from './middlewares/raw-middleware';
     HandshakeStrategy,
     InboundStrategy,
     RawStrategy,
+    CookieUtil
   ],
   exports: [HandshakeStrategy, InboundStrategy, RawStrategy],
 })

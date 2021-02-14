@@ -1,8 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { AGServerSocket } from 'socketcluster-server';
@@ -19,7 +15,6 @@ export class AuthorizeGuard implements CanActivate {
     if (socket.authState === socket.AUTHENTICATED) {
       return true;
     }
-
     throw new WsException('Unauthorized');
   }
 }

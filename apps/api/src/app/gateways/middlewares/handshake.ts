@@ -1,16 +1,13 @@
 import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
 import {
   HandshakeSCAction,
+  HandshakeWSAction,
   MiddlewareHandshakeStrategy,
 } from '@chat-and-call/socketcluster/adapter';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import * as cookieUtility from 'cookie';
-import * as cookieParser from 'cookie-parser';
-import { from, of, throwError, EMPTY } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
-import { AGServer } from 'socketcluster-server';
-import { IncomingMessage } from 'http';
 import { ConfigService } from '@nestjs/config';
+import { AGServer } from 'socketcluster-server';
+import { CookieUtil } from './cookie-util';
 
 type ConnectEvent = {
   id: string;
@@ -22,6 +19,7 @@ type ConnectEvent = {
 export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   constructor(
     private logger: Logger,
+    private cookie: CookieUtil,
     private config: ConfigService,
     @Inject(forwardRef(() => AuthService)) private authService: AuthService
   ) {
@@ -38,58 +36,41 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   }
 
   // TODO: unified type of errors
-  onSCHandshake(action: HandshakeSCAction) {
+  async onSCHandshake(action: HandshakeSCAction) {
     const socket = action.socket;
-    const signedCookies = this.getSignedCookiesFromRequest(action.request);
 
-    // Remove falsy values, don´t use coalesce operator (??)
-    const refreshToken = signedCookies?.refresh_jwt
-      ? signedCookies.refresh_jwt
-      : '';
-    const authToken = signedCookies?.jwt || null;
+    const refreshToken =
+      this.cookie.getRefreshTokenFromRequest(action.request) || '';
 
-    const tryRefresh$ = of(EMPTY).pipe(
-      switchMap(() => this.authService.validateToken(refreshToken)),
-      tap((content) =>
-        console.warn(
-          '*********************************refreshing*****************************\n',
-          refreshToken,
-          content
-        )
-      ),
-      switchMap((content) =>
-        socket.setAuthToken({ username: content.username })
-      ),
-      catchError((err) => throwError(new Error('Unauthorized')))
+    const validRefreshToken = await this.authService.validateToken(
+      refreshToken
     );
 
-    // Disconnect client if token is not valid
-    from(socket.listener('connect').once())
-      .pipe(
-        switchMap((data: ConnectEvent) =>
-          data.isAuthenticated ? of(data) : tryRefresh$
-        )
-      )
-      .subscribe(
-        (data) =>
-          this.logger.log(
-            `Connected => ${socket?.authToken?.username}, id: ${socket.id}`
-          ),
-        (err) => socket.disconnect()
-      );
+    if (validRefreshToken?.username) {
+      action.allow();
+    } else {
+      action.block(new Error('Unauthorized'));
+      socket.disconnect();
+      return;
+    }
 
-    action.allow();
-  }
+    const connectStatus: {
+      id: string;
+      pingTimeout: number;
+      isAuthenticated: boolean;
+      authError?: any;
+    } = await socket.listener('connect').once();
 
-  private getSignedCookiesFromRequest(request: IncomingMessage) {
-    // Cookie parser middleware not applied, socketcluster intercepts handshake request
-    const rawCookies = request?.headers?.cookie ?? '';
-    const cookies = cookieUtility.parse(rawCookies);
-    const signedCookies = cookieParser.signedCookies(
-      cookies,
-      this.config.get('COOKIE_SECRET')!
+    if (connectStatus.isAuthenticated) {
+      return;
+    }
+
+    // Attach a new token if expired.
+    socket.setAuthToken(
+      { username: validRefreshToken.username, id: socket.id },
+      { expiresIn: `${this.config.get('JWT_EXPIRES_MIN')}min` }
     );
 
-    return signedCookies;
+    // TODO: Refresh token
   }
 }

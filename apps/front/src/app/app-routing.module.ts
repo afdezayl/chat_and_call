@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import {
+  IsLoggedGuard,
+  IsNotLoggedGuard,
+} from '@chat-and-call/auth/feature-auth-web';
 
 export const routes: Routes = [
   {
@@ -14,11 +18,15 @@ export const routes: Routes = [
         path: 'login',
         loadChildren: () =>
           import('./login/login.module').then((m) => m.LoginModule),
+        //canLoad: [IsNotLoggedGuard],
+        canActivate: [IsNotLoggedGuard]
       },
       {
         path: 'signup',
         loadChildren: () =>
           import('./signup/signup.module').then((m) => m.SignupModule),
+        //canLoad: [IsNotLoggedGuard],
+        canActivate: [IsNotLoggedGuard]
       },
       {
         path: '**',
@@ -29,6 +37,8 @@ export const routes: Routes = [
   {
     path: 'chat',
     loadChildren: () => import('./chat/chat.module').then((m) => m.ChatModule),
+    //canLoad: [IsLoggedGuard],
+    canActivate: [IsLoggedGuard]
   },
   {
     path: '**',

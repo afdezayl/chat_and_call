@@ -4,12 +4,13 @@ import {
   ProtobufCodecEngine,
   SOCKET_PATH,
   TOKEN_KEY,
+  InMemoryEngine,
 } from '@chat-and-call/socketcluster/shared';
 import { SocketCrudModel } from '@chat-and-call/socketcluster/utils-crud-server';
 import { EMPTY, from, Observable, of, Subject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { AGClientSocket, create } from 'socketcluster-client';
-import { AGServer } from 'socketcluster-server';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,13 +20,14 @@ export class SocketService {
   private _socket!: AGClientSocket;
 
   constructor() {
-    const engine: AGServer.CodecEngine = new ProtobufCodecEngine();
+    const codec = new ProtobufCodecEngine();
     this._socket = create({
       path: SOCKET_PATH,
       authTokenName: TOKEN_KEY,
       autoReconnect: true,
       autoConnect: true,
-      codecEngine: engine,
+      codecEngine: codec,
+      authEngine: new InMemoryEngine(),
     });
 
     (async () => {
