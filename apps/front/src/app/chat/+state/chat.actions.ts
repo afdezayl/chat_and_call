@@ -47,6 +47,7 @@ export const channelCreationFailure = createAction(
   '[Chat] Failed channel creation'
 );
 
+// Message
 export const sendMessage = createAction(
   '[Chat] Send message',
   props<{ message: BasicMessage }>()
@@ -76,6 +77,7 @@ export const ackMessageReaded = createAction(
   props<{ id: string }>()
 );
 
+// General
 export const serverFailMessage = createAction(
   '[Chat] Denied request'
 );

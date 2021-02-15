@@ -3,9 +3,11 @@
     class="message"
     [ngClass]="{ self: message.from === (username$ | async) }"
   >
-    <div>
+    <div class="message__header">
       <em>{{ message.from }} - {{ message.date | date }}</em>
+      <div class="spacer"></div>
+      <mat-icon>{{ message.status | messageStatusIcon }}</mat-icon>
     </div>
-    <p>{{ message.text }}</p>
+    <p class="text">{{ message.text }}</p>
   </mat-card>
 </ng-container>

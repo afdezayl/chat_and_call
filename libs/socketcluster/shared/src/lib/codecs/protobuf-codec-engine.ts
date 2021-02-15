@@ -13,7 +13,6 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
     process.versions.node != null;
 
   encode(object: any) {
-    let output;
     if (object?.data instanceof Message) {
       const message = object.data as Message;
       const encoded = message.$type.encode(message).finish();
@@ -27,16 +26,16 @@ export class ProtobufCodecEngine implements AGServer.CodecEngine {
     const verifyErrors = SCEvent.verify(object);
     if (verifyErrors === null) {
       const scEvent = SCEvent.create(object);
-      output = SCEvent.encode(scEvent).finish();
+      return SCEvent.encode(scEvent).finish();
     }
 
     const responseErrors = SCEventResponse.verify(object);
     if (responseErrors === null) {
       const scResponse = SCEventResponse.create(object);
-      output = SCEventResponse.encode(scResponse).finish();
+      return SCEventResponse.encode(scResponse).finish();
     }
 
-    return output ? output : this.defaultCodec.encode(object);
+    return this.defaultCodec.encode(object);
   }
 
   decode(input: any) {

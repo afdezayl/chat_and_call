@@ -9,15 +9,15 @@ import { ChatEffects } from './+state/chat.effects';
 import * as fromChat from './+state/chat.reducer';
 import { ChatLayoutComponent } from './chat-layout/chat-layout.component';
 import { ChatRoutingModule } from './chat-routing.module';
+import { ChannelCreatorComponent } from './components/channel-creator/channel-creator.component';
 import { ChannelInfoComponent } from './components/channel-info/channel-info.component';
 import { ChannelIconPipe } from './components/channel-selector/channel-icon.pipe';
 import { ChannelSelectorComponent } from './components/channel-selector/channel-selector.component';
 import { ChatHeaderComponent } from './components/chat-header/chat-header.component';
 import { MessageBarComponent } from './components/message-bar/message-bar.component';
+import { MessageStatusPipe } from './components/message/message-status.pipe';
 import { MessageComponent } from './components/message/message.component';
 import { VideoCallComponent } from './components/video-call/video-call.component';
-import { ChatSocketService } from './services/chat-socket.service';
-import { ChannelCreatorComponent } from './components/channel-creator/channel-creator.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +28,7 @@ import { ChannelCreatorComponent } from './components/channel-creator/channel-cr
     ChannelSelectorComponent,
     MessageBarComponent,
     ChannelInfoComponent,
+    MessageStatusPipe,
     ChannelIconPipe,
     ChannelCreatorComponent,
   ],

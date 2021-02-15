@@ -13,6 +13,7 @@ import { ChannelsGateway } from './channels.gateway';
 import { CookieUtil } from './middlewares/cookie-util';
 import { HandshakeStrategy } from './middlewares/handshake';
 import { InboundStrategy } from './middlewares/inbound-middleware';
+import { OutboundStrategy } from './middlewares/outbound-middleware';
 import { RawStrategy } from './middlewares/raw-middleware';
 
 @Module({
@@ -29,6 +30,7 @@ import { RawStrategy } from './middlewares/raw-middleware';
           HandshakeStrategy,
           InboundStrategy,
           RawStrategy,
+          OutboundStrategy,
         ],
         useFactory: async (config: ConfigService) => ({
           path: SOCKET_PATH,
@@ -44,6 +46,7 @@ import { RawStrategy } from './middlewares/raw-middleware';
         handshake: HandshakeStrategy,
         inbound: InboundStrategy,
         inboundRaw: RawStrategy,
+        outbound: OutboundStrategy,
       }
     ),
   ],
@@ -52,9 +55,10 @@ import { RawStrategy } from './middlewares/raw-middleware';
     ChannelsGateway,
     HandshakeStrategy,
     InboundStrategy,
+    OutboundStrategy,
     RawStrategy,
-    CookieUtil
+    CookieUtil,
   ],
-  exports: [HandshakeStrategy, InboundStrategy, RawStrategy],
+  exports: [HandshakeStrategy, InboundStrategy, RawStrategy, OutboundStrategy],
 })
 export class GatewaysModule {}

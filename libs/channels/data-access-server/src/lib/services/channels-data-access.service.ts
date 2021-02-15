@@ -101,9 +101,7 @@ export class ChannelsDataAccessService {
       .select<Array<{ login1: string; login2: string }>>([`login1`, `login2`])
       .from('friends')
       .where({ login1: user })
-      .orWhere({ login2: user })
-      .debug(true);
-
+      .orWhere({ login2: user });
     return friends;
   }
 

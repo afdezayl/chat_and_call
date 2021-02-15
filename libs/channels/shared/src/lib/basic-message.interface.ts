@@ -15,3 +15,8 @@ export class SendMessageDTO extends Message<BasicMessage> {
   @Field.d(2, 'string', 'required')
   text!: string;
 }
+
+export class ServerReceivedMessageDTO extends Message<ServerReceivedMessageDTO> {
+  @Field.d(1, 'string', 'required')
+  id!: string;
+}

@@ -4,6 +4,8 @@ import {
   Message,
   ChannelType,
   CreateGroupChannelRequest,
+  ServerReceivedMessageDTO,
+  MessageDTO,
 } from '@chat-and-call/channels/shared';
 import {
   AuthorizeGuard,
@@ -14,8 +16,8 @@ import {
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { Logger, UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
-import { EMPTY, from, of, throwError } from 'rxjs';
-import { catchError, retry, switchMap } from 'rxjs/operators';
+import { EMPTY, from, Observable, of, throwError } from 'rxjs';
+import { catchError, delay, retry, switchMap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 import { v4 } from 'uuid';
 
@@ -70,12 +72,20 @@ export class ChannelsGateway {
   publishMessageWithResponse(
     @ConnectedSocket() socket: AGServerSocket,
     @MessageBody() data: BasicMessage
-  ) {
+  ): ServerReceivedMessageDTO | Observable<ServerReceivedMessageDTO> {
     const user = socket?.authToken?.username;
 
     if (!socket.isSubscribed(data.channel)) {
       throw new WsException('Unauthorized');
     }
+
+    /* TODO: Protobuf implementation dates
+    const newMessage: MessageDTO = new MessageDTO({
+      id: v4(),
+      ...data,
+      from: user,
+      date: new Date(),
+    }); */
 
     const newMessage: Message = {
       id: v4(),
@@ -84,8 +94,11 @@ export class ChannelsGateway {
       date: new Date(),
     };
 
-    socket.server.exchange.transmitPublish(data.channel, newMessage);
-    return { id: newMessage.id };
+    setTimeout(async () => {
+      await socket.server.exchange.transmitPublish(data.channel, newMessage);
+    }, 0);
+
+    return new ServerReceivedMessageDTO({ id: newMessage.id });
   }
 
   @SocketPost('call')

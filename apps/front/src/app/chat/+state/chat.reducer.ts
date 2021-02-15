@@ -20,11 +20,22 @@ export interface Contact {
   status: string;
 }
 
+export enum MessageStatus {
+  Pending,
+  Server,
+  Target,
+  Read,
+  Error,
+}
+export interface ChatMessage extends Message {
+  status: MessageStatus;
+}
+
 export interface ChatState {
   user: User | null;
   contacts: Array<Contact>;
   channels: Array<Channel>;
-  messages: Array<Message>;
+  messages: Array<ChatMessage>;
   focus: string | number | null;
 }
 
@@ -63,10 +74,40 @@ export const reducer = createReducer(
     focus: id,
   })),
 
-  on(ChatActions.incomingMessage, (state, { message }) => ({
+  on(ChatActions.sendMessageToserver, (state, { message, pendingId }) => ({
     ...state,
-    messages: [...state.messages, message],
-  }))
+    messages: [
+      ...state.messages,
+      {
+        id: pendingId,
+        channel: message.channel,
+        from: state.user?.username ?? '',
+        text: message.text,
+        date: new Date(),
+        status: MessageStatus.Pending,
+      },
+    ],
+  })),
+  on(ChatActions.serverReceivedMessage, (state, { id, pendingId }) => ({
+    ...state,
+    messages: [
+      ...state.messages.map<ChatMessage>((m) =>
+        m.id === pendingId ? { ...m, id, status: MessageStatus.Server } : m
+      ),
+    ],
+  })),
+  on(ChatActions.incomingMessage, (state, { message }) => {
+    if (message.from === state.user?.username) {
+      return state;
+    }
+    return {
+      ...state,
+      messages: [
+        ...state.messages,
+        { ...message, status: MessageStatus.Server },
+      ],
+    };
+  })
 );
 
 export function chatMetaReducer(

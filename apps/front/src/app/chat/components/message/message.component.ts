@@ -1,15 +1,14 @@
 import {
-  Component,
-  OnInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
   Input,
   Output,
-  EventEmitter,
-  AfterViewInit,
-  ElementRef,
 } from '@angular/core';
-import { Message } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
+import { ChatMessage } from '../../+state/chat.reducer';
 import { getUsername } from '../../+state/chat.selectors';
 
 @Component({
@@ -19,7 +18,7 @@ import { getUsername } from '../../+state/chat.selectors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageComponent implements AfterViewInit {
-  @Input() message!: Message;
+  @Input() message!: ChatMessage;
   @Output() viewed = new EventEmitter<boolean>();
   username$ = this.store.select(getUsername);
 
