@@ -57,4 +57,7 @@ body {
   height: 100%;
   width: 100%;
   min-height: -webkit-fill-available;
+
+  // Avoid pull refresh
+  overscroll-behavior: contain;
 }

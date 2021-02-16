@@ -1,4 +1,6 @@
-<chat-and-call-chat-header></chat-and-call-chat-header>
+<chat-and-call-chat-header
+  *ngIf="!((focus$ | async) && (isMobileWidth$ | async))"
+></chat-and-call-chat-header>
 <!-- <chat-and-call-video-call></chat-and-call-video-call> -->
 <mat-sidenav-container>
   <mat-sidenav
