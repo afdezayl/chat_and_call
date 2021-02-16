@@ -1,12 +1,20 @@
 <ng-container *ngIf="focus$ | async as focus">
-  <mat-card>
+  <mat-divider></mat-divider>
+  <mat-toolbar>
     <form
       [formGroup]="messageForm"
       (submit)="sendMessage(focus.id)"
       autocomplete="off"
     >
-      <mat-form-field>
-        <input matInput type="text" formControlName="text" #textInput />
+      <mat-form-field class="input_text">
+        <mat-label></mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="text"
+          #textInput
+          placeholder="Escribe un mensaje"
+        />
       </mat-form-field>
       <button
         type="submit"
@@ -36,5 +44,5 @@
         <mat-icon>videocam</mat-icon>
       </button>
     </form>
-  </mat-card>
+  </mat-toolbar>
 </ng-container>

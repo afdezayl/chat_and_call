@@ -14,27 +14,36 @@
   </mat-sidenav>
   <mat-sidenav-content *ngIf="focus$ | async as focus">
     <div class="content">
-      <mat-card style="display: flex;">
+      <mat-card
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 1em;
+        "
+      >
         <button
           *ngIf="isMobileWidth$ | async"
           mat-mini-fab
           color="primary"
           (click)="openMenu()"
         >
-          <mat-icon>menu</mat-icon>
+          <mat-icon>arrow_back</mat-icon>
         </button>
 
-        <chat-and-call-channel-info></chat-and-call-channel-info>
+        <chat-and-call-channel-info
+          style="flex: 1 1; margin-left: 1em"
+        ></chat-and-call-channel-info>
       </mat-card>
 
       <ng-container *ngIf="messages$ | async as messages">
-        <div>
+        <!-- <div>
           <span>Index: {{ index$ | async }}</span>
           <button mat-mini-fab (click)="goToEnd()" color="">
             <mat-icon>arrow_downward</mat-icon>
           </button>
           <button (click)="fakeMessages(focus)">Test messages</button>
-        </div>
+        </div> -->
 
         <cdk-virtual-scroll-viewport
           class="chat"

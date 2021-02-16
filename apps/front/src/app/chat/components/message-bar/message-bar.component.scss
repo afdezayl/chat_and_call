@@ -4,5 +4,11 @@
 
 form {
   display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+}
+
+.input_text {
+  flex: 1 1;
 }
