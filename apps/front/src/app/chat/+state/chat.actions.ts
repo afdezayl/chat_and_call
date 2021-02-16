@@ -78,9 +78,7 @@ export const ackMessageReaded = createAction(
 );
 
 // General
-export const serverFailMessage = createAction(
-  '[Chat] Denied request'
-);
+export const serverFailMessage = createAction('[Chat] Denied request');
 export const setFocus = createAction(
   '[Chat] Set focus',
   props<{ id: number | string | null }>()

@@ -98,9 +98,9 @@ export class ChatEffects {
             ChatActions.serverReceivedMessage({ pendingId: m.pendingId, id })
           ),
           catchError((err) => {
-            // TODO: Handle error
-            console.error('not sended', err);
-            return of(ChatActions.serverFailMessage());
+            return of(
+              ChatActions.serverRejectedMessage({ pendingId: m.pendingId })
+            );
           })
         )
       )

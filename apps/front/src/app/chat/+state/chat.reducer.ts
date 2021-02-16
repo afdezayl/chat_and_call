@@ -96,6 +96,14 @@ export const reducer = createReducer(
       ),
     ],
   })),
+  on(ChatActions.serverRejectedMessage, (state, { pendingId }) => ({
+    ...state,
+    messages: [
+      ...state.messages.map<ChatMessage>((m) =>
+        m.id === pendingId ? { ...m, status: MessageStatus.Error } : m
+      ),
+    ],
+  })),
   on(ChatActions.incomingMessage, (state, { message }) => {
     if (message.from === state.user?.username) {
       return state;
