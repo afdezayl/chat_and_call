@@ -3,7 +3,7 @@
   <mat-toolbar>
     <form
       [formGroup]="messageForm"
-      (submit)="sendMessage(focus.id)"
+      (submit)="sendMessage(focus!.id)"
       autocomplete="off"
     >
       <mat-form-field class="input_text">
@@ -28,7 +28,7 @@
         type="button"
         mat-mini-fab
         color=""
-        *ngIf="focus.type === channelTypes.Personal"
+        *ngIf="focus!.type === channelTypes.Personal"
         (click)="file_input.click()"
       >
         <mat-icon>attach_file</mat-icon>
@@ -38,9 +38,9 @@
         #file_input
         type="file"
         formControlName="file"
-        (change)="sendFile($event)"
+        (change)="sendFile($event, focus)"
       />
-      <button type="button" mat-mini-fab color="" *ngIf="focus.type === 2">
+      <button type="button" mat-mini-fab color="" *ngIf="focus!.type === 2">
         <mat-icon>videocam</mat-icon>
       </button>
     </form>

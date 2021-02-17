@@ -29,6 +29,18 @@ export enum MessageStatus {
 }
 export interface ChatMessage extends Message {
   status: MessageStatus;
+  file?: Blob;
+}
+
+export interface Chunk {
+  order: number;
+  data: Uint8Array;
+}
+export interface FileUpload {
+  to: string;
+  id: string;
+  //iteraror: AsyncIterator<Chunk>;
+  file: File;
 }
 
 export interface ChatState {
@@ -36,6 +48,7 @@ export interface ChatState {
   contacts: Array<Contact>;
   channels: Array<Channel>;
   messages: Array<ChatMessage>;
+  uploads: Array<FileUpload>;
   focus: string | number | null;
 }
 
@@ -44,6 +57,7 @@ export const initialState: ChatState = {
   contacts: [],
   channels: [],
   messages: [],
+  uploads: [],
   focus: null,
 };
 
@@ -113,6 +127,30 @@ export const reducer = createReducer(
       messages: [
         ...state.messages,
         { ...message, status: MessageStatus.Server },
+      ],
+    };
+  }),
+  on(ChatActions.acceptedFile, (state, info) => ({
+    ...state,
+    uploads: [...state.uploads, info],
+  })),
+  on(ChatActions.incomingFileInfo, (state, info) => {
+    if (info.from === state.user?.username) {
+      return state;
+    }
+    const { id, from, date, channel, filename, size } = info;
+    return {
+      ...state,
+      messages: [
+        ...state.messages,
+        {
+          id,
+          from,
+          channel,
+          date,
+          status: MessageStatus.Pending,
+          text: `${filename} , ${size}`,
+        },
       ],
     };
   })

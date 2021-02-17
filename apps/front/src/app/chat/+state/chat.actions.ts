@@ -12,16 +12,12 @@ export const userAuthenticated = createAction(
   props<{ username: string }>()
 );
 
-export const closeSocket = createAction('[Chat] Close socket');
-export const cleanChatStore = createAction('[Chat] Clean store');
-
 // Channels
 export const loadChannels = createAction('[Chat] Load Channels');
 export const loadChannelsFailure = createAction(
   '[Chat] Load Channels Failure',
   props<{ error: any }>()
 );
-
 export const addChannels = createAction(
   '[Chat] Add channels',
   props<{ channels: Array<Channel> }>()
@@ -32,9 +28,16 @@ export const removeChannels = createAction(
 );
 export const subscribeChannel = createAction(
   '[Chat] Subscribe channel',
-  props<{ channel: string | number }>()
+  props<{ channel: string }>()
 );
-
+export const subscribeFileChannel = createAction(
+  '[Chat] Subscribe file chunks channel',
+  props<{ channel: string }>()
+);
+export const subscribeFileInfoChannel = createAction(
+  '[Chat] Subscribe file info channel',
+  props<{ channel: string }>()
+);
 export const createChannel = createAction(
   '[Chat] Create channel',
   props<{ channel: { title: string; type: ChannelType } }>()
@@ -56,6 +59,7 @@ export const sendMessageToserver = createAction(
   '[Chat] Send message to server',
   props<{ message: BasicMessage; pendingId: string }>()
 );
+
 export const serverReceivedMessage = createAction(
   '[Chat] Received message',
   props<{ id: string; pendingId: string }>()
@@ -77,9 +81,40 @@ export const ackMessageReaded = createAction(
   props<{ id: string }>()
 );
 
+// File
+export const sendFileInfoToServer = createAction(
+  '[Chat] Send file info',
+  props<{ to: string; file: File }>()
+);
+export const acceptedFile = createAction(
+  '[Chat] File accepted',
+  props<{ file: File; to: string; id: string }>()
+);
+export const rejectedFile = createAction('[Chat] Server rejected file');
+export const incomingFileInfo = createAction(
+  '[Chat] Incoming file info',
+  props<{
+    id: string;
+    channel: string;
+    from: string;
+    filename: string;
+    size: number;
+    date: Date;
+  }>()
+);
+
+export const sendFileChunk = createAction('[Chat] Send file chunk');
+export const incomingFileChunk = createAction('[Chat] Incoming file chunk');
+export const rejectedChunk = createAction('[Chat] Rejected chunk');
+
+export const requestFile = createAction('[Chat] Request file');
+export const requestFileChunk = createAction('[Chat] Request file chunk');
+
 // General
 export const serverFailMessage = createAction('[Chat] Denied request');
 export const setFocus = createAction(
   '[Chat] Set focus',
   props<{ id: number | string | null }>()
 );
+export const closeSocket = createAction('[Chat] Close socket');
+export const cleanChatStore = createAction('[Chat] Clean store');

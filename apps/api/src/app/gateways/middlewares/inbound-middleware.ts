@@ -30,22 +30,28 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
     const user = action.socket?.authToken?.username ?? null;
     let channel = action.channel;
 
-    if(channel.endsWith('/ack')) {
+    if (channel.endsWith('/ack')) {
       channel = channel.replace('/ack', '');
     }
-    if(channel.endsWith('/file')) {
+    if (channel.endsWith('/file')) {
       channel = channel.replace('/file', '');
     }
+    if (channel.endsWith('/file_info')) {
+      channel = channel.replace('/file_info', '');
+    }
 
-    if (await this.channelsService.checkChannelAccess(user, action.channel)) {
+    console.log(action.channel, channel);
+
+    if (
+      channel === user ||
+      (await this.channelsService.checkChannelAccess(user, channel))
+    ) {
       //this.logger.log(user + ' subscribe -> ' + action.channel);
       action.allow();
     } else {
       action.block(new Error('Unauthorized'));
     }
   }
-
-
 
   default(action: AGAction): void | Promise<void> {
     //this.logger.debug('default middleware action - ' + action.type);

@@ -1,5 +1,3 @@
-import { Message } from './message.interface';
-
 export interface Channel {
   id: string;
   title: string;
@@ -11,4 +9,13 @@ export enum ChannelType {
   Public,
   Private,
   Personal,
+  File,
+  FileInfo,
+  Hidden,
 }
+
+export const visibleChannelsTypes = [
+  ChannelType.Personal,
+  ChannelType.Private,
+  ChannelType.Public,
+];

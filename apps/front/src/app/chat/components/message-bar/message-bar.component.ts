@@ -1,10 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BasicMessage, ChannelType } from '@chat-and-call/channels/shared';
+import { Channel, ChannelType } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
-import { sendMessage, sendMessageToserver } from '../../+state/chat.actions';
+import { sendFileInfoToServer, sendMessage } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
-import { ChatSocketService } from '../../services/chat-socket.service';
 
 @Component({
   selector: 'chat-and-call-message-bar',
@@ -22,11 +21,7 @@ export class MessageBarComponent {
     file: this.fb.control(null),
   });
 
-  constructor(
-    private store: Store,
-    private fb: FormBuilder,
-    private socket: ChatSocketService
-  ) {}
+  constructor(private store: Store, private fb: FormBuilder) {}
 
   sendMessage(idChannel: string) {
     const message = {
@@ -38,13 +33,17 @@ export class MessageBarComponent {
     this.store.dispatch(sendMessage({ message }));
   }
 
-  async sendFile(event: Event) {
+  sendFile(event: Event, focus: Channel) {
     const files = (event.target as HTMLInputElement).files;
-    const file = files ? files[0] : null;
-    if (file) {
-      const chunked = await this.socket.sendFile(file);
+    const file = files?.length ? files[0] : null;
 
-      console.log(chunked);
+    if (file && focus) {
+      this.store.dispatch(
+        sendFileInfoToServer({
+          to: focus.id,
+          file,
+        })
+      );
     }
   }
 

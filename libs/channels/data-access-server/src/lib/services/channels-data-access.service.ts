@@ -47,7 +47,46 @@ export class ChannelsDataAccessService {
       admin: null,
     }));
 
-    return [...groupChannels, ...contactsChannels];
+    const fileChannels: Array<Channel> = contactsChannels.map((ch) => ({
+      ...ch,
+      type: ChannelType.File,
+      id: `${ch.id}/file`,
+    }));
+
+    const fileInfoChannels: Array<Channel> = contactsChannels.map((ch) => ({
+      ...ch,
+      type: ChannelType.FileInfo,
+      id: `${ch.id}/file_info`,
+    }));
+
+    const personalChannels: Array<Channel> = [
+      {
+        id: `${user}/file`,
+        admin: null,
+        type: ChannelType.File,
+        title: 'Target channel to file chunks',
+      },
+      {
+        id: `${user}/file_info`,
+        admin: null,
+        type: ChannelType.FileInfo,
+        title: 'Target channel to publish file info',
+      },
+      {
+        id: `${user}/ack`,
+        admin: null,
+        type: ChannelType.Hidden,
+        title: 'Acknowledgment of messages',
+      },
+    ];
+
+    return [
+      ...groupChannels,
+      ...contactsChannels,
+      ...fileChannels,
+      ...fileInfoChannels,
+      ...personalChannels,
+    ];
   }
 
   async createChannel(newChannel: {

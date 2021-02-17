@@ -1,3 +1,4 @@
+import { visibleChannelsTypes } from '@chat-and-call/channels/shared';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromChat from './chat.reducer';
 
@@ -10,9 +11,8 @@ export const getUsername = createSelector(
   (state) => state.user?.username
 );
 
-export const getChannels = createSelector(
-  selectChatState,
-  (state) => state.channels
+export const getChannels = createSelector(selectChatState, (state) =>
+  state.channels.filter((ch) => visibleChannelsTypes.includes(ch.type))
 );
 
 export const getFocus = createSelector(selectChatState, (state) => state.focus);

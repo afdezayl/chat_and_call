@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { logoutConfirmed } from '@chat-and-call/auth/feature-auth-web';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import {
+  ChannelType,
+  visibleChannelsTypes,
+} from 'libs/channels/shared/src/lib';
 import { EMPTY, of, throwError } from 'rxjs';
 import {
   catchError,
@@ -50,9 +54,20 @@ export class ChatEffects {
       ofType(ChatActions.addChannels),
       mergeMap(({ channels }) => {
         return [
-          ...channels.map((ch) =>
-            ChatActions.subscribeChannel({ channel: ch.id })
-          ),
+          ...channels.map((ch) => {
+            switch (ch.type) {
+              case ChannelType.Personal:
+              case ChannelType.Public:
+              case ChannelType.Private:
+                return ChatActions.subscribeChannel({ channel: ch.id });
+              case ChannelType.FileInfo:
+                return ChatActions.subscribeFileInfoChannel({ channel: ch.id });
+              case ChannelType.File:
+                return ChatActions.subscribeFileChannel({ channel: ch.id });
+              default:
+                return ChatActions.serverFailMessage();
+            }
+          }),
         ];
       })
     )
@@ -107,12 +122,56 @@ export class ChatEffects {
     );
   });
 
+  sendFileInitial$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.sendFileInfoToServer),
+      mergeMap(({ to, file }) =>
+        this.chatSocket.sendFile(file, to).pipe(
+          map(({ id }) => ChatActions.acceptedFile({ id, file, to })),
+          catchError(() => of(ChatActions.rejectedFile()))
+        )
+      )
+    )
+  );
+
   subscribeChannel$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.subscribeChannel),
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToChannel(channel).pipe(
           map((message) => ChatActions.incomingMessage({ message })),
+          catchError((err) => of(ChatActions.serverFailMessage()))
+        )
+      )
+    );
+  });
+  subscribeFileInfoChannel$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ChatActions.subscribeFileInfoChannel),
+      mergeMap(({ channel }) =>
+        this.chatSocket.subscribeToFileInfoChannel(channel).pipe(
+          map(({ id, channel, from, filename, size }) =>
+            ChatActions.incomingFileInfo({
+              id,
+              channel,
+              from,
+              filename,
+              size,
+              date: new Date(),
+            })
+          ),
+          catchError((err) => of(ChatActions.serverFailMessage()))
+        )
+      )
+    );
+  });
+
+  subscribeFileChannel$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ChatActions.subscribeFileChannel),
+      mergeMap(({ channel }) =>
+        this.chatSocket.subscribeToFileChannel(channel).pipe(
+          map((message) => ChatActions.incomingFileChunk()),
           catchError((err) => of(ChatActions.serverFailMessage()))
         )
       )

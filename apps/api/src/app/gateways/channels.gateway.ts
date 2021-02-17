@@ -1,11 +1,13 @@
 import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
 import {
   BasicMessage,
-  Message,
   ChannelType,
   CreateGroupChannelRequest,
+  FileAcceptedDTO,
+  FileDispatch,
+  FileInfoDTO,
+  Message,
   ServerReceivedMessageDTO,
-  MessageDTO,
 } from '@chat-and-call/channels/shared';
 import {
   AuthorizeGuard,
@@ -16,10 +18,12 @@ import {
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { Logger, UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
-import { EMPTY, from, Observable, of, throwError } from 'rxjs';
-import { catchError, delay, retry, switchMap } from 'rxjs/operators';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
+import { catchError, retry, switchMap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 import { v4 } from 'uuid';
+
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 @UseGuards(AuthorizeGuard)
 @SocketCrudGateway('channels')
@@ -99,6 +103,32 @@ export class ChannelsGateway {
     }, 0);
 
     return new ServerReceivedMessageDTO({ id: newMessage.id });
+  }
+
+  @SocketPost('file')
+  sendFile(
+    @ConnectedSocket() socket: AGServerSocket,
+    @MessageBody() data: FileDispatch
+  ): Observable<FileAcceptedDTO> | FileAcceptedDTO {
+    if (data.size > MAX_FILE_SIZE || !socket.isSubscribed(data.channel)) {
+      throw new WsException(`Max file size is ${MAX_FILE_SIZE}`);
+    }
+
+    // Publish...
+    console.log(data);
+    console.log(socket.subscriptions());
+    const id = v4();
+
+    const toPublish: FileInfoDTO = new FileInfoDTO({
+      from: socket.authToken?.username,
+      filename: data.filename,
+      size: data.size,
+      id,
+      channel: data.channel,
+    });
+    socket.exchange.invokePublish(`${data.channel}/file_info`, toPublish);
+
+    return new FileAcceptedDTO({ id });
   }
 
   @SocketPost('call')

@@ -3,7 +3,11 @@ import {
   BasicMessage,
   Channel,
   ChannelType,
+  FileDispatch,
+  FileAcceptedDTO,
+  FileDispatchDTO,
   Message,
+  FileInfoDTO,
 } from '@chat-and-call/channels/shared';
 import { CHUNK_SIZE_BYTES } from '@chat-and-call/socketcluster/shared';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
@@ -42,16 +46,46 @@ export class ChatSocketService {
     return this.socket.get<Array<Channel>>('channels/', null);
   }
 
-  async sendFile(file: Blob) {
+  sendFile(file: File, channel: string) {
+    const request: FileDispatchDTO = new FileDispatchDTO({
+      channel: channel,
+      filename: file.name,
+      size: file.size,
+    });
+    return this.socket.post<FileAcceptedDTO>('channels/file', request);
+    /* const a = this.blobSlicer(file);
+
     for await (const chunk of this.blobSlicer(file)) {
       if (chunk) {
         await this.socket.sendFileChunk(chunk);
       }
-    }
+    } */
   }
 
-  subscribeToChannel(id: number | string) {
+  subscribeToChannel(id: string) {
     const subject$ = new ReplaySubject<Message>();
+
+    (async () => {
+      for await (const data of this.socket.subscribeToChannel(id)) {
+        subject$.next(data);
+      }
+    })();
+
+    return subject$.asObservable();
+  }
+  subscribeToFileChannel(id: string) {
+    const subject$ = new ReplaySubject<FileInfoDTO>();
+
+    (async () => {
+      for await (const data of this.socket.subscribeToChannel(id)) {
+        subject$.next(data);
+      }
+    })();
+
+    return subject$.asObservable();
+  }
+  subscribeToFileInfoChannel(id: string) {
+    const subject$ = new ReplaySubject<FileInfoDTO>();
 
     (async () => {
       for await (const data of this.socket.subscribeToChannel(id)) {
