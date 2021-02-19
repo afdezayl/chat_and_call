@@ -1,11 +1,19 @@
-import { Field, Message as ProtoMessage } from "protobufjs";
+import { Field, Message as ProtoMessage } from 'protobufjs';
 
 export interface Message {
   id: string;
   channel: string;
   from: string;
   text?: string;
-  date: Date;
+  date: string;
+}
+
+export class BasicMessageDto extends ProtoMessage<BasicMessageDto> {
+  @Field.d(1, 'string', 'required')
+  channel!: string;
+
+  @Field.d(2, 'string', 'optional')
+  text?: string;
 }
 
 export class MessageDTO extends ProtoMessage<MessageDTO> implements Message {
@@ -21,6 +29,6 @@ export class MessageDTO extends ProtoMessage<MessageDTO> implements Message {
   @Field.d(4, 'string', 'optional')
   text?: string | undefined;
 
-  //@Field.d(5, '')
-  date!: Date;
+  @Field.d(5, 'string', 'required')
+  date!: string;
 }

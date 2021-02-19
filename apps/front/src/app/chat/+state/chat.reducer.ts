@@ -97,7 +97,7 @@ export const reducer = createReducer(
         channel: message.channel,
         from: state.user?.username ?? '',
         text: message.text,
-        date: new Date(),
+        date: new Date().toISOString(),
         status: MessageStatus.Pending,
       },
     ],

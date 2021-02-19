@@ -99,7 +99,7 @@ export const incomingFileInfo = createAction(
     from: string;
     filename: string;
     size: number;
-    date: Date;
+    date: string;
   }>()
 );
 

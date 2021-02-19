@@ -40,8 +40,6 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
       channel = channel.replace('/file_info', '');
     }
 
-    console.log(action.channel, channel);
-
     if (
       channel === user ||
       (await this.channelsService.checkChannelAccess(user, channel))

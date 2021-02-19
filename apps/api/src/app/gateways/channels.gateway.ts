@@ -6,7 +6,7 @@ import {
   FileAcceptedDTO,
   FileDispatch,
   FileInfoDTO,
-  Message,
+  MessageDTO,
   ServerReceivedMessageDTO,
 } from '@chat-and-call/channels/shared';
 import {
@@ -83,29 +83,22 @@ export class ChannelsGateway {
       throw new WsException('Unauthorized');
     }
 
-    /* TODO: Protobuf implementation dates
     const newMessage: MessageDTO = new MessageDTO({
       id: v4(),
       ...data,
       from: user,
-      date: new Date(),
-    }); */
+      date: new Date().toISOString(),
+    });
 
-    const newMessage: Message = {
-      id: v4(),
-      ...data,
-      from: user,
-      date: new Date(),
-    };
-
-    setTimeout(async () => {
-      await socket.server.exchange.transmitPublish(data.channel, newMessage);
+    // Defer publish action
+    setTimeout(() => {
+      socket.exchange.transmitPublish(data.channel, newMessage);
     }, 0);
 
     return new ServerReceivedMessageDTO({ id: newMessage.id });
   }
 
-  @SocketPost('file')
+  @SocketPost('file_info')
   sendFile(
     @ConnectedSocket() socket: AGServerSocket,
     @MessageBody() data: FileDispatch
@@ -114,9 +107,6 @@ export class ChannelsGateway {
       throw new WsException(`Max file size is ${MAX_FILE_SIZE}`);
     }
 
-    // Publish...
-    console.log(data);
-    console.log(socket.subscriptions());
     const id = v4();
 
     const toPublish: FileInfoDTO = new FileInfoDTO({
@@ -126,7 +116,12 @@ export class ChannelsGateway {
       id,
       channel: data.channel,
     });
-    socket.exchange.invokePublish(`${data.channel}/file_info`, toPublish);
+
+    setTimeout(
+      () =>
+        socket.exchange.transmitPublish(`${data.channel}/file_info`, toPublish),
+      0
+    );
 
     return new FileAcceptedDTO({ id });
   }

@@ -157,7 +157,7 @@ export class ChatEffects {
               from,
               filename,
               size,
-              date: new Date(),
+              date: new Date().toISOString(),
             })
           ),
           catchError((err) => of(ChatActions.serverFailMessage()))

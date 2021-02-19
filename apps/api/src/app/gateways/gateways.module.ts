@@ -8,6 +8,7 @@ import {
 } from '@chat-and-call/socketcluster/shared';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { environment } from '../../environments/environment';
 import { AuthGateway } from './auth.gateway';
 import { ChannelsGateway } from './channels.gateway';
 import { CookieUtil } from './middlewares/cookie-util';
@@ -39,7 +40,7 @@ import { RawStrategy } from './middlewares/raw-middleware';
           origins: '*:*',
           authDefaultExpiry: config.get('JWT_EXPIRES_MIN') * 60,
           allowClientPublish: false,
-          codecEngine: new ProtobufCodecEngine(),
+          codecEngine: new ProtobufCodecEngine({debug: !environment.production}),
         }),
       },
       {
