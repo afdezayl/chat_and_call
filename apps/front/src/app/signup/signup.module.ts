@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule, TRANSLOCO_SCOPE } from '@ngneat/transloco';
 
 export const routes: Routes = [{ path: '', component: SignupLayoutComponent }];
-export const loader = ['en', 'es'].reduce<Record<string, Function>>(
+export const loader = ['en-GB', 'es-ES'].reduce<Record<string, Function>>(
   (acc, lang) => {
     acc[lang] = () => import(`./i18n/${lang}.json`);
     return acc;

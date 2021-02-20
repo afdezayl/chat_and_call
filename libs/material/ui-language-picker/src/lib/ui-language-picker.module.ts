@@ -5,10 +5,11 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { LanguagePickerDialogService } from './language-picker-dialog.service';
 import { LanguagePickerService } from './language-picker.service';
 import { LanguagePickerComponent } from './language-picker/language-picker.component';
+import { CountryLowercasePipe } from './language-picker/country-lowercase.pipe';
 
 @NgModule({
   imports: [CommonModule, TranslocoModule, MaterialDesignModule],
-  declarations: [LanguagePickerComponent],
+  declarations: [LanguagePickerComponent, CountryLowercasePipe],
   providers: [LanguagePickerService, LanguagePickerDialogService],
 })
 export class UiLanguagePickerModule {}

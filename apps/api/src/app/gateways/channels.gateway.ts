@@ -4,6 +4,7 @@ import {
   ChannelType,
   CreateGroupChannelRequest,
   FileAcceptedDTO,
+  FileChunkDTO,
   FileDispatch,
   FileInfoDTO,
   MessageDTO,
@@ -124,6 +125,15 @@ export class ChannelsGateway {
     );
 
     return new FileAcceptedDTO({ id });
+  }
+
+  @SocketProcedure('file_chunk')
+  async publishChunk(
+    @ConnectedSocket() socket: AGServerSocket,
+    @MessageBody() chunk: FileChunkDTO
+  ) {
+    await socket.exchange.invokePublish(`${chunk.channel}/file`, chunk);
+    return {};
   }
 
   @SocketPost('call')

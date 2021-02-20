@@ -67,6 +67,7 @@
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
     "core-js": "3.8.3",
+    "flag-icon-css": "^3.5.0",
     "mysql2": "^2.2.5",
     "normalize.css": "^8.0.1",
     "protobufjs": "^6.10.2",

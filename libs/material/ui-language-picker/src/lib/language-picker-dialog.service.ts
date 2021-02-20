@@ -15,6 +15,7 @@ export class LanguagePickerDialogService {
       disableClose: true,
       scrollStrategy,
       maxHeight: '100%',
+      maxWidth: '100%',
       panelClass: 'dialog-overflowY',
     });
   }

@@ -27,9 +27,18 @@ export enum MessageStatus {
   Read,
   Error,
 }
-export interface ChatMessage extends Message {
+export interface ChatMessage {
+  id: string;
+  channel: string;
+  from: string;
+  date: string;
   status: MessageStatus;
-  file?: Blob;
+  text?: string;
+  file?: {
+    filename: string;
+    done: boolean;
+    blob: Blob | null;
+  };
 }
 
 export interface Chunk {
@@ -132,6 +141,22 @@ export const reducer = createReducer(
   }),
   on(ChatActions.acceptedFile, (state, info) => ({
     ...state,
+    messages: [
+      ...state.messages,
+      {
+        id: info.id,
+        channel: info.to,
+        date: new Date().toISOString(),
+        from: state.user?.username ?? '',
+        status: MessageStatus.Pending,
+        text: `${info.file.name} , ${info.file.size}`,
+        file: {
+          done: true,
+          blob: info.file,
+          filename: info.file.name,
+        },
+      },
+    ],
     uploads: [...state.uploads, info],
   })),
   on(ChatActions.incomingFileInfo, (state, info) => {
@@ -150,6 +175,11 @@ export const reducer = createReducer(
           date,
           status: MessageStatus.Pending,
           text: `${filename} , ${size}`,
+          file: {
+            blob: null,
+            done: false,
+            filename: filename,
+          },
         },
       ],
     };

@@ -36,10 +36,13 @@ export class FileChunkDTO extends Message<FileChunkDTO> {
   @Field.d(1, 'string', 'required')
   id!: string;
 
-  @Field.d(2, 'uint32', 'required')
+  @Field.d(2, 'string', 'required')
+  channel!: string;
+
+  @Field.d(3, 'uint32', 'required')
   order!: number;
 
-  @Field.d(3, 'bytes', 'required')
+  @Field.d(4, 'bytes', 'required')
   chunk!: Uint8Array;
 }
 

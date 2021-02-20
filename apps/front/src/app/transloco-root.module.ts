@@ -13,8 +13,8 @@ import {
 import { environment } from '../environments/environment';
 
 export const availableLangs: AvailableLangs = [
-  { id: 'es', label: 'Español' },
-  { id: 'en', label: 'English' },
+  { id: 'es-ES', label: 'Español' },
+  { id: 'en-GB', label: 'English' },
 ];
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
@@ -32,7 +32,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
       provide: TRANSLOCO_CONFIG,
       useValue: translocoConfig({
         availableLangs,
-        defaultLang: 'es',
+        defaultLang: 'es-ES',
         reRenderOnLangChange: true,
         prodMode: environment.production,
       }),

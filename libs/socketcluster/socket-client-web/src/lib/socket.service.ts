@@ -20,7 +20,7 @@ export class SocketService {
   private _socket!: AGClientSocket;
 
   constructor() {
-    const codec = new ProtobufCodecEngine();
+    const codec = new ProtobufCodecEngine({ debug: true });
     this._socket = create({
       path: SOCKET_PATH,
       authTokenName: TOKEN_KEY,
@@ -67,10 +67,8 @@ export class SocketService {
     this._socket.send(file);
   }
 
-  async sendFileChunk(chunk: { order: number; data: Uint8Array }) {
-    const message = FileChunk.create(chunk);
-
-    return this._socket.transmit('aaaaa', message);
+  invoke<T = any>(event: string, data: any) {
+    return <Observable<T>>from(this._socket.invoke(event, data));
   }
 
   publishToChannel<T = any>(data: any, channel: string) {

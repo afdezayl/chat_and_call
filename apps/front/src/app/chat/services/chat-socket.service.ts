@@ -1,24 +1,30 @@
 import { Injectable } from '@angular/core';
 import {
   BasicMessage,
+  BasicMessageDto,
   Channel,
   ChannelType,
   FileAcceptedDTO,
+  FileChunkDTO,
   FileDispatchDTO,
   FileInfoDTO,
   Message,
-  BasicMessageDto,
 } from '@chat-and-call/channels/shared';
-import { CHUNK_SIZE_BYTES } from '@chat-and-call/socketcluster/shared';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
 import { userAuthenticated } from '../+state/chat.actions';
+import { FileSlicerService } from './file-slicer.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ChatSocketService {
-  constructor(private socket: SocketService, store: Store) {
+  constructor(
+    private socket: SocketService,
+    private store: Store,
+    private blobSlicer: FileSlicerService
+  ) {
     socket.authenticated$.subscribe((username) => {
       store.dispatch(userAuthenticated({ username }));
     });
@@ -53,6 +59,25 @@ export class ChatSocketService {
       size: file.size,
     });
     return this.socket.post<FileAcceptedDTO>('channels/file_info', request);
+  }
+
+  async sendChunks(file: File, channel: string, id: string) {
+    console.time(`total -> ${id}`)
+    for await (const chunk of this.blobSlicer.blobSlicer(file)) {
+      const request: FileChunkDTO = new FileChunkDTO({
+        id,
+        channel,
+        chunk: chunk?.data,
+        order: chunk?.order,
+      });
+      console.time(`${id} - ${chunk?.order}`);
+      await this.socket
+        .invoke<{ order: number }>('#channels/file_chunk', request)
+        .toPromise();
+
+      console.timeEnd(`${id} - ${chunk?.order}`);
+    }
+    console.timeEnd(`total -> ${id}`)
   }
 
   subscribeToChannel(id: string) {

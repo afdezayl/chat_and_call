@@ -11,8 +11,12 @@
               [value]="lang.id"
               [checked]="lang.id === selectedLang"
               tabindex="0"
-              >{{ lang.label }}</mat-radio-button
-            >
+              ><span
+                class="flag-icon"
+                [ngClass]="'flag-icon-' + (lang.id | countryLowercase)"
+              ></span>
+              &nbsp;{{ lang.label }}
+            </mat-radio-button>
           </mat-list-item>
         </mat-list>
       </mat-radio-group>

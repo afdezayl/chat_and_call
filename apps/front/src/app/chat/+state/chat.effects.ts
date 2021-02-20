@@ -6,7 +6,7 @@ import {
   ChannelType,
   visibleChannelsTypes,
 } from 'libs/channels/shared/src/lib';
-import { EMPTY, of, throwError } from 'rxjs';
+import { EMPTY, from, of, throwError } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -129,6 +129,17 @@ export class ChatEffects {
         this.chatSocket.sendFile(file, to).pipe(
           map(({ id }) => ChatActions.acceptedFile({ id, file, to })),
           catchError(() => of(ChatActions.rejectedFile()))
+        )
+      )
+    )
+  );
+
+  sendChunks$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.acceptedFile),
+      mergeMap(({ id, file, to }) =>
+        from(this.chatSocket.sendChunks(file, to, id)).pipe(
+          map(() => ChatActions.serverFailMessage())
         )
       )
     )
