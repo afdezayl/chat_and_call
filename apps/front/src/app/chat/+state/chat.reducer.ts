@@ -1,3 +1,4 @@
+import { Channel } from '@chat-and-call/channels/shared';
 import {
   Action,
   ActionReducer,
@@ -6,7 +7,6 @@ import {
   on,
   State,
 } from '@ngrx/store';
-import { Channel, Message } from '@chat-and-call/channels/shared';
 import * as ChatActions from './chat.actions';
 
 export const chatFeatureKey = 'chat';
@@ -27,6 +27,14 @@ export enum MessageStatus {
   Read,
   Error,
 }
+
+export interface ChatFileMessage {
+  name: string;
+  size: number;
+  downloaded: number;
+  done: boolean;
+  blob?: Blob;
+}
 export interface ChatMessage {
   id: string;
   channel: string;
@@ -34,11 +42,7 @@ export interface ChatMessage {
   date: string;
   status: MessageStatus;
   text?: string;
-  file?: {
-    filename: string;
-    done: boolean;
-    blob: Blob | null;
-  };
+  file?: ChatFileMessage;
 }
 
 export interface Chunk {
@@ -149,11 +153,12 @@ export const reducer = createReducer(
         date: new Date().toISOString(),
         from: state.user?.username ?? '',
         status: MessageStatus.Pending,
-        text: `${info.file.name} , ${info.file.size}`,
         file: {
+          name: info.file.name,
           done: true,
           blob: info.file,
-          filename: info.file.name,
+          size: info.file.size,
+          downloaded: info.file.size,
         },
       },
     ],
@@ -174,13 +179,46 @@ export const reducer = createReducer(
           channel,
           date,
           status: MessageStatus.Pending,
-          text: `${filename} , ${size}`,
           file: {
-            blob: null,
+            name: filename,
             done: false,
-            filename: filename,
+            size,
+            downloaded: 0,
           },
         },
+      ],
+    };
+  }),
+  on(ChatActions.incomingFileChunk, (state, { id, chunkSize }) => {
+    const message = state.messages.find((m) => m.id === id);
+
+    if (!message?.file || message.from === state.user?.username) {
+      return state;
+    }
+
+    /* const oldBuffer = message?.file?.buffer ?? new Uint8Array(0);
+    const buffer = new Uint8Array(oldBuffer.length + chunk.length);
+    buffer.set(oldBuffer);
+    buffer.set(chunk, oldBuffer.length);
+    console.log(buffer);
+ */
+    const downloaded = message.file.downloaded + chunkSize;
+    //const done = downloaded === message.file.size;
+
+    return {
+      ...state,
+      messages: [
+        ...state.messages.map((m) =>
+          m.id === id
+            ? {
+                ...m,
+                file: {
+                  ...m.file!,
+                  downloaded,
+                },
+              }
+            : m
+        ),
       ],
     };
   })

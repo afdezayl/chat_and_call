@@ -9,6 +9,12 @@
       <mat-icon>{{ message.status | messageStatusIcon }}</mat-icon>
     </div>
     <mat-divider></mat-divider>
+
+    <chat-and-call-file-message
+      *ngIf="message.file"
+      [file]="message.file"
+    ></chat-and-call-file-message>
+
     <p class="text">{{ message.text }}</p>
   </mat-card>
 </ng-container>

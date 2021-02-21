@@ -104,7 +104,7 @@ export const incomingFileInfo = createAction(
 );
 
 export const sendFileChunk = createAction('[Chat] Send file chunk');
-export const incomingFileChunk = createAction('[Chat] Incoming file chunk');
+export const incomingFileChunk = createAction('[Chat] Incoming file chunk', props<{id: string, chunkSize: number}>());
 export const rejectedChunk = createAction('[Chat] Rejected chunk');
 
 export const requestFile = createAction('[Chat] Request file');

@@ -182,7 +182,9 @@ export class ChatEffects {
       ofType(ChatActions.subscribeFileChannel),
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToFileChannel(channel).pipe(
-          map((message) => ChatActions.incomingFileChunk()),
+          map(({ id, chunk, order }) =>
+            ChatActions.incomingFileChunk({ id, chunkSize: chunk.byteLength })
+          ),
           catchError((err) => of(ChatActions.serverFailMessage()))
         )
       )

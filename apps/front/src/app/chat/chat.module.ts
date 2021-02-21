@@ -18,6 +18,7 @@ import { MessageBarComponent } from './components/message-bar/message-bar.compon
 import { MessageStatusPipe } from './components/message/message-status.pipe';
 import { MessageComponent } from './components/message/message.component';
 import { VideoCallComponent } from './components/video-call/video-call.component';
+import { FileMessageComponent } from './components/file-message/file-message.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { VideoCallComponent } from './components/video-call/video-call.component
     MessageStatusPipe,
     ChannelIconPipe,
     ChannelCreatorComponent,
+    FileMessageComponent,
   ],
   imports: [
     CommonModule,

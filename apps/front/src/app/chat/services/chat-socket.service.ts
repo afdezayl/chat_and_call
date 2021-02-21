@@ -92,7 +92,7 @@ export class ChatSocketService {
     return subject$.asObservable();
   }
   subscribeToFileChannel(id: string) {
-    const subject$ = new ReplaySubject<FileInfoDTO>();
+    const subject$ = new ReplaySubject<FileChunkDTO>();
 
     (async () => {
       for await (const data of this.socket.subscribeToChannel(id)) {

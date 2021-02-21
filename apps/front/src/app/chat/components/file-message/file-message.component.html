@@ -1,0 +1,14 @@
+<p>{{ file.name }}</p>
+<mat-progress-bar
+  [mode]="progressBarMode()"
+  [value]="(file.downloaded / file.size) * 100"
+></mat-progress-bar>
+<ng-container *ngIf="file.done">
+  <a
+    mat-raised-button
+    [href]="getDownloadURL()"
+    [download]="file.name"
+    target="_blank"
+    >Download</a
+  >
+</ng-container>
