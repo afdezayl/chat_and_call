@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { logoutConfirmed } from '@chat-and-call/auth/feature-auth-web';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {
-  ChannelType,
-  visibleChannelsTypes,
-} from 'libs/channels/shared/src/lib';
-import { EMPTY, from, of, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { ChannelType } from 'libs/channels/shared/src/lib';
+import { from, iif, of, throwError } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -16,13 +14,18 @@ import {
   retryWhen,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators';
 import { v4 } from 'uuid';
 import { ChatSocketService } from '../services/chat-socket.service';
+import { FileStoreService } from '../services/file-store.service';
 import * as ChatActions from './chat.actions';
+import { getUsername, isSelfMessage } from './chat.selectors';
 
 @Injectable()
 export class ChatEffects {
+  selfMessage$ = (id: string) => this.store.select(isSelfMessage, { id });
+
   loadChannels$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ChatActions.loadChannels),
@@ -161,16 +164,22 @@ export class ChatEffects {
       ofType(ChatActions.subscribeFileInfoChannel),
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToFileInfoChannel(channel).pipe(
-          map(({ id, channel, from, filename, size }) =>
-            ChatActions.incomingFileInfo({
+          withLatestFrom(this.store.select(getUsername)),
+          map(([{ id, channel, from, filename, size }, user]) => {
+            const isSelfMessage = from === user;
+            if (isSelfMessage) {
+              return ChatActions.serverFailMessage();
+            }
+            this.fileStore.createNewIncomingFile(id, size);
+            return ChatActions.incomingFileInfo({
               id,
               channel,
               from,
               filename,
               size,
               date: new Date().toISOString(),
-            })
-          ),
+            });
+          }),
           catchError((err) => of(ChatActions.serverFailMessage()))
         )
       )
@@ -182,9 +191,22 @@ export class ChatEffects {
       ofType(ChatActions.subscribeFileChannel),
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToFileChannel(channel).pipe(
-          map(({ id, chunk, order }) =>
-            ChatActions.incomingFileChunk({ id, chunkSize: chunk.byteLength })
+          mergeMap((x) =>
+            of(x).pipe(
+              withLatestFrom(this.store.select(isSelfMessage, { id: x.id }))
+            )
           ),
+          tap(console.log),
+          map(([{ id, chunk, order }, isSelfMessage]) => {
+            if (isSelfMessage === false) {
+              this.fileStore.saveChunk(id, chunk);
+              return ChatActions.incomingFileChunk({
+                id,
+                chunkSize: chunk.byteLength,
+              });
+            }
+            return ChatActions.serverFailMessage();
+          }),
           catchError((err) => of(ChatActions.serverFailMessage()))
         )
       )
@@ -202,7 +224,9 @@ export class ChatEffects {
 
   constructor(
     private actions$: Actions,
+    private store: Store,
     private chatSocket: ChatSocketService,
+    private fileStore: FileStoreService,
     private router: Router
   ) {}
 }

@@ -165,9 +165,6 @@ export const reducer = createReducer(
     uploads: [...state.uploads, info],
   })),
   on(ChatActions.incomingFileInfo, (state, info) => {
-    if (info.from === state.user?.username) {
-      return state;
-    }
     const { id, from, date, channel, filename, size } = info;
     return {
       ...state,

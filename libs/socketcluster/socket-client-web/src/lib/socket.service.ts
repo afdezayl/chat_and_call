@@ -67,8 +67,14 @@ export class SocketService {
     this._socket.send(file);
   }
 
-  invoke<T = any>(event: string, data: any) {
-    return <Observable<T>>from(this._socket.invoke(event, data));
+  invoke<T = any>(event: string, data: any, timeout?: number) {
+    return <Observable<T>>(
+      from(
+        this._socket.invoke(event, data, {
+          ackTimeout: timeout ?? this._socket.ackTimeout,
+        })
+      )
+    );
   }
 
   publishToChannel<T = any>(data: any, channel: string) {

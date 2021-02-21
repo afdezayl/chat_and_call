@@ -11,6 +11,10 @@ import {
   ServerReceivedMessageDTO,
 } from '@chat-and-call/channels/shared';
 import {
+  MAX_FILE_SIZE,
+  CHUNK_SIZE_BYTES,
+} from '@chat-and-call/socketcluster/shared';
+import {
   AuthorizeGuard,
   SocketCrudGateway,
   SocketGet,
@@ -23,8 +27,6 @@ import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap } from 'rxjs/operators';
 import { AGServerSocket } from 'socketcluster-server';
 import { v4 } from 'uuid';
-
-const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 @UseGuards(AuthorizeGuard)
 @SocketCrudGateway('channels')
@@ -105,6 +107,7 @@ export class ChannelsGateway {
     @MessageBody() data: FileDispatch
   ): Observable<FileAcceptedDTO> | FileAcceptedDTO {
     if (data.size > MAX_FILE_SIZE || !socket.isSubscribed(data.channel)) {
+      console.log(MAX_FILE_SIZE, data.size);
       throw new WsException(`Max file size is ${MAX_FILE_SIZE}`);
     }
 
@@ -132,8 +135,20 @@ export class ChannelsGateway {
     @ConnectedSocket() socket: AGServerSocket,
     @MessageBody() chunk: FileChunkDTO
   ) {
-    await socket.exchange.invokePublish(`${chunk.channel}/file`, chunk);
-    return {};
+    /* if (chunk.chunk.byteLength > CHUNK_SIZE_BYTES) {
+      console.log('file chunk...');
+      throw new WsException(`Max file chunk is ${CHUNK_SIZE_BYTES}`);
+    } */
+    console.log(chunk.order);
+
+    try {
+      await socket.exchange.transmitPublish(`${chunk.channel}/file`, chunk);
+
+      console.log('-->', chunk.order);
+      return new ServerReceivedMessageDTO({ id: chunk.order + '->' + chunk.id });
+    } catch (err) {
+      console.error(err, chunk);
+    }
   }
 
   @SocketPost('call')

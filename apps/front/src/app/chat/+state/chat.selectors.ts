@@ -8,7 +8,7 @@ export const selectChatState = createFeatureSelector<fromChat.ChatState>(
 
 export const getUsername = createSelector(
   selectChatState,
-  (state) => state.user?.username
+  (state) => state.user?.username ?? ''
 );
 
 export const getChannels = createSelector(selectChatState, (state) =>
@@ -20,6 +20,16 @@ export const getFocus = createSelector(selectChatState, (state) => state.focus);
 export const getMessages = createSelector(
   selectChatState,
   (state) => state.messages
+);
+
+export const isSelfMessage = createSelector(
+  getMessages,
+  getUsername,
+  (
+    messages: Array<fromChat.ChatMessage>,
+    user: string,
+    props: { id: string }
+  ) => messages.some((m) => m.id === props.id && m.from === user)
 );
 
 export const getFocusedChannel = createSelector(

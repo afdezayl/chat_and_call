@@ -13,6 +13,7 @@ import {
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject } from 'rxjs';
+import { retry } from 'rxjs/operators';
 import { userAuthenticated } from '../+state/chat.actions';
 import { FileSlicerService } from './file-slicer.service';
 
@@ -62,7 +63,7 @@ export class ChatSocketService {
   }
 
   async sendChunks(file: File, channel: string, id: string) {
-    console.time(`total -> ${id}`)
+    console.time(`total -> ${id}`);
     for await (const chunk of this.blobSlicer.blobSlicer(file)) {
       const request: FileChunkDTO = new FileChunkDTO({
         id,
@@ -72,12 +73,14 @@ export class ChatSocketService {
       });
       console.time(`${id} - ${chunk?.order}`);
       await this.socket
-        .invoke<{ order: number }>('#channels/file_chunk', request)
-        .toPromise();
+        .invoke<{ order: number }>('#channels/file_chunk', request, 3000)
+        .pipe(retry(3))
+        .toPromise()
+        .catch(console.error);
 
       console.timeEnd(`${id} - ${chunk?.order}`);
     }
-    console.timeEnd(`total -> ${id}`)
+    console.timeEnd(`total -> ${id}`);
   }
 
   subscribeToChannel(id: string) {
