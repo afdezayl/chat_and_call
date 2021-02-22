@@ -4,7 +4,7 @@ import { logoutConfirmed } from '@chat-and-call/auth/feature-auth-web';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ChannelType } from 'libs/channels/shared/src/lib';
-import { from, iif, of, throwError } from 'rxjs';
+import { from, of, throwError } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -12,7 +12,6 @@ import {
   map,
   mergeMap,
   retryWhen,
-  switchMap,
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
@@ -165,21 +164,23 @@ export class ChatEffects {
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToFileInfoChannel(channel).pipe(
           withLatestFrom(this.store.select(getUsername)),
-          map(([{ id, channel, from, filename, size, checksum }, user]) => {
-            const isSelfMessage = from === user;
-            if (isSelfMessage) {
-              return ChatActions.serverFailMessage();
+          map(
+            ([{ id, channel, from, filename, size, checksum, type }, user]) => {
+              const isSelfMessage = from === user;
+              if (isSelfMessage) {
+                return ChatActions.serverFailMessage();
+              }
+              this.fileStore.createNewIncomingFile(id, size, checksum, type);
+              return ChatActions.incomingFileInfo({
+                id,
+                channel,
+                from,
+                filename,
+                size,
+                date: new Date().toISOString(),
+              });
             }
-            this.fileStore.createNewIncomingFile(id, size, checksum);
-            return ChatActions.incomingFileInfo({
-              id,
-              channel,
-              from,
-              filename,
-              size,
-              date: new Date().toISOString(),
-            });
-          }),
+          ),
           catchError((err) => of(ChatActions.serverFailMessage()))
         )
       )

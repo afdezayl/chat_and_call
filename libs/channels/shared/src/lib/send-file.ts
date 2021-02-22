@@ -10,6 +10,7 @@ export class FileDispatch {
   size!: number;
   @IsNotEmpty()
   checksum!: string;
+  type!: string;
 }
 
 export class FileAcceptedDTO extends Message<FileAcceptedDTO> {
@@ -35,6 +36,9 @@ export class FileInfoDTO extends Message<FileInfoDTO> {
 
   @Field.d(6, 'string', 'required')
   checksum!: string;
+
+  @Field.d(7, 'string', 'required')
+  type!: string;
 }
 
 export class FileChunkDTO extends Message<FileChunkDTO> {
@@ -65,4 +69,7 @@ export class FileDispatchDTO
 
   @Field.d(4, 'string', 'required')
   checksum!: string;
+
+  @Field.d(5, 'string', 'required')
+  type!: string;
 }

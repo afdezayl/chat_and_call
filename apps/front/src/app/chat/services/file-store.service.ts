@@ -6,6 +6,7 @@ export interface FileProccess {
   totalSize: number;
   checksum: string;
   chunks: Array<Uint8Array>;
+  type: string;
 }
 
 @Injectable({
@@ -16,8 +17,13 @@ export class FileStoreService {
 
   constructor(private store: Store, private blobSlicer: FileSlicerService) {}
 
-  createNewIncomingFile(id: string, totalSize: number, checksum: string) {
-    this.files.set(id, { totalSize, checksum, chunks: [] });
+  createNewIncomingFile(
+    id: string,
+    totalSize: number,
+    checksum: string,
+    type: string
+  ) {
+    this.files.set(id, { totalSize, checksum, type, chunks: [] });
   }
 
   saveChunk(id: string, chunk: Uint8Array) {
@@ -45,9 +51,9 @@ export class FileStoreService {
   }
 
   private joinChunks(id: string): Blob {
-    const chunks = this.files.get(id)?.chunks;
+    const { chunks, type } = this.files.get(id)!;
     console.time('union');
-    const blob = new Blob(chunks);
+    const blob = new Blob(chunks, { type });
     console.timeEnd('union');
 
     return blob;

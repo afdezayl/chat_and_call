@@ -120,6 +120,7 @@ export class ChannelsGateway {
       id,
       channel: data.channel,
       checksum: data.checksum,
+      type: data.type,
     });
 
     setTimeout(
@@ -140,18 +141,16 @@ export class ChannelsGateway {
       console.log('file chunk...');
       throw new WsException(`Max file chunk is ${CHUNK_SIZE_BYTES}`);
     } */
-    console.log(chunk.order);
 
-    try {
-      await socket.exchange.transmitPublish(`${chunk.channel}/file`, chunk);
+    setTimeout(
+      () => socket.exchange.transmitPublish(`${chunk.channel}/file`, chunk),
+      0
+    );
 
-      console.log('-->', chunk.order);
-      return new ServerReceivedMessageDTO({
-        id: chunk.order + '->' + chunk.id,
-      });
-    } catch (err) {
-      console.error(err, chunk);
-    }
+    console.log('-->', chunk.order);
+    return new ServerReceivedMessageDTO({
+      id: chunk.order + '->' + chunk.id,
+    });
   }
 
   @SocketPost('call')

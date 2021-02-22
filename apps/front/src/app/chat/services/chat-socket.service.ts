@@ -62,6 +62,7 @@ export class ChatSocketService {
             filename: file.name,
             size: file.size,
             checksum: hash,
+            type: file.type
           })
       ),
       switchMap((request) =>
@@ -71,7 +72,7 @@ export class ChatSocketService {
   }
 
   async sendChunks(file: File, channel: string, id: string) {
-    console.time(`total -> ${id}`);
+    console.time(`upload time -> ${file.name} - ${id}`);
     for await (const chunk of this.blobSlicer.blobSlicer(file)) {
       const request: FileChunkDTO = new FileChunkDTO({
         id,
