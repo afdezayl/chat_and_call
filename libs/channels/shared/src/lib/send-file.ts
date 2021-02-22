@@ -8,6 +8,8 @@ export class FileDispatch {
   filename!: string;
   @IsNotEmpty()
   size!: number;
+  @IsNotEmpty()
+  checksum!: string;
 }
 
 export class FileAcceptedDTO extends Message<FileAcceptedDTO> {
@@ -30,6 +32,9 @@ export class FileInfoDTO extends Message<FileInfoDTO> {
 
   @Field.d(5, 'string', 'required')
   from!: string;
+
+  @Field.d(6, 'string', 'required')
+  checksum!: string;
 }
 
 export class FileChunkDTO extends Message<FileChunkDTO> {
@@ -57,4 +62,7 @@ export class FileDispatchDTO
 
   @Field.d(3, 'uint32', 'required')
   size!: number;
+
+  @Field.d(4, 'string', 'required')
+  checksum!: string;
 }

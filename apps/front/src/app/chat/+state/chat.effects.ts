@@ -165,12 +165,12 @@ export class ChatEffects {
       mergeMap(({ channel }) =>
         this.chatSocket.subscribeToFileInfoChannel(channel).pipe(
           withLatestFrom(this.store.select(getUsername)),
-          map(([{ id, channel, from, filename, size }, user]) => {
+          map(([{ id, channel, from, filename, size, checksum }, user]) => {
             const isSelfMessage = from === user;
             if (isSelfMessage) {
               return ChatActions.serverFailMessage();
             }
-            this.fileStore.createNewIncomingFile(id, size);
+            this.fileStore.createNewIncomingFile(id, size, checksum);
             return ChatActions.incomingFileInfo({
               id,
               channel,
@@ -196,7 +196,6 @@ export class ChatEffects {
               withLatestFrom(this.store.select(isSelfMessage, { id: x.id }))
             )
           ),
-          tap(console.log),
           map(([{ id, chunk, order }, isSelfMessage]) => {
             if (isSelfMessage === false) {
               this.fileStore.saveChunk(id, chunk);

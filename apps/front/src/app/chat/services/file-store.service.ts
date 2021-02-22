@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { FileSlicerService } from './file-slicer.service';
 
 export interface FileProccess {
   totalSize: number;
+  checksum: string;
   chunks: Array<Uint8Array>;
 }
 
@@ -12,18 +14,17 @@ export interface FileProccess {
 export class FileStoreService {
   private files = new Map<string, FileProccess>();
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private blobSlicer: FileSlicerService) {}
 
-  createNewIncomingFile(id: string, totalSize: number) {
-    console.log('new', id, totalSize);
-    this.files.set(id, { totalSize, chunks: [] });
+  createNewIncomingFile(id: string, totalSize: number, checksum: string) {
+    this.files.set(id, { totalSize, checksum, chunks: [] });
   }
 
   saveChunk(id: string, chunk: Uint8Array) {
     const previousValue = this.files.get(id);
     if (previousValue) {
       const newValue: FileProccess = {
-        totalSize: previousValue.totalSize,
+        ...previousValue,
         chunks: [...previousValue.chunks, chunk],
       };
       this.files.set(id, newValue);
@@ -33,12 +34,13 @@ export class FileStoreService {
         .reduce((acc, length) => acc + length, 0);
 
       if (currentSize === newValue.totalSize) {
-        console.log('finished');
-        console.log(newValue);
         const blob = this.joinChunks(id);
-        console.log(blob);
+        this.blobSlicer
+          .getChecksum(blob)
+          .then((hash) =>
+            console.log('hash matches => ', newValue.checksum === hash)
+          );
       }
-      console.log('Size:', currentSize);
     }
   }
 

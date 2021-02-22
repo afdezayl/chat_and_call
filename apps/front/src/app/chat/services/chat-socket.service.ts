@@ -12,8 +12,8 @@ import {
 } from '@chat-and-call/channels/shared';
 import { SocketService } from '@chat-and-call/socketcluster/socket-client-web';
 import { Store } from '@ngrx/store';
-import { Observable, ReplaySubject } from 'rxjs';
-import { retry } from 'rxjs/operators';
+import { from, Observable, ReplaySubject } from 'rxjs';
+import { delay, map, retry, switchMap } from 'rxjs/operators';
 import { userAuthenticated } from '../+state/chat.actions';
 import { FileSlicerService } from './file-slicer.service';
 
@@ -54,12 +54,20 @@ export class ChatSocketService {
   }
 
   sendFile(file: File, channel: string) {
-    const request: FileDispatchDTO = new FileDispatchDTO({
-      channel: channel,
-      filename: file.name,
-      size: file.size,
-    });
-    return this.socket.post<FileAcceptedDTO>('channels/file_info', request);
+    return from(this.blobSlicer.getChecksum(file)).pipe(
+      map(
+        (hash) =>
+          new FileDispatchDTO({
+            channel: channel,
+            filename: file.name,
+            size: file.size,
+            checksum: hash,
+          })
+      ),
+      switchMap((request) =>
+        this.socket.post<FileAcceptedDTO>('channels/file_info', request)
+      )
+    );
   }
 
   async sendChunks(file: File, channel: string, id: string) {
@@ -71,16 +79,20 @@ export class ChatSocketService {
         chunk: chunk?.data,
         order: chunk?.order,
       });
-      console.time(`${id} - ${chunk?.order}`);
+
       await this.socket
         .invoke<{ order: number }>('#channels/file_chunk', request, 3000)
         .pipe(retry(3))
         .toPromise()
-        .catch(console.error);
-
-      console.timeEnd(`${id} - ${chunk?.order}`);
+        .catch((err) =>
+          console.error(
+            'retrying...',
+            file.name,
+            '> ' + id + '-' + chunk?.order
+          )
+        );
     }
-    console.timeEnd(`total -> ${id}`);
+    console.timeEnd(`upload time -> ${file.name} - ${id}`);
   }
 
   subscribeToChannel(id: string) {

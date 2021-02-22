@@ -119,6 +119,7 @@ export class ChannelsGateway {
       size: data.size,
       id,
       channel: data.channel,
+      checksum: data.checksum,
     });
 
     setTimeout(
@@ -145,7 +146,9 @@ export class ChannelsGateway {
       await socket.exchange.transmitPublish(`${chunk.channel}/file`, chunk);
 
       console.log('-->', chunk.order);
-      return new ServerReceivedMessageDTO({ id: chunk.order + '->' + chunk.id });
+      return new ServerReceivedMessageDTO({
+        id: chunk.order + '->' + chunk.id,
+      });
     } catch (err) {
       console.error(err, chunk);
     }

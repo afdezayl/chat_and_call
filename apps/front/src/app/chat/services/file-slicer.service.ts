@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CHUNK_SIZE_BYTES } from '@chat-and-call/socketcluster/shared';
+import { ArrayBuffer as MD5ArrayBuffer } from 'spark-md5';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,20 @@ export class FileSlicerService {
         };
       },
     };
+  }
+
+  getChecksum(blob: Blob): Promise<string> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const hash = MD5ArrayBuffer.hash(arrayBuffer);
+        resolve(hash);
+      };
+
+      reader.readAsArrayBuffer(blob);
+    });
   }
 }
 
