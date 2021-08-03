@@ -17,49 +17,49 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@chat-and-call/utils/feature-gateway-explorer": [
-        "libs/utils/feature-gateway-explorer/src/index.ts"
-      ],
-      "@chat-and-call/socketcluster/adapter": [
-        "libs/socketcluster/adapter/src/index.ts"
-      ],
-      "@chat-and-call/socketcluster/utils-crud-server": [
-        "libs/socketcluster/utils-crud-server/src/index.ts"
-      ],
       "@chat-and-call/auth/data-access-auth-server": [
         "libs/auth/data-access-auth-server/src/index.ts"
       ],
       "@chat-and-call/auth/feature-auth-web": [
         "libs/auth/feature-auth-web/src/index.ts"
       ],
-      "@chat-and-call/socketcluster/socket-client-web": [
-        "libs/socketcluster/socket-client-web/src/index.ts"
-      ],
-      "@chat-and-call/material/ui-material-design": [
-        "libs/material/ui-material-design/src/index.ts"
-      ],
+      "@chat-and-call/auth/shared": ["libs/auth/shared/src/index.ts"],
       "@chat-and-call/channels/data-access-server": [
         "libs/channels/data-access-server/src/index.ts"
       ],
       "@chat-and-call/channels/shared": ["libs/channels/shared/src/index.ts"],
-      "@chat-and-call/auth/shared": ["libs/auth/shared/src/index.ts"],
-      "@chat-and-call/socketcluster/shared": [
-        "libs/socketcluster/shared/src/index.ts"
-      ],
       "@chat-and-call/contacts/feature-server-contacts": [
         "libs/contacts/feature-server-contacts/src/index.ts"
-      ],
-      "@chat-and-call/utils/forms-shared": [
-        "libs/utils/forms-shared/src/index.ts"
       ],
       "@chat-and-call/database/entities": [
         "libs/database/entities/src/index.ts"
       ],
+      "@chat-and-call/material/ui-language-picker": [
+        "libs/material/ui-language-picker/src/index.ts"
+      ],
+      "@chat-and-call/material/ui-material-design": [
+        "libs/material/ui-material-design/src/index.ts"
+      ],
       "@chat-and-call/material/ui-theme-picker": [
         "libs/material/ui-theme-picker/src/index.ts"
       ],
-      "@chat-and-call/material/ui-language-picker": [
-        "libs/material/ui-language-picker/src/index.ts"
+      "@chat-and-call/socketcluster/adapter": [
+        "libs/socketcluster/adapter/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/shared": [
+        "libs/socketcluster/shared/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/socket-client-web": [
+        "libs/socketcluster/socket-client-web/src/index.ts"
+      ],
+      "@chat-and-call/socketcluster/utils-crud-server": [
+        "libs/socketcluster/utils-crud-server/src/index.ts"
+      ],
+      "@chat-and-call/utils/feature-gateway-explorer": [
+        "libs/utils/feature-gateway-explorer/src/index.ts"
+      ],
+      "@chat-and-call/utils/forms-shared": [
+        "libs/utils/forms-shared/src/index.ts"
       ]
     }
   },

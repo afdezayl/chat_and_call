@@ -1,8 +1,9 @@
-$default-primary: mat-palette($mat-blue);
-$default-accent: mat-palette($mat-teal);
-$default-warn: mat-palette($mat-red);
+@use '~@angular/material' as mat;
+$default-primary: mat.define-palette(mat.$blue-palette);
+$default-accent: mat.define-palette(mat.$teal-palette);
+$default-warn: mat.define-palette(mat.$red-palette);
 
-$default-theme: mat-light-theme(
+$default-theme: mat.define-light-theme(
   $default-primary,
   $default-accent,
   $default-warn

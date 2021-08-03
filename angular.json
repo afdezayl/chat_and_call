@@ -1,98 +1,6 @@
 {
   "version": 1,
   "projects": {
-    "front": {
-      "projectType": "application",
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "apps/front",
-      "sourceRoot": "apps/front/src",
-      "prefix": "chat-and-call",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/apps/front",
-            "index": "apps/front/src/index.html",
-            "main": "apps/front/src/main.ts",
-            "polyfills": "apps/front/src/polyfills.ts",
-            "tsConfig": "apps/front/tsconfig.app.json",
-            "aot": true,
-            "assets": ["apps/front/src/favicon.ico", "apps/front/src/assets"],
-            "styles": ["apps/front/src/styles.scss"],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/front/src/environments/environment.ts",
-                  "with": "apps/front/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "front:build",
-            "proxyConfig": "apps/front/proxy.conf.json"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "front:build:production"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "front:build"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/front/tsconfig.app.json",
-              "apps/front/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/front/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/front/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
     "api": {
       "root": "apps/api",
       "sourceRoot": "apps/api/src",
@@ -106,7 +14,9 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": ["apps/api/src/assets"]
+            "assets": [
+              "apps/api/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -137,42 +47,17 @@
               "apps/api/tsconfig.app.json",
               "apps/api/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!apps/api/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/api/**/*"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/api/jest.config.js",
-            "tsConfig": "apps/api/tsconfig.spec.json",
             "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "front-e2e": {
-      "root": "apps/front-e2e",
-      "sourceRoot": "apps/front-e2e/src",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@nrwl/cypress:cypress",
-          "options": {
-            "cypressConfig": "apps/front-e2e/cypress.json",
-            "tsConfig": "apps/front-e2e/tsconfig.e2e.json",
-            "devServerTarget": "front:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "front:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["apps/front-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/front-e2e/**/*"]
           }
         }
       }
@@ -200,7 +85,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/auth/data-access-auth-server/jest.config.js",
-            "tsConfig": "libs/auth/data-access-auth-server/tsconfig.spec.json",
             "passWithNoTests": true
           }
         }
@@ -229,7 +113,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/auth/feature-auth-web/jest.config.js",
-            "tsConfig": "libs/auth/feature-auth-web/tsconfig.spec.json",
             "passWithNoTests": true,
             "setupFile": "libs/auth/feature-auth-web/src/test-setup.ts"
           }
@@ -254,14 +137,16 @@
               "libs/auth/shared/tsconfig.lib.json",
               "libs/auth/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/auth/shared/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/auth/shared/**/*"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/auth/shared/jest.config.js",
-            "tsConfig": "libs/auth/shared/tsconfig.spec.json",
             "passWithNoTests": true
           }
         }
@@ -290,7 +175,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/channels/data-access-server/jest.config.js",
-            "tsConfig": "libs/channels/data-access-server/tsconfig.spec.json",
             "passWithNoTests": true
           }
         }
@@ -309,14 +193,292 @@
               "libs/channels/shared/tsconfig.lib.json",
               "libs/channels/shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/channels/shared/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/channels/shared/**/*"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/channels/shared/jest.config.js",
-            "tsConfig": "libs/channels/shared/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "contacts-feature-server-contacts": {
+      "root": "libs/contacts/feature-server-contacts",
+      "sourceRoot": "libs/contacts/feature-server-contacts/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/contacts/feature-server-contacts/tsconfig.lib.json",
+              "libs/contacts/feature-server-contacts/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/contacts/feature-server-contacts/**/*"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/contacts/feature-server-contacts/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "database-entities": {
+      "root": "libs/database/entities",
+      "sourceRoot": "libs/database/entities/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/database/entities/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/database/entities"
+          ],
+          "options": {
+            "jestConfig": "libs/database/entities/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "front": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/front",
+      "sourceRoot": "apps/front/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/front",
+            "index": "apps/front/src/index.html",
+            "main": "apps/front/src/main.ts",
+            "polyfills": "apps/front/src/polyfills.ts",
+            "tsConfig": "apps/front/tsconfig.app.json",
+            "assets": [
+              "apps/front/src/favicon.ico",
+              "apps/front/src/assets"
+            ],
+            "styles": [
+              "apps/front/src/styles.scss"
+            ],
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/front/src/environments/environment.ts",
+                  "with": "apps/front/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": ""
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "front:build",
+            "proxyConfig": "apps/front/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "front:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "front:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/front/tsconfig.app.json",
+              "apps/front/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/front/**/*"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/front/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "front-e2e": {
+      "root": "apps/front-e2e",
+      "sourceRoot": "apps/front-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/front-e2e/cypress.json",
+            "tsConfig": "apps/front-e2e/tsconfig.e2e.json",
+            "devServerTarget": "front:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "front:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/front-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/front-e2e/**/*"
+            ]
+          }
+        }
+      }
+    },
+    "identity": {
+      "root": "apps/identity",
+      "sourceRoot": "apps/identity/src",
+      "projectType": "application",
+      "prefix": "identity",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/apps/identity",
+            "main": "apps/identity/src/main.ts",
+            "tsConfig": "apps/identity/tsconfig.app.json",
+            "assets": [
+              "apps/identity/src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/identity/src/environments/environment.ts",
+                  "with": "apps/identity/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "identity:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/identity/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/identity"
+          ],
+          "options": {
+            "jestConfig": "apps/identity/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "material-ui-language-picker": {
+      "projectType": "library",
+      "root": "libs/material/ui-language-picker",
+      "sourceRoot": "libs/material/ui-language-picker/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/material/ui-language-picker/src/**/*.ts",
+              "libs/material/ui-language-picker/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/material/ui-language-picker"
+          ],
+          "options": {
+            "jestConfig": "libs/material/ui-language-picker/jest.config.js",
             "passWithNoTests": true
           }
         }
@@ -345,7 +507,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/material/ui-material-design/jest.config.js",
-            "tsConfig": "libs/material/ui-material-design/tsconfig.spec.json",
             "passWithNoTests": true,
             "setupFile": "libs/material/ui-material-design/src/test-setup.ts"
           }
@@ -354,6 +515,33 @@
       "schematics": {
         "@nrwl/angular:component": {
           "style": "scss"
+        }
+      }
+    },
+    "material-ui-theme-picker": {
+      "projectType": "library",
+      "root": "libs/material/ui-theme-picker",
+      "sourceRoot": "libs/material/ui-theme-picker/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/material/ui-theme-picker/src/**/*.ts",
+              "libs/material/ui-theme-picker/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/material/ui-theme-picker"
+          ],
+          "options": {
+            "jestConfig": "libs/material/ui-theme-picker/jest.config.js",
+            "passWithNoTests": true
+          }
         }
       }
     },
@@ -380,7 +568,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/socketcluster/adapter/jest.config.js",
-            "tsConfig": "libs/socketcluster/adapter/tsconfig.spec.json",
             "passWithNoTests": true
           }
         },
@@ -391,14 +578,16 @@
             "tsConfig": "libs/socketcluster/adapter/tsconfig.lib.json",
             "packageJson": "libs/socketcluster/adapter/package.json",
             "main": "libs/socketcluster/adapter/src/index.ts",
-            "assets": ["libs/socketcluster/adapter/*.md"]
+            "assets": [
+              "libs/socketcluster/adapter/*.md"
+            ]
           }
         }
       }
     },
-    "socketcluster-utils-crud-server": {
-      "root": "libs/socketcluster/utils-crud-server",
-      "sourceRoot": "libs/socketcluster/utils-crud-server/src",
+    "socketcluster-shared": {
+      "root": "libs/socketcluster/shared",
+      "sourceRoot": "libs/socketcluster/shared/src",
       "projectType": "library",
       "schematics": {},
       "architect": {
@@ -406,31 +595,20 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
-              "libs/socketcluster/utils-crud-server/tsconfig.spec.json"
+              "libs/socketcluster/shared/tsconfig.lib.json",
+              "libs/socketcluster/shared/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/socketcluster/utils-crud-server/**/*"
+              "!libs/socketcluster/shared/**/*"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
-            "jestConfig": "libs/socketcluster/utils-crud-server/jest.config.js",
-            "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.spec.json",
+            "jestConfig": "libs/socketcluster/shared/jest.config.js",
             "passWithNoTests": true
-          }
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "options": {
-            "outputPath": "dist/libs/socketcluster/utils-crud-server",
-            "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
-            "packageJson": "libs/socketcluster/utils-crud-server/package.json",
-            "main": "libs/socketcluster/utils-crud-server/src/index.ts",
-            "assets": ["libs/socketcluster/utils-crud-server/*.md"]
           }
         }
       }
@@ -468,6 +646,46 @@
         }
       }
     },
+    "socketcluster-utils-crud-server": {
+      "root": "libs/socketcluster/utils-crud-server",
+      "sourceRoot": "libs/socketcluster/utils-crud-server/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
+              "libs/socketcluster/utils-crud-server/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/socketcluster/utils-crud-server/**/*"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/socketcluster/utils-crud-server/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/socketcluster/utils-crud-server",
+            "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
+            "packageJson": "libs/socketcluster/utils-crud-server/package.json",
+            "main": "libs/socketcluster/utils-crud-server/src/index.ts",
+            "assets": [
+              "libs/socketcluster/utils-crud-server/*.md"
+            ]
+          }
+        }
+      }
+    },
     "utils-feature-gateway-explorer": {
       "root": "libs/utils/feature-gateway-explorer",
       "sourceRoot": "libs/utils/feature-gateway-explorer/src",
@@ -491,7 +709,6 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/utils/feature-gateway-explorer/jest.config.js",
-            "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.spec.json",
             "passWithNoTests": true
           }
         },
@@ -502,62 +719,9 @@
             "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
             "packageJson": "libs/utils/feature-gateway-explorer/package.json",
             "main": "libs/utils/feature-gateway-explorer/src/index.ts",
-            "assets": ["libs/utils/feature-gateway-explorer/*.md"]
-          }
-        }
-      }
-    },
-    "socketcluster-shared": {
-      "root": "libs/socketcluster/shared",
-      "sourceRoot": "libs/socketcluster/shared/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/socketcluster/shared/tsconfig.lib.json",
-              "libs/socketcluster/shared/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/socketcluster/shared/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/socketcluster/shared/jest.config.js",
-            "tsConfig": "libs/socketcluster/shared/tsconfig.spec.json",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "contacts-feature-server-contacts": {
-      "root": "libs/contacts/feature-server-contacts",
-      "sourceRoot": "libs/contacts/feature-server-contacts/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/contacts/feature-server-contacts/tsconfig.lib.json",
-              "libs/contacts/feature-server-contacts/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/contacts/feature-server-contacts/**/*"
+            "assets": [
+              "libs/utils/feature-gateway-explorer/*.md"
             ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/contacts/feature-server-contacts/jest.config.js",
-            "tsConfig": "libs/contacts/feature-server-contacts/tsconfig.spec.json",
-            "passWithNoTests": true
           }
         }
       }
@@ -575,85 +739,19 @@
               "libs/utils/forms-shared/tsconfig.lib.json",
               "libs/utils/forms-shared/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/utils/forms-shared/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/utils/forms-shared/**/*"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/utils/forms-shared"],
+          "outputs": [
+            "coverage/libs/utils/forms-shared"
+          ],
           "options": {
             "jestConfig": "libs/utils/forms-shared/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "database-entities": {
-      "root": "libs/database/entities",
-      "sourceRoot": "libs/database/entities/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/database/entities/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/database/entities"],
-          "options": {
-            "jestConfig": "libs/database/entities/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "material-ui-theme-picker": {
-      "projectType": "library",
-      "root": "libs/material/ui-theme-picker",
-      "sourceRoot": "libs/material/ui-theme-picker/src",
-      "prefix": "chat-and-call",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/material/ui-theme-picker/src/**/*.ts",
-              "libs/material/ui-theme-picker/src/**/*.html"
-            ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/material/ui-theme-picker"],
-          "options": {
-            "jestConfig": "libs/material/ui-theme-picker/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "material-ui-language-picker": {
-      "projectType": "library",
-      "root": "libs/material/ui-language-picker",
-      "sourceRoot": "libs/material/ui-language-picker/src",
-      "prefix": "chat-and-call",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/material/ui-language-picker/src/**/*.ts",
-              "libs/material/ui-language-picker/src/**/*.html"
-            ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/material/ui-language-picker"],
-          "options": {
-            "jestConfig": "libs/material/ui-language-picker/jest.config.js",
             "passWithNoTests": true
           }
         }

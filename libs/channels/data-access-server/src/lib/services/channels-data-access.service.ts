@@ -126,7 +126,7 @@ export class ChannelsDataAccessService {
     }
   }
 
-  async checkChannelAccess(user: string, channel: string): Promise<boolean> {
+  checkChannelAccess(user: string, channel: string): Promise<boolean> {
     const isGroup = validate(channel);
 
     return isGroup

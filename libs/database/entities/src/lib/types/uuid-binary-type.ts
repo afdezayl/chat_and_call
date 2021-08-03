@@ -3,7 +3,7 @@ import { parse, stringify, v1, validate } from 'uuid';
 
 export class UuidBinaryType extends Type<string, Buffer> {
   convertToDatabaseValue(value: string | any): Buffer {
-    return validate(value) ? Buffer.from(parse(value)) : value;
+    return validate(value) ? parse(value) : value;
   }
 
   convertToJSValue(value: Buffer): string {

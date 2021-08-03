@@ -1,4 +1,5 @@
 /* Reset CSS*/
+@use '~@angular/material' as mat;
 @import '~normalize.css';
 
 /* Flag icons*/
@@ -7,12 +8,12 @@
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 /* Custom themes */
 @import '~@angular/material/theming';
-@include mat-core();
+@include mat.core();
 
 @mixin body-background($theme) {
   //$foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
-  background-color: mat-color($background, background);
+  background-color: mat.get-color-from-palette($background, background);
 }
 
 @import 'app/chat/components/message/message.component.theme.scss';
@@ -26,19 +27,19 @@
 @import './themes/candy-theme.scss';
 
 .default-theme {
-  @include angular-material-theme($default-theme);
+  @include mat.all-component-themes($default-theme);
   @include body-background($default-theme);
   @include custom-components-theme($default-theme);
 }
 
 .dark-theme {
-  @include angular-material-theme($dark-theme);
+  @include mat.all-component-themes($dark-theme);
   @include body-background($dark-theme);
   @include custom-components-theme($dark-theme);
 }
 
 .candy-theme {
-  @include angular-material-theme($candy-theme);
+  @include mat.all-component-themes($candy-theme);
   @include body-background($candy-theme);
   @include custom-components-theme($candy-theme);
 }

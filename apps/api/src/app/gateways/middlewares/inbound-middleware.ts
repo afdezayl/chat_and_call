@@ -42,7 +42,7 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
 
     if (
       channel === user ||
-      (await this.channelsService.checkChannelAccess(user, channel))
+      (await this.channelsService.checkChannelAccess(user, channel).catch(console.error))
     ) {
       //this.logger.log(user + ' subscribe -> ' + action.channel);
       action.allow();

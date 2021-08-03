@@ -2,7 +2,10 @@
   "npmScope": "chat-and-call",
   "implicitDependencies": {
     "angular.json": "*",
-    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
     "tslint.json": "*",
     "nx.json": "*",
     "tsconfig.base.json": "*"
@@ -10,29 +13,83 @@
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
     }
   },
   "projects": {
-    "api": { "tags": [] },
-    "front": { "tags": [] },
-    "front-e2e": { "tags": [], "implicitDependencies": ["front"] },
-    "utils-feature-gateway-explorer": { "tags": [] },
-    "socketcluster-adapter": { "tags": [] },
-    "socketcluster-utils-crud-server": { "tags": [] },
-    "auth-data-access-auth-server": { "tags": [] },
-    "auth-feature-auth-web": { "tags": [] },
-    "socketcluster-socket-client-web": { "tags": [] },
-    "material-ui-material-design": { "tags": [] },
-    "channels-data-access-server": { "tags": [] },
-    "channels-shared": { "tags": [] },
-    "auth-shared": { "tags": [] },
-    "socketcluster-shared": { "tags": [] },
-    "contacts-feature-server-contacts": { "tags": [] },
-    "utils-forms-shared": { "tags": [] },
-    "database-entities": { "tags": [] },
-    "material-ui-theme-picker": { "tags": [] },
-    "material-ui-language-picker": { "tags": [] }
+    "api": {
+      "tags": []
+    },
+    "auth-data-access-auth-server": {
+      "tags": []
+    },
+    "auth-feature-auth-web": {
+      "tags": []
+    },
+    "auth-shared": {
+      "tags": []
+    },
+    "channels-data-access-server": {
+      "tags": []
+    },
+    "channels-shared": {
+      "tags": []
+    },
+    "contacts-feature-server-contacts": {
+      "tags": []
+    },
+    "database-entities": {
+      "tags": []
+    },
+    "front": {
+      "tags": []
+    },
+    "front-e2e": {
+      "tags": [],
+      "implicitDependencies": ["front"]
+    },
+    "identity": {
+      "tags": []
+    },
+    "material-ui-language-picker": {
+      "tags": []
+    },
+    "material-ui-material-design": {
+      "tags": []
+    },
+    "material-ui-theme-picker": {
+      "tags": []
+    },
+    "socketcluster-adapter": {
+      "tags": []
+    },
+    "socketcluster-shared": {
+      "tags": []
+    },
+    "socketcluster-socket-client-web": {
+      "tags": []
+    },
+    "socketcluster-utils-crud-server": {
+      "tags": []
+    },
+    "utils-feature-gateway-explorer": {
+      "tags": []
+    },
+    "utils-forms-shared": {
+      "tags": []
+    }
   },
-  "affected": { "defaultBase": "master" }
+  "affected": {
+    "defaultBase": "master"
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
+  }
 }
