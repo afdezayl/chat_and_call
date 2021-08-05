@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
+import { OidcProviderService } from './oidc-provider.service';
 import { OidcController } from './oidc.controller';
 
 @Module({
   imports: [],
   controllers: [OidcController],
-  providers: [AppService],
+  providers: [OidcProviderService],
 })
 export class AppModule {}

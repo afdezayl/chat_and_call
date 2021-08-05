@@ -14,8 +14,8 @@
 
     <!-- <chat-and-call-channel-creator></chat-and-call-channel-creator> -->
   </mat-sidenav>
-  <mat-sidenav-content *ngIf="focus$ | async as focus">
-    <div class="content">
+  <mat-sidenav-content>
+    <div class="content" *ngIf="focus$ | async as focus">
       <mat-card
         style="
           display: flex;

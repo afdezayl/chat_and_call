@@ -62,7 +62,7 @@
     "@ngrx/router-store": "12.2.0",
     "@ngrx/store": "12.2.0",
     "async-stream-emitter": "^4.0.0",
-    "bcrypt": "^5.0.0",
+    "bcrypt": "^5.0.1",
     "class-transformer": "0.3.2",
     "class-validator": "0.13.1",
     "cookie": "^0.4.1",
@@ -84,6 +84,9 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "12.1.4",
+    "@angular-eslint/eslint-plugin": "~12.3.0",
+    "@angular-eslint/eslint-plugin-template": "~12.3.0",
+    "@angular-eslint/template-parser": "~12.3.0",
     "@angular/cli": "12.1.4",
     "@angular/compiler-cli": "12.1.0",
     "@angular/language-service": "12.1.0",

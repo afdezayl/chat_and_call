@@ -14,9 +14,7 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": [
-              "apps/api/src/assets"
-            ]
+            "assets": ["apps/api/src/assets"]
           },
           "configurations": {
             "production": {
@@ -47,10 +45,7 @@
               "apps/api/tsconfig.app.json",
               "apps/api/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/api/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/api/**/*"]
           }
         },
         "test": {
@@ -137,10 +132,7 @@
               "libs/auth/shared/tsconfig.lib.json",
               "libs/auth/shared/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/auth/shared/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/auth/shared/**/*"]
           }
         },
         "test": {
@@ -193,10 +185,7 @@
               "libs/channels/shared/tsconfig.lib.json",
               "libs/channels/shared/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/channels/shared/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/channels/shared/**/*"]
           }
         },
         "test": {
@@ -244,16 +233,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/database/entities/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/database/entities/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/database/entities"
-          ],
+          "outputs": ["coverage/libs/database/entities"],
           "options": {
             "jestConfig": "libs/database/entities/jest.config.js",
             "passWithNoTests": true
@@ -280,13 +265,8 @@
             "main": "apps/front/src/main.ts",
             "polyfills": "apps/front/src/polyfills.ts",
             "tsConfig": "apps/front/tsconfig.app.json",
-            "assets": [
-              "apps/front/src/favicon.ico",
-              "apps/front/src/assets"
-            ],
-            "styles": [
-              "apps/front/src/styles.scss"
-            ],
+            "assets": ["apps/front/src/favicon.ico", "apps/front/src/assets"],
+            "styles": ["apps/front/src/styles.scss"],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -351,10 +331,7 @@
               "apps/front/tsconfig.app.json",
               "apps/front/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/front/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/front/**/*"]
           }
         },
         "test": {
@@ -387,13 +364,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/front-e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/front-e2e/**/*"
-            ]
+            "tsConfig": ["apps/front-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/front-e2e/**/*"]
           }
         }
       }
@@ -406,16 +378,12 @@
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/identity",
             "main": "apps/identity/src/main.ts",
             "tsConfig": "apps/identity/tsconfig.app.json",
-            "assets": [
-              "apps/identity/src/assets"
-            ]
+            "assets": ["apps/identity/src/assets"]
           },
           "configurations": {
             "production": {
@@ -440,19 +408,131 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
+            "lintFilePatterns": ["apps/identity/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/identity"],
+          "options": {
+            "jestConfig": "apps/identity/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "login": {
+      "projectType": "application",
+      "root": "apps/login",
+      "sourceRoot": "apps/login/src",
+      "prefix": "chat-and-call",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/login",
+            "index": "apps/login/src/index.html",
+            "main": "apps/login/src/main.ts",
+            "polyfills": "apps/login/src/polyfills.ts",
+            "tsConfig": "apps/login/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["apps/login/src/favicon.ico", "apps/login/src/assets"],
+            "styles": ["apps/login/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/login/src/environments/environment.ts",
+                  "with": "apps/login/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "login:build:production"
+            },
+            "development": {
+              "browserTarget": "login:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "login:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
             "lintFilePatterns": [
-              "apps/identity/**/*.ts"
+              "apps/login/src/**/*.ts",
+              "apps/login/src/**/*.html"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/identity"
-          ],
+          "outputs": ["coverage/apps/login"],
           "options": {
-            "jestConfig": "apps/identity/jest.config.js",
+            "jestConfig": "apps/login/jest.config.js",
             "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "login-e2e": {
+      "root": "apps/login-e2e",
+      "sourceRoot": "apps/login-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/login-e2e/cypress.json",
+            "tsConfig": "apps/login-e2e/tsconfig.e2e.json",
+            "devServerTarget": "login:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "login:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/login-e2e/**/*.{js,ts}"]
           }
         }
       }
@@ -474,9 +554,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/material/ui-language-picker"
-          ],
+          "outputs": ["coverage/libs/material/ui-language-picker"],
           "options": {
             "jestConfig": "libs/material/ui-language-picker/jest.config.js",
             "passWithNoTests": true
@@ -535,9 +613,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/material/ui-theme-picker"
-          ],
+          "outputs": ["coverage/libs/material/ui-theme-picker"],
           "options": {
             "jestConfig": "libs/material/ui-theme-picker/jest.config.js",
             "passWithNoTests": true
@@ -578,9 +654,7 @@
             "tsConfig": "libs/socketcluster/adapter/tsconfig.lib.json",
             "packageJson": "libs/socketcluster/adapter/package.json",
             "main": "libs/socketcluster/adapter/src/index.ts",
-            "assets": [
-              "libs/socketcluster/adapter/*.md"
-            ]
+            "assets": ["libs/socketcluster/adapter/*.md"]
           }
         }
       }
@@ -598,10 +672,7 @@
               "libs/socketcluster/shared/tsconfig.lib.json",
               "libs/socketcluster/shared/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/socketcluster/shared/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/socketcluster/shared/**/*"]
           }
         },
         "test": {
@@ -679,9 +750,7 @@
             "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
             "packageJson": "libs/socketcluster/utils-crud-server/package.json",
             "main": "libs/socketcluster/utils-crud-server/src/index.ts",
-            "assets": [
-              "libs/socketcluster/utils-crud-server/*.md"
-            ]
+            "assets": ["libs/socketcluster/utils-crud-server/*.md"]
           }
         }
       }
@@ -719,9 +788,7 @@
             "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
             "packageJson": "libs/utils/feature-gateway-explorer/package.json",
             "main": "libs/utils/feature-gateway-explorer/src/index.ts",
-            "assets": [
-              "libs/utils/feature-gateway-explorer/*.md"
-            ]
+            "assets": ["libs/utils/feature-gateway-explorer/*.md"]
           }
         }
       }
@@ -739,17 +806,12 @@
               "libs/utils/forms-shared/tsconfig.lib.json",
               "libs/utils/forms-shared/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/utils/forms-shared/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/utils/forms-shared/**/*"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/utils/forms-shared"
-          ],
+          "outputs": ["coverage/libs/utils/forms-shared"],
           "options": {
             "jestConfig": "libs/utils/forms-shared/jest.config.js",
             "passWithNoTests": true
