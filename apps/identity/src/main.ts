@@ -14,6 +14,7 @@ async function bootstrap() {
   });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  app.enableCors();
   const port = process.env.IDENTITY_PORT || 3334;
 
   await app.listen(port, () => {

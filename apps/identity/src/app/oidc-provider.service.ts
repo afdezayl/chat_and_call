@@ -12,10 +12,18 @@ export class OidcProviderService {
       clients: [
         {
           client_id: 'foo',
-          client_secret: 'bar',
-          redirect_uris: ['https://oidcdebugger.com/debug'],
+          application_type: 'web',
+          //client_secret: 'bar',
+          token_endpoint_auth_method: 'none',
+          redirect_uris: [
+            'https://oidcdebugger.com/debug',
+            'http://localhost:4201',
+          ],
+          post_logout_redirect_uris: [
+            'http://localhost:4201'
+          ],
           grant_types: ['implicit', 'refresh_token', 'authorization_code'],
-          response_types: ['id_token', 'code'],
+          //response_types: ['id_token token', 'id_token', 'code id_token token']
         },
       ],
       pkce: {
@@ -42,6 +50,8 @@ export class OidcProviderService {
           code === 'implicit-force-https' ||
           code === 'implicit-forbid-localhost'
         ) {
+          console.log('-------');
+          console.warn(message, code);
           return;
         }
 
