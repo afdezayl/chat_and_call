@@ -5,6 +5,7 @@
 
     <ng-container *ngIf="auth.isAuthenticated">
       <button (click)="logout()">Logout</button>
+      <div style="color: red">{{ token }}</div>
       <div>{{ auth | json }}</div>
     </ng-container>
   </ng-container>

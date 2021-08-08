@@ -10,12 +10,16 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   auth$ = new BehaviorSubject<LoginResponse | null>(null);
+  token?: string;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.oidcSecurityService.checkAuth().subscribe((data) => {
       console.log(data);
+      if(data.isAuthenticated) {
+        this.token = data.idToken;
+      }
       this.auth$.next(data);
     });
   }
@@ -23,7 +27,9 @@ export class AppComponent implements OnInit {
     this.oidcSecurityService.authorize();
   }
 
+
   logout() {
+    console.log(this.oidcSecurityService.getIdToken());
     this.oidcSecurityService.logoff();
   }
 }

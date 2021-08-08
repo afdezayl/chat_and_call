@@ -18,10 +18,9 @@ export class OidcProviderService {
           redirect_uris: [
             'https://oidcdebugger.com/debug',
             'http://localhost:4201',
+            'http://localhost:4201/silent-renew.html',
           ],
-          post_logout_redirect_uris: [
-            'http://localhost:4201'
-          ],
+          post_logout_redirect_uris: ['http://localhost:4201'],
           grant_types: ['implicit', 'refresh_token', 'authorization_code'],
           //response_types: ['id_token token', 'id_token', 'code id_token token']
         },
@@ -29,6 +28,11 @@ export class OidcProviderService {
       pkce: {
         methods: ['S256'],
         required: () => true,
+      },
+      ttl: {
+        AccessToken: 20,
+        AuthorizationCode: 300,
+        IdToken: 20,
       },
     };
 

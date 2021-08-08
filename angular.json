@@ -478,7 +478,8 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "apps/login/src/favicon.ico",
-              "apps/login/src/assets"
+              "apps/login/src/assets",
+              "apps/login/src/silent-renew.html"
             ],
             "styles": [
               "apps/login/src/styles.scss"
