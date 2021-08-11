@@ -15,8 +15,7 @@
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
             "assets": [
-              "apps/api/src/assets",
-              "apps/api/src/silent-renew.html"
+              "apps/api/src/assets"
             ]
           },
           "configurations": {
