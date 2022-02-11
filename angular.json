@@ -14,9 +14,7 @@
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": [
-              "apps/api/src/assets"
-            ]
+            "assets": ["apps/api/src/assets"]
           },
           "configurations": {
             "production": {
@@ -46,6 +44,13 @@
             "jestConfig": "apps/api/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/api/**/*.ts"]
+          }
         }
       },
       "tags": []
@@ -61,6 +66,13 @@
           "options": {
             "jestConfig": "libs/auth/data-access-auth-server/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/auth/data-access-auth-server/**/*.ts"]
           }
         }
       },
@@ -78,6 +90,15 @@
             "jestConfig": "libs/auth/feature-auth-web/jest.config.js",
             "passWithNoTests": true,
             "setupFile": "libs/auth/feature-auth-web/src/test-setup.ts"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/auth/feature-auth-web/src/**/*.ts",
+              "libs/auth/feature-auth-web/src/**/*.html"
+            ]
           }
         }
       },
@@ -100,6 +121,13 @@
             "jestConfig": "libs/auth/shared/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/auth/shared/**/*.ts"]
+          }
         }
       },
       "tags": []
@@ -115,6 +143,13 @@
           "options": {
             "jestConfig": "libs/channels/data-access-server/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/channels/data-access-server/**/*.ts"]
           }
         }
       },
@@ -132,6 +167,13 @@
             "jestConfig": "libs/channels/shared/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/channels/shared/**/*.ts"]
+          }
         }
       },
       "tags": []
@@ -148,6 +190,15 @@
             "jestConfig": "libs/contacts/feature-server-contacts/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": [
+              "libs/contacts/feature-server-contacts/**/*.ts"
+            ]
+          }
         }
       },
       "tags": []
@@ -160,16 +211,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/database/entities/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/database/entities/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/database/entities"
-          ],
+          "outputs": ["coverage/libs/database/entities"],
           "options": {
             "jestConfig": "libs/database/entities/jest.config.js",
             "passWithNoTests": true
@@ -197,13 +244,8 @@
             "main": "apps/front/src/main.ts",
             "polyfills": "apps/front/src/polyfills.ts",
             "tsConfig": "apps/front/tsconfig.app.json",
-            "assets": [
-              "apps/front/src/favicon.ico",
-              "apps/front/src/assets"
-            ],
-            "styles": [
-              "apps/front/src/styles.scss"
-            ],
+            "assets": ["apps/front/src/favicon.ico", "apps/front/src/assets"],
+            "styles": ["apps/front/src/styles.scss"],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -266,6 +308,15 @@
             "jestConfig": "apps/front/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/front/src/**/*.ts",
+              "apps/front/src/**/*.html"
+            ]
+          }
         }
       },
       "tags": []
@@ -287,12 +338,17 @@
               "devServerTarget": "front:serve:production"
             }
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/front-e2e/**/*.{js,ts}"]
+          }
         }
       },
       "tags": [],
-      "implicitDependencies": [
-        "front"
-      ]
+      "implicitDependencies": ["front"]
     },
     "identity": {
       "root": "apps/identity",
@@ -302,16 +358,12 @@
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/identity",
             "main": "apps/identity/src/main.ts",
             "tsConfig": "apps/identity/tsconfig.app.json",
-            "assets": [
-              "apps/identity/src/assets"
-            ]
+            "assets": ["apps/identity/src/assets"]
           },
           "configurations": {
             "production": {
@@ -336,16 +388,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/identity/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/identity/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/identity"
-          ],
+          "outputs": ["coverage/apps/identity"],
           "options": {
             "jestConfig": "apps/identity/jest.config.js",
             "passWithNoTests": true
@@ -362,9 +410,7 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/login",
             "index": "apps/login/src/index.html",
@@ -377,9 +423,7 @@
               "apps/login/src/assets",
               "apps/login/src/silent-renew.html"
             ],
-            "styles": [
-              "apps/login/src/styles.scss"
-            ],
+            "styles": ["apps/login/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -444,9 +488,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/login"
-          ],
+          "outputs": ["coverage/apps/login"],
           "options": {
             "jestConfig": "apps/login/jest.config.js",
             "passWithNoTests": true
@@ -476,16 +518,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/login-e2e/**/*.{js,ts}"
-            ]
+            "lintFilePatterns": ["apps/login-e2e/**/*.{js,ts}"]
           }
         }
       },
       "tags": [],
-      "implicitDependencies": [
-        "login"
-      ]
+      "implicitDependencies": ["login"]
     },
     "material-ui-language-picker": {
       "projectType": "library",
@@ -504,9 +542,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/material/ui-language-picker"
-          ],
+          "outputs": ["coverage/libs/material/ui-language-picker"],
           "options": {
             "jestConfig": "libs/material/ui-language-picker/jest.config.js",
             "passWithNoTests": true
@@ -527,6 +563,15 @@
             "jestConfig": "libs/material/ui-material-design/jest.config.js",
             "passWithNoTests": true,
             "setupFile": "libs/material/ui-material-design/src/test-setup.ts"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/material/ui-material-design/src/**/*.ts",
+              "libs/material/ui-material-design/src/**/*.html"
+            ]
           }
         }
       },
@@ -554,9 +599,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/material/ui-theme-picker"
-          ],
+          "outputs": ["coverage/libs/material/ui-theme-picker"],
           "options": {
             "jestConfig": "libs/material/ui-theme-picker/jest.config.js",
             "passWithNoTests": true
@@ -585,9 +628,14 @@
             "tsConfig": "libs/socketcluster/adapter/tsconfig.lib.json",
             "packageJson": "libs/socketcluster/adapter/package.json",
             "main": "libs/socketcluster/adapter/src/index.ts",
-            "assets": [
-              "libs/socketcluster/adapter/*.md"
-            ]
+            "assets": ["libs/socketcluster/adapter/*.md"]
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/socketcluster/adapter/**/*.ts"]
           }
         }
       },
@@ -605,6 +653,13 @@
             "jestConfig": "libs/socketcluster/shared/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/socketcluster/shared/**/*.ts"]
+          }
         }
       },
       "tags": []
@@ -620,6 +675,15 @@
           "options": {
             "jestConfig": "libs/socketcluster/socket-client-web/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/socketcluster/socket-client-web/src/**/*.ts",
+              "libs/socketcluster/socket-client-web/src/**/*.html"
+            ]
           }
         }
       },
@@ -650,9 +714,14 @@
             "tsConfig": "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
             "packageJson": "libs/socketcluster/utils-crud-server/package.json",
             "main": "libs/socketcluster/utils-crud-server/src/index.ts",
-            "assets": [
-              "libs/socketcluster/utils-crud-server/*.md"
-            ]
+            "assets": ["libs/socketcluster/utils-crud-server/*.md"]
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/socketcluster/utils-crud-server/**/*.ts"]
           }
         }
       },
@@ -678,9 +747,14 @@
             "tsConfig": "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
             "packageJson": "libs/utils/feature-gateway-explorer/package.json",
             "main": "libs/utils/feature-gateway-explorer/src/index.ts",
-            "assets": [
-              "libs/utils/feature-gateway-explorer/*.md"
-            ]
+            "assets": ["libs/utils/feature-gateway-explorer/*.md"]
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/utils/feature-gateway-explorer/**/*.ts"]
           }
         }
       },
@@ -694,12 +768,19 @@
       "architect": {
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/utils/forms-shared"
-          ],
+          "outputs": ["coverage/libs/utils/forms-shared"],
           "options": {
             "jestConfig": "libs/utils/forms-shared/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/utils/forms-shared/src/**/*.ts",
+              "libs/utils/forms-shared/src/**/*.html"
+            ]
           }
         }
       },
