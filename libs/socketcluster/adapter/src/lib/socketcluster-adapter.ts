@@ -1,10 +1,9 @@
 import {
+  ConsoleLogger,
   Inject,
-  Injectable,
-  Logger,
-  Optional,
+  Injectable, Optional,
   WebSocketAdapter,
-  WsMessageHandler,
+  WsMessageHandler
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { of } from 'rxjs';
@@ -15,19 +14,19 @@ import { AGServerOptions } from 'socketcluster-server/server';
 import { AGAction, IAGRequest } from './interfaces';
 import {
   MiddlewareHandshakeStrategy,
-  MIDDLEWARE_HANDSHAKE_TOKEN,
+  MIDDLEWARE_HANDSHAKE_TOKEN
 } from './middlewares/middleware-handshake-strategy';
 import {
   MiddlewareInboundRawStrategy,
-  MIDDLEWARE_INBOUND_RAW_TOKEN,
+  MIDDLEWARE_INBOUND_RAW_TOKEN
 } from './middlewares/middleware-inbound-raw-strategy';
 import {
   MiddlewareInboundStrategy,
-  MIDDLEWARE_INBOUND_TOKEN,
+  MIDDLEWARE_INBOUND_TOKEN
 } from './middlewares/middleware-inbound-strategy';
 import {
   MiddlewareOutboundStrategy,
-  MIDDLEWARE_OUTBOUND_TOKEN,
+  MIDDLEWARE_OUTBOUND_TOKEN
 } from './middlewares/middleware-outbound-strategy';
 
 export const SOCKETCLUSTER_OPTIONS_TOKEN = 'SOCKETCLUSTER_SERVER_OPTIONS';
@@ -37,7 +36,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   private _server!: AGServer;
 
   constructor(
-    private logger: Logger,
+    private logger: ConsoleLogger,
     private readonly adapterHost: HttpAdapterHost,
     @Inject(SOCKETCLUSTER_OPTIONS_TOKEN) private _options: AGServerOptions,
     @Optional()

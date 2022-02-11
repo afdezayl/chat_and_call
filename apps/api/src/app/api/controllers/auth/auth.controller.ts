@@ -1,30 +1,29 @@
 import {
   AuthService,
   Fail,
-  Success,
+  Success
 } from '@chat-and-call/auth/data-access-auth-server';
 import {
   LoginRequestDto,
   SignupConflictResponseDto,
-  SignupRequestDto,
+  SignupRequestDto
 } from '@chat-and-call/auth/shared';
 import {
   Body,
   ConflictException,
+  ConsoleLogger,
   Controller,
   Get,
-  InternalServerErrorException,
-  Logger,
-  Post,
+  InternalServerErrorException, Post,
   Query,
   Req,
-  Res,
+  Res
 } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private logger: Logger) {
+  constructor(private authService: AuthService, private logger: ConsoleLogger) {
     this.logger.setContext(this.constructor.name);
   }
 

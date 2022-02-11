@@ -1,5 +1,5 @@
 import { MessageBody, ConnectedSocket, WsException } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 import {
   SocketCrudGateway,
   SocketPost,
@@ -14,7 +14,7 @@ import {
 
 @SocketCrudGateway('auth')
 export class AuthGateway {
-  constructor(private logger: Logger, private authService: AuthService) {
+  constructor(private logger: ConsoleLogger, private authService: AuthService) {
     this.logger.setContext(this.constructor.name);
   }
 

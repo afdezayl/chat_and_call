@@ -21,7 +21,7 @@ import {
   SocketPost,
   SocketProcedure,
 } from '@chat-and-call/socketcluster/utils-crud-server';
-import { Logger, UseGuards } from '@nestjs/common';
+import { ConsoleLogger, UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, WsException } from '@nestjs/websockets';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, retry, switchMap } from 'rxjs/operators';
@@ -33,7 +33,7 @@ import { v4 } from 'uuid';
 export class ChannelsGateway {
   constructor(
     private channelService: ChannelsDataAccessService,
-    private logger: Logger
+    private logger: ConsoleLogger
   ) {
     this.logger.setContext(this.constructor.name);
   }

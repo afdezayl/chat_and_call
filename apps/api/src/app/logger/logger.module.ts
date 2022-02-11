@@ -2,7 +2,7 @@ import { Module, ConsoleLogger, Global, Scope, Logger } from '@nestjs/common';
 
 @Global()
 @Module({
-  providers: [{ useClass: ConsoleLogger, provide: Logger, scope: Scope.TRANSIENT }],
-  exports: [Logger],
+  providers: [{ useClass: ConsoleLogger, provide: ConsoleLogger, scope: Scope.TRANSIENT }],
+  exports: [ConsoleLogger],
 })
 export class LoggerModule {}

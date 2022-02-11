@@ -5,11 +5,11 @@ import {
   SocketPost,
 } from '@chat-and-call/socketcluster/utils-crud-server';
 import { AGServerSocket } from 'socketcluster-server';
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 
 @SocketCrudGateway('dev')
 export class DevTestsGateway {
-  constructor(private logger: Logger) {
+  constructor(private logger: ConsoleLogger) {
     this.logger.setContext(this.constructor.name);
   }
 

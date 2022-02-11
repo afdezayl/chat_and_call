@@ -7,13 +7,13 @@ import {
   PublishInAction,
   SubscribeAction,
 } from '@chat-and-call/socketcluster/adapter';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, ConsoleLogger } from '@nestjs/common';
 import { CookieUtil } from './cookie-util';
 
 @Injectable()
 export class InboundStrategy extends MiddlewareInboundStrategy {
   constructor(
-    private logger: Logger,
+    private logger: ConsoleLogger,
     private channelsService: ChannelsDataAccessService,
     private cookie: CookieUtil,
     private authService: AuthService

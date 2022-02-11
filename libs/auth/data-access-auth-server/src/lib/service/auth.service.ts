@@ -1,7 +1,7 @@
 import { User } from '@chat-and-call/database/entities';
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, ConsoleLogger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 
@@ -14,7 +14,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: EntityRepository<User>,
     private jwtService: JwtService,
-    private logger: Logger
+    private logger: ConsoleLogger
   ) {
     this.logger.setContext(this.constructor.name);
   }

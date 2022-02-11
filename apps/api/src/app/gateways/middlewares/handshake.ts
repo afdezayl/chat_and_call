@@ -4,7 +4,7 @@ import {
   HandshakeWSAction,
   MiddlewareHandshakeStrategy,
 } from '@chat-and-call/socketcluster/adapter';
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, ConsoleLogger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AGServer, AGServerSocket } from 'socketcluster-server';
 import { setInterval } from 'timers';
@@ -20,7 +20,7 @@ type ConnectEvent = {
 @Injectable()
 export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   constructor(
-    private logger: Logger,
+    private logger: ConsoleLogger,
     private cookie: CookieUtil,
     private config: ConfigService,
     @Inject(forwardRef(() => AuthService)) private authService: AuthService
