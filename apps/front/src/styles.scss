@@ -1,13 +1,13 @@
 /* Reset CSS*/
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '~normalize.css';
 
 /* Flag icons*/
 @import '~flag-icon-css/css/flag-icon.min.css';
 /* Material prebuilt theme */
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 /* Custom themes */
-@import '~@angular/material/theming';
+@import '@angular/material/theming';
 @include mat.core();
 
 @mixin body-background($theme) {

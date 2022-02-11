@@ -14,78 +14,14 @@
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ],
+        "parallel": 1
       }
-    }
-  },
-  "projects": {
-    "api": {
-      "tags": []
-    },
-    "auth-data-access-auth-server": {
-      "tags": []
-    },
-    "auth-feature-auth-web": {
-      "tags": []
-    },
-    "auth-shared": {
-      "tags": []
-    },
-    "channels-data-access-server": {
-      "tags": []
-    },
-    "channels-shared": {
-      "tags": []
-    },
-    "contacts-feature-server-contacts": {
-      "tags": []
-    },
-    "database-entities": {
-      "tags": []
-    },
-    "front": {
-      "tags": []
-    },
-    "front-e2e": {
-      "tags": [],
-      "implicitDependencies": ["front"]
-    },
-    "identity": {
-      "tags": []
-    },
-    "login": {
-      "tags": []
-    },
-    "login-e2e": {
-      "tags": [],
-      "implicitDependencies": ["login"]
-    },
-    "material-ui-language-picker": {
-      "tags": []
-    },
-    "material-ui-material-design": {
-      "tags": []
-    },
-    "material-ui-theme-picker": {
-      "tags": []
-    },
-    "socketcluster-adapter": {
-      "tags": []
-    },
-    "socketcluster-shared": {
-      "tags": []
-    },
-    "socketcluster-socket-client-web": {
-      "tags": []
-    },
-    "socketcluster-utils-crud-server": {
-      "tags": []
-    },
-    "utils-feature-gateway-explorer": {
-      "tags": []
-    },
-    "utils-forms-shared": {
-      "tags": []
     }
   },
   "affected": {
@@ -98,5 +34,24 @@
         "projects": "dependencies"
       }
     ]
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/nest"
+  },
+  "defaultProject": "api",
+  "generators": {
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
+    }
   }
 }

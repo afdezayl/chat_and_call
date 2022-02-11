@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 $default-primary: mat.define-palette(mat.$blue-palette);
 $default-accent: mat.define-palette(mat.$teal-palette);
 $default-warn: mat.define-palette(mat.$red-palette);

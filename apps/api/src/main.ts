@@ -8,7 +8,9 @@ import { AppModule } from './app/app.module';
 
 // TODO: Professional logger (Winston, ...);
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['debug']
+  });
   const config = app.get(ConfigService);
 
   const globalPrefix = 'api';

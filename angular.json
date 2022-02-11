@@ -40,19 +40,6 @@
             "port": 9229
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/api/tsconfig.app.json",
-              "apps/api/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/api/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -60,7 +47,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "auth-data-access-auth-server": {
       "root": "libs/auth/data-access-auth-server",
@@ -68,19 +56,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/auth/data-access-auth-server/tsconfig.lib.json",
-              "libs/auth/data-access-auth-server/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/auth/data-access-auth-server/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -88,7 +63,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "auth-feature-auth-web": {
       "projectType": "library",
@@ -96,19 +72,6 @@
       "sourceRoot": "libs/auth/feature-auth-web/src",
       "prefix": "chat-and-call",
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/auth/feature-auth-web/tsconfig.lib.json",
-              "libs/auth/feature-auth-web/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/auth/feature-auth-web/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -122,7 +85,8 @@
         "@nrwl/angular:component": {
           "style": "scss"
         }
-      }
+      },
+      "tags": []
     },
     "auth-shared": {
       "root": "libs/auth/shared",
@@ -130,19 +94,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/auth/shared/tsconfig.lib.json",
-              "libs/auth/shared/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/auth/shared/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -150,7 +101,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "channels-data-access-server": {
       "root": "libs/channels/data-access-server",
@@ -158,19 +110,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/channels/data-access-server/tsconfig.lib.json",
-              "libs/channels/data-access-server/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/channels/data-access-server/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -178,7 +117,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "channels-shared": {
       "root": "libs/channels/shared",
@@ -186,19 +126,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/channels/shared/tsconfig.lib.json",
-              "libs/channels/shared/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/channels/shared/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -206,7 +133,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "contacts-feature-server-contacts": {
       "root": "libs/contacts/feature-server-contacts",
@@ -214,19 +142,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/contacts/feature-server-contacts/tsconfig.lib.json",
-              "libs/contacts/feature-server-contacts/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/contacts/feature-server-contacts/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -234,7 +149,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "database-entities": {
       "root": "libs/database/entities",
@@ -259,7 +175,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "front": {
       "projectType": "application",
@@ -306,7 +223,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -344,19 +260,6 @@
             "browserTarget": "front:build"
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/front/tsconfig.app.json",
-              "apps/front/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/front/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -364,7 +267,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "front-e2e": {
       "root": "apps/front-e2e",
@@ -383,20 +287,12 @@
               "devServerTarget": "front:serve:production"
             }
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/front-e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/front-e2e/**/*"
-            ]
-          }
         }
-      }
+      },
+      "tags": [],
+      "implicitDependencies": [
+        "front"
+      ]
     },
     "identity": {
       "root": "apps/identity",
@@ -455,7 +351,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "login": {
       "projectType": "application",
@@ -555,7 +452,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "login-e2e": {
       "root": "apps/login-e2e",
@@ -583,7 +481,11 @@
             ]
           }
         }
-      }
+      },
+      "tags": [],
+      "implicitDependencies": [
+        "login"
+      ]
     },
     "material-ui-language-picker": {
       "projectType": "library",
@@ -610,7 +512,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "material-ui-material-design": {
       "projectType": "library",
@@ -618,19 +521,6 @@
       "sourceRoot": "libs/material/ui-material-design/src",
       "prefix": "chat-and-call",
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/material/ui-material-design/tsconfig.lib.json",
-              "libs/material/ui-material-design/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/material/ui-material-design/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -644,7 +534,8 @@
         "@nrwl/angular:component": {
           "style": "scss"
         }
-      }
+      },
+      "tags": []
     },
     "material-ui-theme-picker": {
       "projectType": "library",
@@ -671,7 +562,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "socketcluster-adapter": {
       "root": "libs/socketcluster/adapter",
@@ -679,19 +571,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/socketcluster/adapter/tsconfig.lib.json",
-              "libs/socketcluster/adapter/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/socketcluster/adapter/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -711,7 +590,8 @@
             ]
           }
         }
-      }
+      },
+      "tags": []
     },
     "socketcluster-shared": {
       "root": "libs/socketcluster/shared",
@@ -719,19 +599,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/socketcluster/shared/tsconfig.lib.json",
-              "libs/socketcluster/shared/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/socketcluster/shared/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -739,7 +606,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "socketcluster-socket-client-web": {
       "projectType": "library",
@@ -747,19 +615,6 @@
       "sourceRoot": "libs/socketcluster/socket-client-web/src",
       "prefix": "chat-and-call",
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/socketcluster/socket-client-web/tsconfig.lib.json",
-              "libs/socketcluster/socket-client-web/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/socketcluster/socket-client-web/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -772,7 +627,8 @@
         "@nrwl/angular:component": {
           "style": "scss"
         }
-      }
+      },
+      "tags": []
     },
     "socketcluster-utils-crud-server": {
       "root": "libs/socketcluster/utils-crud-server",
@@ -780,19 +636,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/socketcluster/utils-crud-server/tsconfig.lib.json",
-              "libs/socketcluster/utils-crud-server/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/socketcluster/utils-crud-server/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -812,7 +655,8 @@
             ]
           }
         }
-      }
+      },
+      "tags": []
     },
     "utils-feature-gateway-explorer": {
       "root": "libs/utils/feature-gateway-explorer",
@@ -820,19 +664,6 @@
       "projectType": "library",
       "schematics": {},
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/utils/feature-gateway-explorer/tsconfig.lib.json",
-              "libs/utils/feature-gateway-explorer/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/utils/feature-gateway-explorer/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
@@ -852,7 +683,8 @@
             ]
           }
         }
-      }
+      },
+      "tags": []
     },
     "utils-forms-shared": {
       "projectType": "library",
@@ -860,19 +692,6 @@
       "sourceRoot": "libs/utils/forms-shared/src",
       "prefix": "chat-and-call",
       "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/utils/forms-shared/tsconfig.lib.json",
-              "libs/utils/forms-shared/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/utils/forms-shared/**/*"
-            ]
-          }
-        },
         "test": {
           "builder": "@nrwl/jest:jest",
           "outputs": [
@@ -883,27 +702,8 @@
             "passWithNoTests": true
           }
         }
-      }
-    }
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/nest"
-  },
-  "defaultProject": "api",
-  "schematics": {
-    "@nrwl/angular:application": {
-      "style": "scss",
-      "linter": "eslint",
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "cypress"
-    },
-    "@nrwl/angular:library": {
-      "style": "scss",
-      "linter": "eslint",
-      "unitTestRunner": "jest"
-    },
-    "@nrwl/angular:component": {
-      "style": "scss"
+      },
+      "tags": []
     }
   }
 }

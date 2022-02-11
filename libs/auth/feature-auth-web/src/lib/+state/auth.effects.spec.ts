@@ -6,11 +6,11 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { NxModule, DataPersistence } from '@nrwl/angular';
-import { hot } from '@nrwl/angular/testing';
 
 import { AuthEffects } from './auth.effects';
 import * as AuthActions from './auth.actions';
 import { HttpClientModule } from '@angular/common/http';
+import { hot } from 'jasmine-marbles';
 
 describe('AuthEffects', () => {
   let actions: Observable<any>;
@@ -30,9 +30,9 @@ describe('AuthEffects', () => {
     effects = TestBed.inject(AuthEffects);
   });
 
-  it('should be created', async() => {
+  it('should be created', async () => {
     expect(effects).toBeTruthy();
-  })
+  });
 
   describe('loadAuth$', () => {
     /* it('should work', () => {

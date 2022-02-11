@@ -1,8 +1,8 @@
-import { Module, Logger, Global, Scope } from '@nestjs/common';
+import { Module, ConsoleLogger, Global, Scope, Logger } from '@nestjs/common';
 
 @Global()
 @Module({
-  providers: [{ useClass: Logger, provide: Logger, scope: Scope.TRANSIENT }],
+  providers: [{ useClass: ConsoleLogger, provide: Logger, scope: Scope.TRANSIENT }],
   exports: [Logger],
 })
 export class LoggerModule {}

@@ -64,7 +64,7 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     distinctUntilChanged()
   );
 
-  private readonly destroy$ = new Subject();
+  private readonly destroy$ = new Subject<void>();
 
   index$ = new Subject<number>();
   scrollSubscription!: Subscription;

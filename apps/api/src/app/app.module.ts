@@ -19,6 +19,8 @@ import { environment } from '../environments/environment';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
+          registerRequestContext: false,
+          allowGlobalContext: true,
           autoLoadEntities: true,
           debug: !environment.production,
           type: 'mysql',
