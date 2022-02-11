@@ -1,12 +1,12 @@
 import {
   AuthService,
+  Conflict,
   Fail,
-  Success
 } from '@chat-and-call/auth/data-access-auth-server';
 import {
   LoginRequestDto,
   SignupConflictResponseDto,
-  SignupRequestDto
+  SignupRequestDto,
 } from '@chat-and-call/auth/shared';
 import {
   Body,
@@ -14,10 +14,11 @@ import {
   ConsoleLogger,
   Controller,
   Get,
-  InternalServerErrorException, Post,
+  InternalServerErrorException,
+  Post,
   Query,
   Req,
-  Res
+  Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -69,17 +70,19 @@ export class AuthController {
       data.email
     );
 
-    if (result instanceof Success) {
-      return;
-    } else if (result instanceof Fail) {
+    if (result instanceof Fail) {
       throw new InternalServerErrorException();
-    } else {
+    }
+
+    if (result instanceof Conflict) {
       const error: SignupConflictResponseDto = {
         notAvailableEmail: result.isEmailTaken,
         notAvailableUsername: result.isUsernameTaken,
       };
       throw new ConflictException(error);
     }
+
+    return;
   }
 
   @Get('authorized')

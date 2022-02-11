@@ -6,6 +6,10 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 
 export class Success {}
+export class Conflict {
+  isEmailTaken!: boolean;
+  isUsernameTaken!: boolean;
+}
 export class Fail {}
 
 @Injectable()
@@ -55,9 +59,7 @@ export class AuthService {
     username: string,
     password: string,
     email: string
-  ): Promise<
-    Success | { isEmailTaken: boolean; isUsernameTaken: boolean } | Fail
-  > {
+  ): Promise<Success | Conflict | Fail> {
     try {
       const hashedPassword = await this._hashPassword(password);
       const user = this.userRepository.create({
