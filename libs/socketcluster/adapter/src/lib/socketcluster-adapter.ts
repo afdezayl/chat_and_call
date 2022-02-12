@@ -1,32 +1,43 @@
 import {
   ConsoleLogger,
   Inject,
-  Injectable, Optional,
+  Injectable,
+  Optional,
   WebSocketAdapter,
-  WsMessageHandler
+  WsMessageHandler,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { of } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { switchMap } from 'rxjs/operators';
 import { AGServer, AGServerSocket, attach } from 'socketcluster-server';
+import {
+  AGActionAuthenticate,
+  AGActionHandshakeSC,
+  AGActionHandshakeWS,
+  AGActionInvoke,
+  AGActionMessage,
+  AGActionPublishIn,
+  AGActionPublishOut,
+  AGActionSubscribe,
+  AGActionTransmit,
+} from 'socketcluster-server/action';
 import { AGServerOptions } from 'socketcluster-server/server';
-import { AGAction, IAGRequest } from './interfaces';
 import {
   MiddlewareHandshakeStrategy,
-  MIDDLEWARE_HANDSHAKE_TOKEN
+  MIDDLEWARE_HANDSHAKE_TOKEN,
 } from './middlewares/middleware-handshake-strategy';
 import {
   MiddlewareInboundRawStrategy,
-  MIDDLEWARE_INBOUND_RAW_TOKEN
+  MIDDLEWARE_INBOUND_RAW_TOKEN,
 } from './middlewares/middleware-inbound-raw-strategy';
 import {
   MiddlewareInboundStrategy,
-  MIDDLEWARE_INBOUND_TOKEN
+  MIDDLEWARE_INBOUND_TOKEN,
 } from './middlewares/middleware-inbound-strategy';
 import {
   MiddlewareOutboundStrategy,
-  MIDDLEWARE_OUTBOUND_TOKEN
+  MIDDLEWARE_OUTBOUND_TOKEN,
 } from './middlewares/middleware-outbound-strategy';
 
 export const SOCKETCLUSTER_OPTIONS_TOKEN = 'SOCKETCLUSTER_SERVER_OPTIONS';
@@ -101,7 +112,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
         : socket.receiver(message);
       (async () => {
         for await (const request of consumer) {
-          const req = request as IAGRequest;
+          const req = request;
           of(callback(request))
             .pipe(switchMap(transform))
             .subscribe(
@@ -135,7 +146,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
       this._server.setMiddleware(
         this._server.MIDDLEWARE_HANDSHAKE,
-        async (stream: AsyncIterable<AGAction>) => {
+        async (stream) => {
           for await (const action of stream) {
             this._handleHandshakeAction(action, handshake);
           }
@@ -145,7 +156,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   }
 
   private _handleHandshakeAction(
-    action: AGAction,
+    action: AGActionHandshakeWS | AGActionHandshakeSC,
     handshake: MiddlewareHandshakeStrategy
   ) {
     switch (action.type) {
@@ -160,7 +171,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           : handshake.default(action);
         break;
       default:
-        this.logger.warn(`Not implemented type "${action.type}"!`);
+        this.logger.warn(`Not implemented type "${action}"!`);
         handshake.default(action);
     }
   }
@@ -171,7 +182,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
       this._server.setMiddleware(
         this._server.MIDDLEWARE_INBOUND_RAW,
-        async (stream: AsyncIterable<AGAction>) => {
+        async (stream) => {
           for await (const action of stream) {
             this._handleInboundRawAction(action, inboundRaw);
           }
@@ -181,7 +192,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   }
 
   private _handleInboundRawAction(
-    action: AGAction,
+    action: AGActionMessage,
     inboundRaw: MiddlewareInboundRawStrategy
   ) {
     switch (action.type) {
@@ -200,7 +211,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
       this._server.setMiddleware(
         this._server.MIDDLEWARE_INBOUND,
-        async (middlewareStream: AsyncIterable<AGAction>) => {
+        async (middlewareStream) => {
           for await (const action of middlewareStream) {
             this._handleInboundAction(action, inbound);
           }
@@ -210,7 +221,12 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   }
 
   private _handleInboundAction(
-    action: AGAction,
+    action:
+      | AGActionTransmit
+      | AGActionInvoke
+      | AGActionSubscribe
+      | AGActionPublishIn
+      | AGActionAuthenticate,
     inbound: MiddlewareInboundStrategy
   ) {
     switch (action.type) {
@@ -236,7 +252,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
           : inbound.default(action);
         break;
       default:
-        this.logger.warn(`Not implemented type "${action.type}"!`);
+        this.logger.warn(`Not implemented type "${action}"!`);
         inbound.default(action);
     }
   }
@@ -247,7 +263,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
 
       this._server.setMiddleware(
         this._server.MIDDLEWARE_OUTBOUND,
-        async (stream: AsyncIterable<AGAction>) => {
+        async (stream) => {
           for await (const action of stream) {
             this._handleOutboundAction(action, outbound);
           }
@@ -257,7 +273,7 @@ export class SocketClusterAdapter implements WebSocketAdapter {
   }
 
   private _handleOutboundAction(
-    action: AGAction,
+    action: AGActionPublishOut,
     outbound: MiddlewareOutboundStrategy
   ) {
     switch (action.type) {

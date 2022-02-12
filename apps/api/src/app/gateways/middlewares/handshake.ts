@@ -1,12 +1,9 @@
 import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
-import {
-  HandshakeSCAction,
-  HandshakeWSAction,
-  MiddlewareHandshakeStrategy,
-} from '@chat-and-call/socketcluster/adapter';
-import { forwardRef, Inject, Injectable, ConsoleLogger } from '@nestjs/common';
+import { MiddlewareHandshakeStrategy } from '@chat-and-call/socketcluster/adapter';
+import { ConsoleLogger, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AGServer, AGServerSocket } from 'socketcluster-server';
+import { AGActionHandshakeSC } from 'socketcluster-server/action';
 import { setInterval } from 'timers';
 import { CookieUtil } from './cookie-util';
 
@@ -38,7 +35,7 @@ export class HandshakeStrategy extends MiddlewareHandshakeStrategy {
   }
 
   // TODO: unified type of errors
-  async onSCHandshake(action: HandshakeSCAction) {
+  async onSCHandshake(action: AGActionHandshakeSC) {
     const socket = action.socket;
 
     const refreshToken =

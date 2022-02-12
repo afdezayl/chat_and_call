@@ -1,13 +1,13 @@
 import { AuthService } from '@chat-and-call/auth/data-access-auth-server';
 import { ChannelsDataAccessService } from '@chat-and-call/channels/data-access-server';
+import { MiddlewareInboundStrategy } from '@chat-and-call/socketcluster/adapter';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import {
-  AGAction,
-  AuthenticateAction,
-  MiddlewareInboundStrategy,
-  PublishInAction,
-  SubscribeAction,
-} from '@chat-and-call/socketcluster/adapter';
-import { Injectable, ConsoleLogger } from '@nestjs/common';
+  AGActionAuthenticate,
+  AGActionInvoke,
+  AGActionPublishIn,
+  AGActionSubscribe,
+} from 'socketcluster-server/action';
 import { CookieUtil } from './cookie-util';
 
 @Injectable()
@@ -22,13 +22,18 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
     this.logger.setContext(this.constructor.name);
   }
 
-  onPublishIn?(action: PublishInAction): void {
+  onPublishIn?(action: AGActionPublishIn): void {
     action.block(new Error('Unauthorized'));
   }
 
-  async onSubscribe?(action: SubscribeAction): Promise<void> {
+  async onSubscribe?(action: AGActionSubscribe): Promise<void> {
     const user = action.socket?.authToken?.username ?? null;
     let channel = action.channel;
+
+    if (!channel) {
+      action.block(new Error('Empty channel'));
+      return;
+    }
 
     if (channel.endsWith('/ack')) {
       channel = channel.replace('/ack', '');
@@ -42,7 +47,9 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
 
     if (
       channel === user ||
-      (await this.channelsService.checkChannelAccess(user, channel).catch(console.error))
+      (await this.channelsService
+        .checkChannelAccess(user, channel)
+        .catch(console.error))
     ) {
       //this.logger.log(user + ' subscribe -> ' + action.channel);
       action.allow();
@@ -51,12 +58,18 @@ export class InboundStrategy extends MiddlewareInboundStrategy {
     }
   }
 
-  default(action: AGAction): void | Promise<void> {
+  default(
+    action:
+      | AGActionPublishIn
+      | AGActionInvoke
+      | AGActionSubscribe
+      | AGActionAuthenticate
+  ): void | Promise<void> {
     //this.logger.debug('default middleware action - ' + action.type);
     action.allow();
   }
 
-  async onAuthenticate?(action: AuthenticateAction): Promise<void> {
+  async onAuthenticate?(action: AGActionAuthenticate): Promise<void> {
     const { socket, authToken } = action;
     const username = authToken?.username;
 

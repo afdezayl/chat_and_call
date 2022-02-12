@@ -1,5 +1,8 @@
-import { HandshakeWSAction, HandshakeSCAction, AGAction } from '../interfaces';
 import { AGServer } from 'socketcluster-server';
+import {
+  AGActionHandshakeSC,
+  AGActionHandshakeWS
+} from 'socketcluster-server/action';
 
 export const MIDDLEWARE_HANDSHAKE_TOKEN = 'SOCKETCLUSTER_MIDDLEWARE_HANDSHAKE';
 
@@ -10,11 +13,13 @@ export abstract class MiddlewareHandshakeStrategy {
    */
   onServer?(server: AGServer): void | Promise<void>;
 
-  onWSHandshake?(action: HandshakeWSAction): void | Promise<void>;
+  onWSHandshake?(action: AGActionHandshakeWS): void | Promise<void>;
 
-  onSCHandshake?(action: HandshakeSCAction): void | Promise<void>;
+  onSCHandshake?(action: AGActionHandshakeSC): void | Promise<void>;
 
-  default(action: AGAction): void | Promise<void> {
+  default(
+    action: AGActionHandshakeWS | AGActionHandshakeSC
+  ): void | Promise<void> {
     action.allow();
   }
 }
