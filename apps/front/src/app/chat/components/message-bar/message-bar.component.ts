@@ -1,7 +1,14 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Channel, ChannelType } from '@chat-and-call/channels/shared';
 import { Store } from '@ngrx/store';
+import { tap } from 'rxjs';
 import { sendFileInfoToServer, sendMessage } from '../../+state/chat.actions';
 import { getFocusedChannel } from '../../+state/chat.selectors';
 
@@ -9,11 +16,14 @@ import { getFocusedChannel } from '../../+state/chat.selectors';
   selector: 'chat-and-call-message-bar',
   templateUrl: './message-bar.component.html',
   styleUrls: ['./message-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MessageBarComponent {
+export class MessageBarComponent implements AfterViewInit {
   @ViewChild('textInput') textInput!: ElementRef<HTMLInputElement>;
 
-  focus$ = this.store.select(getFocusedChannel);
+  focus$ = this.store
+    .select(getFocusedChannel)
+    .pipe(tap(() => this.setInitialState()));
 
   channelTypes = ChannelType;
   messageForm: FormGroup = this.fb.group({
@@ -22,6 +32,10 @@ export class MessageBarComponent {
   });
 
   constructor(private store: Store, private fb: FormBuilder) {}
+
+  ngAfterViewInit(): void {
+    this.setAutofocus();
+  }
 
   sendMessage(idChannel: string) {
     const message = {
@@ -47,7 +61,12 @@ export class MessageBarComponent {
     }
   }
 
-  setAutofocus() {
+  private setInitialState() {
+    this.messageForm.reset();
+    this.setAutofocus();
+  }
+
+  private setAutofocus() {
     this.textInput?.nativeElement?.focus();
   }
 }
