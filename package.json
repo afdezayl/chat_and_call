@@ -73,7 +73,7 @@
     "flag-icon-css": "^3.5.0",
     "mysql2": "^2.2.5",
     "normalize.css": "^8.0.1",
-    "oidc-provider": "^7.6.0",
+    "oidc-provider": "^8.1.0",
     "protobufjs": "^6.10.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
